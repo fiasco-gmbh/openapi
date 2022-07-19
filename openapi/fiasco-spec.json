@@ -1,0 +1,211 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
+      "version": "1.0.0",
+      "title": "FIASCO Calculation Service API",
+      "contact": {
+        "name": "FIASCO support",
+        "email": "info@fiasco.de",
+        "url": "https://fiasco.de/"
+      }
+    },
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "external",
+        "description": "Everything about our external endpoints"
+      }
+    ],
+    "schemes": [
+      "https",
+      "http"
+    ],
+    "paths": {
+      "/ext/v1/calculationRequests": {
+        "post": {
+          "tags": [
+            "ext/v1"
+          ],
+          "summary": "Creates a new calculation request",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "USER-AGENT",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "enum": [
+                "partner-name-web-app/1.0"
+              ]
+            },
+            {
+              "name": "Token",
+              "in": "header",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/CalculationRequest"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "$ref": "#/definitions/ApiResponse"
+              }
+            }
+          }
+        }
+      },
+      "/ext/v1/calculationRequest/{id}": {
+        "get": {
+          "tags": [
+            "ext/v1"
+          ],
+          "summary": "Returns information about a calculation request.",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "USER-AGENT",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "enum": [
+                "partner-name-web-app/1.0"
+              ]
+            },
+            {
+              "name": "Token",
+              "in": "header",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "The parameter :id is the requestId as returned by POST /ext/v1/calculationRequests.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "A text describing the current status (e.g. 'FIASCO_CALCULATING')"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Unknown Id"
+            },
+            "500": {
+              "description": "Unknown Id"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "CalculationRequest": {
+        "type": "object",
+        "properties": {
+          "foreignCaseId": {
+            "type": "string",
+            "description": "A reference number that we add to the request for future reference (Auftragsnummer)"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "string",
+                  "description": "Base64-encoded image data. Formats: JPEG or PNG"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Textual description of the image (e.g. 'front', 'damaged-part', 'paperwork')"
+                }
+              },
+              "required": [
+                "data"
+              ]
+            }
+          },
+          "vin": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "Indicates the number of kilometers the vehicle has driven."
+          },
+          "firstRegistrationDate": {
+            "type": "string",
+            "description": "Date of first registration of the vehicle. Format is 'yyyy-mm-dd' or 'dd.mm.yyyy'",
+            "format": "date"
+          },
+          "licensePlate": {
+            "type": "string"
+          },
+          "hsnTsn": {
+            "type": "string",
+            "description": "HSN/TSN of the vehicle (in short (4+3 digits) or long (4+8 digits) form)"
+          },
+          "audatexReceiver": {
+            "type": "string",
+            "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
+          }
+        },
+        "required": [
+          "images",
+          "vin",
+          "mileage"
+        ]
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean",
+            "description": "Either true of false. Always available."
+          },
+          "message": {
+            "type": "string",
+            "description": "Describes the return status (e.g. error details). Can be null or empty."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "ID of the newly created request. Only available when 'success' is true."
+          }
+        },
+        "example": {
+          "success": true,
+          "message": "message",
+          "requestId": "string"
+        }
+      }
+    }
+  }
