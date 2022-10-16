@@ -1,5 +1,5 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.1",
     "info": {
       "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
       "version": "1.0.0",
@@ -10,201 +10,760 @@
         "url": "https://fiasco.de/"
       }
     },
-    "basePath": "/",
-    "tags": [
+    "servers": [
       {
-        "name": "external",
-        "description": "Everything about our external endpoints"
+        "url": "https://cloud.staging.fiasco.de/",
+        "description": "staging server"
+      },
+      {
+        "url": "https://cloud.fiasco.de/",
+        "description": "production server"
       }
     ],
-    "schemes": [
-      "https",
-      "http"
+    "security": [
+      {
+        "Bearer": []
+      }
+    ],
+    "tags": [
+      {
+        "name": "Calculation Requests",
+        "description": ""
+      },
+      {
+        "name": "Express Links",
+        "description": ""
+      }
     ],
     "paths": {
-      "/ext/v1/calculationRequests": {
+      "/api/v1/calculationRequest": {
         "post": {
+          "operationId": "v1_createCalculationRequest",
           "tags": [
-            "ext/v1"
+            "Calculation Requests"
           ],
           "summary": "Creates a new calculation request",
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
+          "description": "Input data is processed asynchronously, results are delivered via webhook.",
           "parameters": [
             {
-              "name": "USER-AGENT",
+              "name": "User-Agent",
+              "description": "Please provide the name and version of your application here.",
               "in": "header",
               "required": true,
-              "type": "string",
-              "enum": [
-                "partner-name-web-app/1.0"
-              ]
+              "schema": {
+                "type": "string"
+              },
+              "example": "partner-web-app/1.0"
             },
             {
               "name": "Token",
+              "description": "An authorization token will be provided to you.",
               "in": "header",
               "required": true,
-              "type": "string"
-            },
-            {
-              "in": "body",
-              "name": "body",
-              "required": true,
               "schema": {
-                "$ref": "#/definitions/CalculationRequest"
+                "type": "string"
               }
             }
           ],
+          "requestBody": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCalculationRequestBody"
+                }
+              }
+            },
+            "required": true
+          },
           "responses": {
             "200": {
-              "description": "successful operation",
-              "schema": {
-                "$ref": "#/definitions/ApiResponse"
+              "description": "The request has been accepted and will be processed asynchronously. The response contains the ID of the created calculation request.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CreateCalculationRequestSuccessResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "One of the input parameters does not match the requirements. Details are provided in the response body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CreateCalculationRequestErrorResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Your credentials could not be authenticated.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CreateCalculationRequestErrorResponse"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "You are not authorized to create new calculation requests.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CreateCalculationRequestErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An internal error has occured. Additional details might be provided in the response.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CreateCalculationRequestErrorResponse"
+                  }
+                }
+              }
+            }
+          },
+          "callbacks": {
+            "calculationRequestCreated": {
+              "https://your-server.local/webhook-path": {
+                "post": {
+                  "summary": "Webhook for calculation request results",
+                  "description": "This webhook is called when the calculation request has been processed. The webhook is called at least once.",
+                  "parameters": [
+                    {
+                      "name": "User-Agent",
+                      "description": "Name and version of the application providing the calculation.",
+                      "in": "header",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "FIASCO Cloud/1.0"
+                    },
+                    {
+                      "name": "Token",
+                      "description": "An optional authorization token that you provided to us.",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "event",
+                      "description": "A name identifiying this event.",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "calculationRequestCreated"
+                        ]
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "description": "",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/CalculationRequestResultBody"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
+                    },
+                    "400": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "401": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "403": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "500": {
+                      "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
+                    }
+                  }
+                }
               }
             }
           }
         }
       },
-      "/ext/v1/calculationRequest/{id}": {
-        "get": {
+
+      "/api/v1/expressLink": {
+        "post": {
+          "operationId": "v1_sendExpressLink",
           "tags": [
-            "ext/v1"
+            "Express Links"
           ],
-          "summary": "Returns information about a calculation request.",
-          "produces": [
-            "application/json"
-          ],
+          "summary": "Sends a new express link to a customer",
+          "description": "Data will be delivered via AudaNet, therefore a valid 'audaNetRecipient' is required.",
           "parameters": [
             {
-              "name": "USER-AGENT",
+              "name": "User-Agent",
+              "description": "Please provide the name and version of your application here.",
               "in": "header",
               "required": true,
-              "type": "string",
-              "enum": [
-                "partner-name-web-app/1.0"
-              ]
+              "schema": {
+                "type": "string"
+              },
+              "example": "partner-web-app/1.0"
             },
             {
               "name": "Token",
+              "description": "An authorization token will be provided to you.",
               "in": "header",
               "required": true,
-              "type": "string"
-            },
-            {
-              "name": "id",
-              "in": "path",
-              "description": "The parameter :id is the requestId as returned by POST /ext/v1/calculationRequests.",
-              "required": true,
-              "type": "string"
+              "schema": {
+                "type": "string"
+              }
             }
           ],
+          "requestBody": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendExpressLinkRequestBody"
+                }
+              }
+            },
+            "required": true
+          },
           "responses": {
             "200": {
-              "description": "successful operation",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "description": "A text describing the current status (e.g. 'FIASCO_CALCULATING')"
+              "description": "The request has been accepted and will be processed asynchronously. The response contains the ID of the created calculation request.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendExpressLinkResponse"
                   }
                 }
               }
             },
-            "404": {
-              "description": "Unknown Id"
+            "400": {
+              "description": "One of the input parameters does not match the requirements. Details are provided in the response body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Your credentials could not be authenticated.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "You are not authorized to create new calculation requests.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                  }
+                }
+              }
             },
             "500": {
-              "description": "Unknown Id"
+              "description": "An internal error has occured. Additional details might be provided in the response.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                  }
+                }
+              }
+            }
+          },
+          "callbacks": {
+            "expressLinkCompleted": {
+              "https://your-server.local/webhook-path": {
+                "post": {
+                  "description": "This webhook is called when the calculation request has been processed. The webhook is called at least once.",
+                  "parameters": [
+                    {
+                      "name": "User-Agent",
+                      "description": "Name and version of the application providing the calculation.",
+                      "in": "header",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "FIASCO Cloud/1.0"
+                    },
+                    {
+                      "name": "Token",
+                      "description": "An optional authorization token that you provided to us.",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "event",
+                      "description": "A name identifiying this event.",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "calculationRequestCreated"
+                        ]
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "description": "",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ExpressLinkResultBody"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
+                    },
+                    "400": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "401": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "403": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "500": {
+                      "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
+                    }
+                  }
+                }
+              }
             }
           }
         }
       }
     },
-    "definitions": {
-      "CalculationRequest": {
-        "type": "object",
-        "properties": {
-          "foreignCaseId": {
-            "type": "string",
-            "description": "A reference number that we add to the request for future reference (Auftragsnummer)"
-          },
-          "images": {
-            "type": "array",
-            "items": {
+
+    "components": {
+      "schemas": {
+        "AverageLaborRatesViaZipCode": {
+          "type": "object",
+          "required": [
+            "laborRatesZipCode"
+          ],
+          "properties": {
+            "laborRatesCountry": {
+              "type": "string",
+              "nullable": true,
+              "description": "Country code (ISO 3166-1 ALPHA-2) for the ZIP code.",
+              "default": "DE",
+              "enum": [
+                "DE"
+              ]
+            },
+
+            "laborRatesZipCode": {
+              "type": "string",
+              "description": "The zip code for which average labor rates should be determined",
+              "example": "12345"
+            }
+          }
+        },
+
+        "BasicCalculationParameters": {
+          "type": "object",
+          "properties": {
+            "paintSystem": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "manufacturer",
+                "azt"
+              ],
+              "default": "manufacturer",
+              "description": "The paint system to base the calculation on (AZT or Manufacturer)"
+            },
+
+            "replacementPartsSurcharge": {
+              "type": "number",
+              "nullable": true,
+              "default": 0.0,
+              "description": "Relative surcharge for replacement parts (e.g. 0.1 for 10%) [Audatex block code 22]"
+            },
+
+            "paintMaterialPercentage": {
+              "type": "number",
+              "nullable": true,
+              "default": 0.38,
+              "description": "Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on chosen paint system]"
+            },
+
+            "smallPartsPercentage": {
+              "type": "number",
+              "nullable": true,
+              "default": 0.02,
+              "description": "Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]"
+            }
+          }
+        },
+
+        "BasicRequestData": {
+          "type": "object",
+          "required": [
+            "photos",
+            "vin",
+            "mileage",
+            "firstRegistrationDate"
+          ],
+          "properties": {
+            "referenceId": {
+              "type": "string",
+              "nullable": true,
+              "description": "A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.)"
+            },
+
+            "photos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "format": "byte",
+                    "description": "Base64-encoded image data. Formats: JPEG or PNG"
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/png')"
+                  },
+                  "filename": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Filename of the photo"
+                  }
+                }
+              }
+            },
+
+            "vin": {
+              "type": "string",
+              "description": "Vehicle identification number (VIN)"
+            },
+
+            "mileage": {
+              "type": "number",
+              "description": "Indicates the number of kilometers the vehicle has driven."
+            },
+
+            "firstRegistrationDate": {
+              "type": "string",
+              "description": "Date of first registration of the vehicle in the format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'",
+              "format": "date"
+            },
+
+            "licensePlate": {
+              "type": "string",
+              "nullable": true,
+              "description": "Will be added to the calculation result (for further reference). Not required for the actual calculation."
+            },
+
+            "audaNetRecipient": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
+              "example": "CommId:DE123456",
+              "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
+            }
+          }
+        },
+
+        "CalculationParameters": {
+          "allOf": [
+            { "$ref": "#/components/schemas/LaborRates" },  
+            { "$ref": "#/components/schemas/BasicCalculationParameters" }
+          ]
+        },
+
+        "CalculationRequestResultBody": {
+          "type": "object",
+          "properties": {
+            "sucess": {
+              "type": "boolean",
+              "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+              "example": true
+            },
+            "message": {
+              "type": "string",
+              "description": "Describes the return status (e.g. error details). Can be null or empty.",
+              "example": "Calculation request successfully processed"
+            },
+            "calculationRequestId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the newly created request. Only available when 'success' is true.",
+              "example": "12341234-1234-1234-1234-123412341234"
+            },
+            "calculationText": {
+              "type": "string",
+              "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true."
+            },
+            "audaNetCaseId": {
+              "type": "string",
+              "format": "uuid",
+              "example": "B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179",
+              "description": "The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested."
+            }
+          }
+        },
+
+        "CreateCalculationRequestBody": {
+          "description": "",
+          "allOf": [
+            { "$ref": "#/components/schemas/BasicRequestData" },
+            { "$ref": "#/components/schemas/CalculationParameters" },
+            {
               "type": "object",
               "properties": {
-                "data": {
+                "referenceId": {
                   "type": "string",
-                  "description": "Base64-encoded image data. Formats: JPEG or PNG"
+                  "description": "A reference ID that we add to the request for future reference (e.g. case ID, order ID, etc.)"
                 },
-                "label": {
+
+                "recipient": {
                   "type": "string",
-                  "description": "Textual description of the image (e.g. 'front', 'damaged-part', 'paperwork')"
+                  "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
                 }
-              },
-              "required": [
-                "data"
-              ]
+              }
+            }
+          ]
+        },
+
+        "CreateCalculationRequestErrorResponse": {
+          "type": "object",
+          "properties": {
+            "sucess": {
+              "type": "boolean",
+              "description": "Either true of false. Always available."
+            },
+            "message": {
+              "type": "string",
+              "nullable": true,
+              "description": "Describes the return status (e.g. error details). Can be null or empty."
             }
           },
-          "vin": {
-            "type": "string"
-          },
-          "mileage": {
-            "type": [
-              "string",
-              "number"
-            ],
-            "description": "Indicates the number of kilometers the vehicle has driven."
-          },
-          "firstRegistrationDate": {
-            "type": "string",
-            "description": "Date of first registration of the vehicle. Format is 'yyyy-mm-dd' or 'dd.mm.yyyy'",
-            "format": "date"
-          },
-          "licensePlate": {
-            "type": "string"
-          },
-          "hsnTsn": {
-            "type": "string",
-            "description": "HSN/TSN of the vehicle (in short (4+3 digits) or long (4+8 digits) form)"
-          },
-          "audatexReceiver": {
-            "type": "string",
-            "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
+          "example": {
+            "success": false,
+            "message": "Your token could not be authenticated"
           }
         },
-        "required": [
-          "images",
-          "vin",
-          "mileage"
-        ]
-      },
-      "ApiResponse": {
-        "type": "object",
-        "properties": {
-          "sucess": {
-            "type": "boolean",
-            "description": "Either true of false. Always available."
-          },
-          "message": {
-            "type": "string",
-            "description": "Describes the return status (e.g. error details). Can be null or empty."
-          },
-          "requestId": {
-            "type": "string",
-            "description": "ID of the newly created request. Only available when 'success' is true."
+
+        "CreateCalculationRequestSuccessResponse": {
+          "type": "object",
+          "properties": {
+            "sucess": {
+              "type": "boolean",
+              "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+              "example": true
+            },
+            "message": {
+              "type": "string",
+              "description": "Describes the return status (e.g. error details). Can be null or empty.",
+              "example": "Calculation successfully requested"
+            },
+            "calculationId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the newly created request. Only available when 'success' is true.",
+              "example": "12341234-1234-1234-1234-123412341234"
+            }
           }
         },
-        "example": {
-          "success": true,
-          "message": "message",
-          "requestId": "string"
+
+        "ExpressLinkRecipients": {
+          "type": "object",
+          "description": "An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.",
+          "required": [
+            "audaNetRecipient"
+          ],
+          "properties": {
+            "emailRecipient": {
+              "type": "string",
+              "format": "email",
+              "nullable": true,
+              "description": "An email address to send a request for data to."
+            },
+            "smsRecipient": {
+              "type": "string",
+              "format": "phone",
+              "nullable": true,
+              "description": "A mobile phone number to send a request for data to (via SMS)."
+            },
+            "audaNetRecipient": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
+              "example": "CommId:DE123456",
+              "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
+            }
+          }
+        },
+
+        "ExpressLinkBaseData": {
+          "type": "object",
+          "properties": {
+            "requestCalculationForData": {
+              "type": "boolean",
+              "description": "If true, a calculation request will be created as soon as data is available"
+            }
+          }
+        },
+
+        "ExpressLinkData": {
+          "anyOf": [
+            { "$ref": "#/components/schemas/ExpressLinkBaseData" },
+            { "$ref": "#/components/schemas/BasicRequestData" },
+            { "$ref": "#/components/schemas/CalculationParameters" }
+          ]
+        },
+
+        "ExpressLinkResultBody": {
+          "type": "object",
+          "properties": {
+            "sucess": {
+              "type": "boolean",
+              "description": "Either true (data was collected and (optionally) a calculation has been created) of false (an error occured). Always available.",
+              "example": true
+            },
+            "message": {
+              "type": "string",
+              "description": "Describes the return status (e.g. error details). Can be null or empty.",
+              "example": "Calculation request successfully processed"
+            },
+            "calculationRequestId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the newly created request. Only available when 'success' is true.",
+              "example": "12341234-1234-1234-1234-123412341234"
+            },
+            "calculationText": {
+              "type": "string",
+              "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true and if a calculation was originally requested."
+            },
+            "audaNetCaseId": {
+              "type": "string",
+              "format": "uuid",
+              "example": "B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179",
+              "description": "The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested."
+            }
+          }
+        },
+
+        "LaborRates": {
+          "description": "Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be overwritten by average labor rates for that ZIP code.",
+          "anyOf": [
+            { "$ref": "#/components/schemas/SpecificLaborRates" },
+            { "$ref": "#/components/schemas/AverageLaborRatesViaZipCode" }
+          ]
+        },
+
+        "SendExpressLinkRequestBody": {
+          "allOf": [
+            { "$ref": "#/components/schemas/ExpressLinkRecipients" },
+            { "$ref": "#/components/schemas/ExpressLinkData" }
+          ]
+        },
+
+        "SendExpressLinkResponse": {
+          "type": "object",
+          "properties": {
+            "sucess": {
+              "type": "boolean",
+              "description": "Either true (messages have been sent successfully) of false (an error occured). Always available.",
+              "example": false
+            },
+            "message": {
+              "type": "string",
+              "description": "Describes the return status (e.g. error details). Can be null or empty.",
+              "example": "The phone number specified does not appear to be in an acceptable format"
+            },
+            "expressLinkId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the express link. Only available when 'success' is true.",
+              "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+            }
+          }
+        },
+
+        "SpecificLaborRates": {
+          "type": "object",
+          "required": [
+            "laborRateMechanics",
+            "laborRateElectronics",
+            "laborRateBody",
+            "laborRateHailDamage",
+            "laborRatePaint"
+          ],
+          "properties": {
+            "laborRateMechanics": {
+              "type": "number",
+              "nullable": true,
+              "description": "Labor rate for mechanical work (Karosserieschlosser)",
+              "example": 80.00
+            },
+            "laborRateElectronics": {
+              "type": "number",
+              "nullable": true,
+              "description": "Labor rate for electrical work (Elektrik)",
+              "example": 80.00
+            },
+            "laborRateBody": {
+              "type": "number",
+              "nullable": true,
+              "description": "Labor rate for body work (Karosseriebau)",
+              "example": 80.00
+            },
+            "laborRateHailDamage": {
+              "type": "number",
+              "nullable": true,
+              "description": "Labor rate for hail damage (Hagelschaden)",
+              "example": 80.00
+            },
+            "laborRatePaint": {
+              "type": "number",
+              "nullable": true,
+              "description": "Labor rate for paint work (Lackarbeiten)",
+              "example": 80.00
+            }
+          }
         }
       }
     }
