@@ -535,6 +535,10 @@
               "type": "string",
               "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true."
             },
+            "referenceId": {
+              "type": "string",
+              "description": "The reference ID that was passed in the original request."
+            },
             "audaNetCaseId": {
               "type": "string",
               "format": "uuid",
@@ -557,7 +561,7 @@
                   "description": "A reference ID that we add to the request for future reference (e.g. case ID, order ID, etc.)"
                 },
 
-                "recipient": {
+                "audaNetRecipient": {
                   "type": "string",
                   "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
                 }
@@ -626,6 +630,10 @@
               "nullable": true,
               "description": "A mobile phone number to send a request for data to (via SMS)."
             },
+            "referenceId": {
+              "type": "string",
+              "description": "A reference ID that we add to the request for future reference (e.g. case ID, order ID, etc.)"
+            },
             "audaNetRecipient": {
               "type": "string",
               "nullable": true,
@@ -676,6 +684,10 @@
             "calculationText": {
               "type": "string",
               "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true and if a calculation was originally requested."
+            },
+            "referenceId": {
+              "type": "string",
+              "description": "The reference ID that was passed in the original request."
             },
             "audaNetCaseId": {
               "type": "string",
