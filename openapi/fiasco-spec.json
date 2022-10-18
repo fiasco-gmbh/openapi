@@ -232,7 +232,7 @@
             }
           ],
           "requestBody": {
-            "description": "",
+            "description": "The schemas `ExpressLinkBaseData` and `BasicRequestData` are always required. If the field `requestCalculationForData` is true, `CalculationParameters` is required.",
             "content": {
               "application/json": {
                 "schema": {
