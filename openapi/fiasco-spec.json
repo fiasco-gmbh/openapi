@@ -564,6 +564,11 @@
                 "audaNetRecipient": {
                   "type": "string",
                   "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
+                },
+                
+                "billed": {
+                  "type": "boolean",
+                  "description": "Indicates whether the calculation was billed or not."
                 }
               }
             }
@@ -694,6 +699,10 @@
               "format": "uuid",
               "example": "B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179",
               "description": "The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested."
+            },
+            "billed": {
+              "type": "boolean",
+              "description": "Indicates whether the calculation was billed or not."
             }
           }
         },
