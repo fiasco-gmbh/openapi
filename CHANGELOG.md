@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [1.1.0] - 2022-11-29
+## [1.1.1] - 2022-11-29
 
 ### Added
 
@@ -31,5 +31,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-[1.0.1]: https://github.com/fiasco-gmbh/openapi/compare/1.0.0...1.0.1
+[1.1.1]: https://github.com/fiasco-gmbh/openapi/compare/1.0.0...1.1.1
 [1.0.0]: https://github.com/fiasco-gmbh/openapi/releases/tag/1.0.0
