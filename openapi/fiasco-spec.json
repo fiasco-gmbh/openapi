@@ -2,13 +2,17 @@
     "openapi": "3.0.1",
     "info": {
       "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-      "version": "1.0.0",
-      "title": "FIASCO Calculation Service API",
+      "version": "1.1.0",
+      "title": "FIASCO API",
       "contact": {
         "name": "FIASCO support",
         "email": "info@fiasco.de",
         "url": "https://fiasco.de/"
       }
+    },
+    "externalDocs": {
+      "description": "Find more information (e.g. a changelog) in the GitHub repository.",
+      "url": "https://github.com/fiasco-gmbh/openapi/"
     },
     "servers": [
       {
@@ -204,11 +208,11 @@
 
       "/api/v1/expressLink": {
         "post": {
-          "operationId": "v1_sendExpressLink",
+          "operationId": "v1_createExpressLink",
           "tags": [
             "Express Links"
           ],
-          "summary": "Sends a new express link to a customer",
+          "summary": "Creates a new express link to be used by an end user. If an email address and/or phone number are present, the link will be sent there.",
           "description": "Data will be delivered via AudaNet, therefore a valid 'audaNetRecipient' is required.",
           "parameters": [
             {
@@ -236,7 +240,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SendExpressLinkRequestBody"
+                  "$ref": "#/components/schemas/CreateExpressLinkRequestBody"
                 }
               }
             },
@@ -248,7 +252,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                    "$ref": "#/components/schemas/CreateExpressLinkResponse"
                   }
                 }
               }
@@ -258,7 +262,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                    "$ref": "#/components/schemas/CreateExpressLinkResponse"
                   }
                 }
               }
@@ -268,7 +272,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                    "$ref": "#/components/schemas/CreateExpressLinkResponse"
                   }
                 }
               }
@@ -278,7 +282,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                    "$ref": "#/components/schemas/CreateExpressLinkResponse"
                   }
                 }
               }
@@ -288,7 +292,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SendExpressLinkResponse"
+                    "$ref": "#/components/schemas/CreateExpressLinkResponse"
                   }
                 }
               }
@@ -457,17 +461,28 @@
                   "data": {
                     "type": "string",
                     "format": "byte",
-                    "description": "Base64-encoded image data. Formats: JPEG or PNG"
+                    "description": "Base64-encoded image data. Formats: JPEG, PNG, or HEIF"
                   },
                   "content_type": {
                     "type": "string",
                     "nullable": true,
-                    "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/png')"
+                    "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/png', 'image/heic', 'image/heif'). If not provided, the MIME type will be determined automatically (if possible)."
                   },
                   "filename": {
                     "type": "string",
                     "nullable": true,
                     "description": "Filename of the photo"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "nullable": true,
+                    "default": "common",
+                    "description": "The subject of the photo (common picture of the car, photo of a damage, other/unspecified)",
+                    "enum": [
+                      "common",
+                      "other",
+                      "damage"
+                    ]
                   }
                 }
               }
@@ -715,14 +730,14 @@
           ]
         },
 
-        "SendExpressLinkRequestBody": {
+        "CreateExpressLinkRequestBody": {
           "allOf": [
             { "$ref": "#/components/schemas/ExpressLinkRecipients" },
             { "$ref": "#/components/schemas/ExpressLinkData" }
           ]
         },
 
-        "SendExpressLinkResponse": {
+        "CreateExpressLinkResponse": {
           "type": "object",
           "properties": {
             "sucess": {
@@ -740,6 +755,12 @@
               "format": "uuid",
               "description": "ID of the express link. Only available when 'success' is true.",
               "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+            },
+            "expressLinkUrl": {
+              "type": "string",
+              "format": "uri",
+              "description": "The URL of the express link (this can be sent to end users). Only available when 'success' is true.",
+              "example": "https://cloud.fiasco.de/express/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
             }
           }
         },
