@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
       "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-      "version": "1.1.0",
+      "version": "1.1.2",
       "title": "FIASCO API",
       "contact": {
         "name": "FIASCO support",
