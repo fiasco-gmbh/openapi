@@ -40,7 +40,7 @@
       }
     ],
     "paths": {
-      "/api/v1/calculationRequest": {
+      "/api/v1/calculation_request": {
         "post": {
           "operationId": "v1_createCalculationRequest",
           "tags": [
@@ -166,7 +166,9 @@
                       "schema": {
                         "type": "string",
                         "enum": [
-                          "calculationRequestCreated"
+                          "calculationRequestCreated",
+                          "calculationReady",
+                          "calculationFailed"
                         ]
                       }
                     }
@@ -206,7 +208,7 @@
         }
       },
 
-      "/api/v1/expressLink": {
+      "/api/v1/express_link": {
         "post": {
           "operationId": "v1_createExpressLink",
           "tags": [

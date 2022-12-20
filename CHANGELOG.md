@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.1.2] - 2022-12-21
+
+### Added
+
+- Added new enum values to the `calculationRequestCreated` callback:
+  - `"calculationReady"`
+  - `"calculationFailed"`
+
+### Changed
+
+- Changed URLs
+  - `/api/v1/calculationRequest` -> `/api/v1/calculation_request`
+  - `/api/v1/expressLink` -> `/api/v1/express_link`
+
+
 ## [1.1.1] - 2022-11-29
 
 ### Added
@@ -31,5 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[1.1.2]: https://github.com/fiasco-gmbh/openapi/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/fiasco-gmbh/openapi/compare/1.0.0...1.1.1
 [1.0.0]: https://github.com/fiasco-gmbh/openapi/releases/tag/1.0.0
