@@ -26,7 +26,7 @@
     ],
     "security": [
       {
-        "Bearer": []
+        "BearerToken": []
       }
     ],
     "tags": [
@@ -58,15 +58,6 @@
                 "type": "string"
               },
               "example": "partner-web-app/1.0"
-            },
-            {
-              "name": "Token",
-              "description": "An authorization token will be provided to you.",
-              "in": "header",
-              "required": true,
-              "schema": {
-                "type": "string"
-              }
             }
           ],
           "requestBody": {
@@ -150,8 +141,8 @@
                       "example": "FIASCO Cloud/1.0"
                     },
                     {
-                      "name": "Token",
-                      "description": "An optional authorization token that you provided to us.",
+                      "name": "Authorization",
+                      "description": "An optional authorization token can be send as bearer token (provided by you).",
                       "in": "header",
                       "required": false,
                       "schema": {
@@ -215,7 +206,7 @@
             "Express Links"
           ],
           "summary": "Creates a new express link to be used by an end user. If an email address and/or phone number are present, the link will be sent there.",
-          "description": "Data will be delivered via AudaNet, therefore a valid 'audaNetRecipient' is required.",
+          "description": "",
           "parameters": [
             {
               "name": "User-Agent",
@@ -226,19 +217,10 @@
                 "type": "string"
               },
               "example": "partner-web-app/1.0"
-            },
-            {
-              "name": "Token",
-              "description": "An authorization token will be provided to you.",
-              "in": "header",
-              "required": true,
-              "schema": {
-                "type": "string"
-              }
             }
           ],
           "requestBody": {
-            "description": "The schemas `ExpressLinkBaseData` and `BasicRequestData` are always required. If the field `requestCalculationForData` is true, `CalculationParameters` is required.",
+            "description": "If the field `doCalculation` is true, `CalculationParameters` are required. The fields in `VehicleData` can be used to pre-fill data for the end user (e.g. vehicle information).",
             "content": {
               "application/json": {
                 "schema": {
@@ -317,8 +299,8 @@
                       "example": "FIASCO Cloud/1.0"
                     },
                     {
-                      "name": "Token",
-                      "description": "An optional authorization token that you provided to us.",
+                      "name": "Authorization",
+                      "description": "An optional authorization token can be send as bearer token (provided by you).",
                       "in": "header",
                       "required": false,
                       "schema": {
@@ -333,7 +315,10 @@
                       "schema": {
                         "type": "string",
                         "enum": [
-                          "calculationRequestCreated"
+                          "dataReceivedByUser",
+                          "calculationRequestCreated",
+                          "calculationReady",
+                          "calculationFailed"
                         ]
                       }
                     }
@@ -375,6 +360,14 @@
     },
 
     "components": {
+      "securitySchemes": {
+        "BearerToken": {
+          "type": "http",
+          "scheme": "bearer",
+          "description": "Please provide your API key as the bearer token (via the HTTP header \"Authentication: Bearer $API_TOKEN\")."
+        }
+      },
+
       "schemas": {
         "AverageLaborRatesViaZipCode": {
           "type": "object",
@@ -394,7 +387,7 @@
 
             "laborRatesZipCode": {
               "type": "string",
-              "description": "The zip code for which average labor rates should be determined",
+              "description": "The zip code for which average labor rates should be determined.",
               "example": "12345"
             }
           }
@@ -418,6 +411,8 @@
               "type": "number",
               "nullable": true,
               "default": 0.0,
+              "maximum": 1.0,
+              "minimum": 0.0,
               "description": "Relative surcharge for replacement parts (e.g. 0.1 for 10%) [Audatex block code 22]"
             },
 
@@ -425,6 +420,8 @@
               "type": "number",
               "nullable": true,
               "default": 0.38,
+              "maximum": 1.0,
+              "minimum": 0.0,
               "description": "Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on chosen paint system]"
             },
 
@@ -432,26 +429,56 @@
               "type": "number",
               "nullable": true,
               "default": 0.02,
+              "maximum": 1.0,
+              "minimum": 0.0,
               "description": "Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]"
             }
           }
         },
 
-        "BasicRequestData": {
+        "VehicleData": {
           "type": "object",
           "required": [
-            "photos",
-            "vin",
-            "mileage",
-            "firstRegistrationDate"
+            "vin"
           ],
           "properties": {
-            "referenceId": {
+            "vin": {
               "type": "string",
-              "nullable": true,
-              "description": "A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.)"
+              "maxLength": 18,
+              "description": "Vehicle identification number (VIN; 17 chars) with optional check digit (18 chars).",
+              "pattern": "^[1234567890ABCDEFGHJKLMNPRSTUVWXYZ]{17}\\d?$",
+              "nullable": true
             },
 
+            "mileage": {
+              "type": "number",
+              "minimum": 0,
+              "nullable": true,
+              "description": "Indicates the number of kilometers the vehicle has driven. Required for total loss calculation."
+            },
+
+            "firstRegistrationDate": {
+              "type": "string",
+              "nullable": true,
+              "description": "Date of first registration of the vehicle in the format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'. Required for total loss calculation if not enough data is available via VIN lookup.",
+              "format": "date"
+            },
+
+            "licensePlate": {
+              "type": "string",
+              "maxLength": 15,
+              "nullable": true,
+              "description": "Will be added to the calculation result (for further reference). Not required for the actual calculation."
+            }
+          }
+        },
+
+        "VehicleAndDamagePhotos": {
+          "type": "object",
+          "required": [
+            "photos"
+          ],
+          "properties": {
             "photos": {
               "type": "array",
               "items": {
@@ -465,7 +492,7 @@
                     "format": "byte",
                     "description": "Base64-encoded image data. Formats: JPEG, PNG, or HEIF"
                   },
-                  "content_type": {
+                  "contentType": {
                     "type": "string",
                     "nullable": true,
                     "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/png', 'image/heic', 'image/heif'). If not provided, the MIME type will be determined automatically (if possible)."
@@ -488,38 +515,16 @@
                   }
                 }
               }
-            },
-
-            "vin": {
-              "type": "string",
-              "description": "Vehicle identification number (VIN)"
-            },
-
-            "mileage": {
-              "type": "number",
-              "description": "Indicates the number of kilometers the vehicle has driven."
-            },
-
-            "firstRegistrationDate": {
-              "type": "string",
-              "description": "Date of first registration of the vehicle in the format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'",
-              "format": "date"
-            },
-
-            "licensePlate": {
-              "type": "string",
-              "nullable": true,
-              "description": "Will be added to the calculation result (for further reference). Not required for the actual calculation."
-            },
-
-            "audaNetRecipient": {
-              "type": "string",
-              "nullable": true,
-              "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
-              "example": "CommId:DE123456",
-              "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
             }
           }
+        },
+
+        "BasicCalculationRequestData": {
+          "type": "object",
+          "allOf": [
+            { "$ref": "#/components/schemas/VehicleData" },
+            { "$ref": "#/components/schemas/VehicleAndDamagePhotos" }
+          ]
         },
 
         "CalculationParameters": {
@@ -532,7 +537,7 @@
         "CalculationRequestResultBody": {
           "type": "object",
           "properties": {
-            "sucess": {
+            "success": {
               "type": "boolean",
               "description": "Either true (request was successfully created) of false (an error occured). Always available.",
               "example": true
@@ -565,37 +570,32 @@
           }
         },
 
+        "RequestMetaData": {
+          "type": "object",
+          "properties": {
+            "referenceId": {
+              "type": "string",
+              "maxLength": 50,
+              "nullable": true,
+              "description": "A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference."
+            }
+          }
+        },
+
         "CreateCalculationRequestBody": {
           "description": "",
           "allOf": [
-            { "$ref": "#/components/schemas/BasicRequestData" },
+            { "$ref": "#/components/schemas/RequestMetaData" },
+            { "$ref": "#/components/schemas/BasicCalculationRequestData" },
             { "$ref": "#/components/schemas/CalculationParameters" },
-            {
-              "type": "object",
-              "properties": {
-                "referenceId": {
-                  "type": "string",
-                  "description": "A reference ID that we add to the request for future reference (e.g. case ID, order ID, etc.)"
-                },
-
-                "audaNetRecipient": {
-                  "type": "string",
-                  "description": "The finished calculation will be sent to this Audatex account. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
-                },
-                
-                "billed": {
-                  "type": "boolean",
-                  "description": "Indicates whether the calculation was billed or not."
-                }
-              }
-            }
+            { "$ref": "#/components/schemas/CalculationRecipients" }
           ]
         },
 
         "CreateCalculationRequestErrorResponse": {
           "type": "object",
           "properties": {
-            "sucess": {
+            "success": {
               "type": "boolean",
               "description": "Either true of false. Always available."
             },
@@ -614,7 +614,7 @@
         "CreateCalculationRequestSuccessResponse": {
           "type": "object",
           "properties": {
-            "sucess": {
+            "success": {
               "type": "boolean",
               "description": "Either true (request was successfully created) of false (an error occured). Always available.",
               "example": true
@@ -624,7 +624,7 @@
               "description": "Describes the return status (e.g. error details). Can be null or empty.",
               "example": "Calculation successfully requested"
             },
-            "calculationId": {
+            "calculationRequestId": {
               "type": "string",
               "format": "uuid",
               "description": "ID of the newly created request. Only available when 'success' is true.",
@@ -636,9 +636,6 @@
         "ExpressLinkRecipients": {
           "type": "object",
           "description": "An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.",
-          "required": [
-            "audaNetRecipient"
-          ],
           "properties": {
             "emailRecipient": {
               "type": "string",
@@ -651,43 +648,38 @@
               "format": "phone",
               "nullable": true,
               "description": "A mobile phone number to send a request for data to (via SMS)."
-            },
-            "referenceId": {
-              "type": "string",
-              "description": "A reference ID that we add to the request for future reference (e.g. case ID, order ID, etc.)"
-            },
-            "audaNetRecipient": {
-              "type": "string",
-              "nullable": true,
-              "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
-              "example": "CommId:DE123456",
-              "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'"
-            }
-          }
-        },
-
-        "ExpressLinkBaseData": {
-          "type": "object",
-          "properties": {
-            "requestCalculationForData": {
-              "type": "boolean",
-              "description": "If true, a calculation request will be created as soon as data is available"
             }
           }
         },
 
         "ExpressLinkData": {
+          "type": "object",
           "anyOf": [
-            { "$ref": "#/components/schemas/ExpressLinkBaseData" },
-            { "$ref": "#/components/schemas/BasicRequestData" },
-            { "$ref": "#/components/schemas/CalculationParameters" }
+            {
+              "type": "object",
+              "properties": {
+                "doCalculation": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "If true, a calculation request will be created as soon as data has been collected from the end user."
+                },
+                "expirationDate": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "The date when the link will expire. If not specified, the link will expire after 30 days. Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'."
+                }
+              }
+            },
+            { "$ref": "#/components/schemas/CalculationParameters" },
+            { "$ref": "#/components/schemas/CalculationRecipients" },
+            { "$ref": "#/components/schemas/VehicleData" }
           ]
         },
 
         "ExpressLinkResultBody": {
           "type": "object",
           "properties": {
-            "sucess": {
+            "success": {
               "type": "boolean",
               "description": "Either true (data was collected and (optionally) a calculation has been created) of false (an error occured). Always available.",
               "example": true
@@ -716,10 +708,6 @@
               "format": "uuid",
               "example": "B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179",
               "description": "The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested."
-            },
-            "billed": {
-              "type": "boolean",
-              "description": "Indicates whether the calculation was billed or not."
             }
           }
         },
@@ -734,6 +722,7 @@
 
         "CreateExpressLinkRequestBody": {
           "allOf": [
+            { "$ref": "#/components/schemas/RequestMetaData" },
             { "$ref": "#/components/schemas/ExpressLinkRecipients" },
             { "$ref": "#/components/schemas/ExpressLinkData" }
           ]
@@ -742,7 +731,7 @@
         "CreateExpressLinkResponse": {
           "type": "object",
           "properties": {
-            "sucess": {
+            "success": {
               "type": "boolean",
               "description": "Either true (messages have been sent successfully) of false (an error occured). Always available.",
               "example": false
@@ -767,6 +756,26 @@
           }
         },
 
+        "CalculationRecipients": {
+          "type": "object",
+          "properties": {
+            "calculationAudaNetRecipient": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
+              "example": "CommId:DE123456",
+              "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'."
+            },
+
+            "calculationEmailRecipient": {
+              "type": "string",
+              "format": "email",
+              "nullable": true,
+              "description": "If specified, the finished calculation will be sent via email to this email address. The calculation will be sent as plain text and PDF in a human-readable format."
+            }
+          }
+        },
+
         "SpecificLaborRates": {
           "type": "object",
           "required": [
@@ -779,30 +788,40 @@
           "properties": {
             "laborRateMechanics": {
               "type": "number",
+              "minimum": 0,
+              "maximum": 999.99,
               "nullable": true,
               "description": "Labor rate for mechanical work (Karosserieschlosser)",
               "example": 80.00
             },
             "laborRateElectronics": {
               "type": "number",
+              "minimum": 0,
+              "maximum": 999.99,
               "nullable": true,
               "description": "Labor rate for electrical work (Elektrik)",
               "example": 80.00
             },
             "laborRateBody": {
               "type": "number",
+              "minimum": 0,
+              "maximum": 999.99,
               "nullable": true,
               "description": "Labor rate for body work (Karosseriebau)",
               "example": 80.00
             },
             "laborRateHailDamage": {
               "type": "number",
+              "minimum": 0,
+              "maximum": 999.99,
               "nullable": true,
               "description": "Labor rate for hail damage (Hagelschaden)",
               "example": 80.00
             },
             "laborRatePaint": {
               "type": "number",
+              "minimum": 0,
+              "maximum": 999.99,
               "nullable": true,
               "description": "Labor rate for paint work (Lackarbeiten)",
               "example": 80.00

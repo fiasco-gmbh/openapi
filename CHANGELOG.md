@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.0] - 2023-01-02
+
+### Added
+
+- Vehicle data can be provided when creating express links. This can be used to pre-fill data that would otherwise be asked from the end user.
+- Results of calculations can be send to email recipient (via `"calculationEmailRecipient"`).
+
+### Changed
+
+- **breaking** An authorization token is required via `Authorization` header (in the form of a bearer token) instead of its own `Token` header.
+- Updated descriptions and formats for some fields to provide for better validation methods.
+- **breaking** Changed the name of the property `"content_type"` to `"contentType"`.
+- **breaking** Fixed spelling of the word `"success"` (was sometimes spelled as `"sucess"`).
+- **possibly breaking** Removed the `"billed"` property everywhere.
+- **breaking** Renamed the property `"audaNetRecipient"` to `"calculationAudaNetRecipient"`.
+- **breaking** Renamed the property `"calculationId"` to `"calculationRequestId"` (schema `CreateCalculationRequestSuccessResponse`).
+
 
 ## [1.1.2] - 2022-12-20
 
@@ -46,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[2.0.0]: https://github.com/fiasco-gmbh/openapi/compare/1.1.2...2.0.0
 [1.1.2]: https://github.com/fiasco-gmbh/openapi/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/fiasco-gmbh/openapi/compare/1.0.0...1.1.1
 [1.0.0]: https://github.com/fiasco-gmbh/openapi/releases/tag/1.0.0
