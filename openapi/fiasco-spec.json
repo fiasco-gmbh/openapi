@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
       "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "title": "FIASCO API",
       "contact": {
         "name": "FIASCO support",
@@ -220,7 +220,7 @@
             }
           ],
           "requestBody": {
-            "description": "If the field `doCalculation` is true, `CalculationParameters` are required. The fields in `VehicleData` can be used to pre-fill data for the end user (e.g. vehicle information).",
+            "description": "**Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as `\"required\"` are only required, if the field `doCalculation` is true.\n\nThe fields in the `VehicleData` schema can be used to pre-fill data for the end user (e.g. vehicle information).",
             "content": {
               "application/json": {
                 "schema": {
@@ -689,10 +689,82 @@
           }
         },
 
+        "VehicleDamagesToConsider": {
+          "type": "object",
+          "properties": {
+            "damagesToConsider": {
+              "type": "array",
+              "minimum": 0,
+              "description": "If not empty, the union of damages detected in the photos and this list will be considered in the calcualation. This is a way to limit the calculation to certain damages (e.g. a subset reported by a driver).",
+              "items": {
+                "type": "object",
+                "required": [
+                  "damagedPart",
+                  "damageType"
+                ],
+                "properties": {
+                  "damagedPart": {
+                    "type": "string",
+                    "description": "The damaged part (e.g. 'bumber_rear', 'bumper_front', ...)",
+                    "enum": [
+                      "a_pillar_left",
+                      "a_pillar_right",
+                      "bumper_rear",
+                      "bumper_front",
+                      "door_rear_left",
+                      "door_rear_right",
+                      "door_front_left",
+                      "door_front_right",
+                      "engine_hood",
+                      "fender_rear_left",
+                      "fender_rear_right",
+                      "fender_front_left",
+                      "fender_front_right",
+                      "fuel_filler_cap",
+                      "headlight_left",
+                      "headlight_right",
+                      "rear_mirror_left",
+                      "rear_mirror_right",
+                      "rear_window",
+                      "rim_rear_left",
+                      "rim_rear_right",
+                      "rim_front_left",
+                      "rim_front_right",
+                      "roof",
+                      "side_rear_left",
+                      "side_rear_right",
+                      "sill_left",
+                      "sill_right",
+                      "tailgate",
+                      "taillight_left",
+                      "taillight_right",
+                      "windschield",
+                      "roof_window",
+                      "trunk"
+                    ]
+                  },
+
+                  "damageType": {
+                    "type": "string",
+                    "description": "The type of the damage (e.g. 'paint', 'dent', ...)",
+                    "enum": [
+                      "paint",
+                      "dent",
+                      "paint_dent",
+                      "crack"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+
         "BasicCalculationRequestData": {
           "type": "object",
           "allOf": [
             { "$ref": "#/components/schemas/VehicleData" },
+            { "$ref": "#/components/schemas/VehicleDamagesToConsider" },
             { "$ref": "#/components/schemas/VehicleAndDamagePhotos" }
           ]
         },
@@ -830,7 +902,7 @@
 
         "ExpressLinkData": {
           "type": "object",
-          "anyOf": [
+          "allOf": [
             {
               "type": "object",
               "properties": {
@@ -848,7 +920,8 @@
             },
             { "$ref": "#/components/schemas/CalculationParameters" },
             { "$ref": "#/components/schemas/CalculationRecipients" },
-            { "$ref": "#/components/schemas/VehicleData" }
+            { "$ref": "#/components/schemas/VehicleData" },
+            { "$ref": "#/components/schemas/VehicleDamagesToConsider" }
           ]
         },
 
