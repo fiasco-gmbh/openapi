@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
       "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-      "version": "1.1.2",
+      "version": "2.1.0",
       "title": "FIASCO API",
       "contact": {
         "name": "FIASCO support",
@@ -356,6 +356,176 @@
             }
           }
         }
+      },
+
+      "/api/v1/calculation/{calculationId}/send": {
+        "post": {
+          "operationId": "v1_sendCalculation",
+          "tags": [
+            "Calculations"
+          ],
+          "summary": "Sends a finished calculation to an AudaNet and/or email recipient.",
+          "description": "",
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "description": "Please provide the name and version of your application here.",
+              "in": "header",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "example": "partner-web-app/1.0"
+            },
+            {
+              "name": "calculationId",
+              "description": "The ID of the calculation finished calculation (you receive this via webhook).",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+            }
+          ],
+          "requestBody": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculationRecipients"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "The calculation has been sent to the specified recipients. Please note that there are no delivery guarantees for email recipients.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendCalculationSuccessResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "One of the input parameters does not match the requirements. Details are provided in the response body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendCalculationErrorResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Your credentials could not be authenticated.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendCalculationErrorResponse"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "You are not authorized to create new calculation requests.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendCalculationErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An internal error has occured. Additional details might be provided in the response.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendCalculationErrorResponse"
+                  }
+                }
+              }
+            }
+          },
+          "callbacks": {
+            "calculationRequestCreated": {
+              "https://your-server.local/webhook-path": {
+                "post": {
+                  "summary": "Webhook for calculation request results",
+                  "description": "This webhook is called when the calculation request has been processed. The webhook is called at least once.",
+                  "parameters": [
+                    {
+                      "name": "User-Agent",
+                      "description": "Name and version of the application providing the calculation.",
+                      "in": "header",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "FIASCO Cloud/1.0"
+                    },
+                    {
+                      "name": "Authorization",
+                      "description": "An optional authorization token can be send as bearer token (provided by you).",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "event",
+                      "description": "A name identifiying this event.",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "calculationRequestCreated",
+                          "calculationReady",
+                          "calculationFailed"
+                        ]
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "description": "",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/CalculationRequestResultBody"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
+                    },
+                    "400": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "401": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "403": {
+                      "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    },
+                    "500": {
+                      "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
 
@@ -553,6 +723,12 @@
               "description": "ID of the newly created request. Only available when 'success' is true.",
               "example": "12341234-1234-1234-1234-123412341234"
             },
+            "calculationId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the finished calculation.",
+              "example": "12341234-1234-1234-1234-123412341234"
+            },
             "calculationText": {
               "type": "string",
               "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true."
@@ -695,6 +871,12 @@
               "description": "ID of the newly created request. Only available when 'success' is true.",
               "example": "12341234-1234-1234-1234-123412341234"
             },
+            "calculationId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the finished calculation.",
+              "example": "12341234-1234-1234-1234-123412341234"
+            },
             "calculationText": {
               "type": "string",
               "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true and if a calculation was originally requested."
@@ -825,6 +1007,41 @@
               "nullable": true,
               "description": "Labor rate for paint work (Lackarbeiten)",
               "example": 80.00
+            }
+          }
+        },
+
+        "SendCalculationErrorResponse": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "description": "Either true of false. Always available."
+            },
+            "message": {
+              "type": "string",
+              "nullable": true,
+              "description": "Describes the return status (e.g. error details). Can be null or empty."
+            }
+          },
+          "example": {
+            "success": false,
+            "message": "Your token could not be authenticated"
+          }
+        },
+
+        "SendCalculationSuccessResponse": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+              "example": true
+            },
+            "message": {
+              "type": "string",
+              "description": "Describes the return status (e.g. error details). Can be null or empty.",
+              "example": "Calculation successfully requested"
             }
           }
         }
