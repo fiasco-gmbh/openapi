@@ -49,9 +49,9 @@ help: ## This help.
 
 # 'sed -i' is not part of the POSIX standard, so it's different for macOS/BSD
 ifeq ($(shell uname -s | grep -qiE '(darwin|bsd)'; echo $$?),0)
-	SED_INPLACE=sed -i ''
+	@SED_INPLACE="sed -i ''"
 else
-	SED_INPLACE=sed -i
+	@SED_INPLACE="sed -i"
 endif
 
 .PHONY: release
