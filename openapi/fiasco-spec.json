@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-    "version": "2.2.2",
+    "version": "2.3.0",
     "title": "FIASCO API",
     "contact": {
       "name": "FIASCO support",
@@ -157,9 +157,9 @@
                     "schema": {
                       "type": "string",
                       "enum": [
-                        "calculationRequestCreated",
                         "calculationReady",
-                        "calculationFailed"
+                        "calculationRequestClosed",
+                        "feedbackRequested"
                       ]
                     }
                   }
@@ -860,6 +860,10 @@
           "calculationText": {
             "type": "string",
             "description": "The calculation text as returned by the calculation engine. Only available when 'success' is true."
+          },
+          "calculationDV90": {
+            "type": "string",
+            "description": "The calculation in the DV90 format. Only available when 'success' is true."
           },
           "referenceId": {
             "type": "string",
