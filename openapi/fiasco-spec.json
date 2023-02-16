@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "title": "FIASCO API",
     "contact": {
       "name": "FIASCO support",
@@ -445,79 +445,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SendCalculationErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "callbacks": {
-          "calculationRequestCreated": {
-            "https://your-server.local/webhook-path": {
-              "post": {
-                "summary": "Webhook for calculation request results",
-                "description": "This webhook is called when the calculation request has been processed. The webhook is called at least once.",
-                "parameters": [
-                  {
-                    "name": "User-Agent",
-                    "description": "Name and version of the application providing the calculation.",
-                    "in": "header",
-                    "required": true,
-                    "schema": {
-                      "type": "string"
-                    },
-                    "example": "FIASCO Cloud/1.0"
-                  },
-                  {
-                    "name": "Authorization",
-                    "description": "An optional authorization token can be send as bearer token (provided by you).",
-                    "in": "header",
-                    "required": false,
-                    "schema": {
-                      "type": "string"
-                    }
-                  },
-                  {
-                    "name": "event",
-                    "description": "A name identifiying this event.",
-                    "in": "query",
-                    "required": true,
-                    "schema": {
-                      "type": "string",
-                      "enum": [
-                        "calculationRequestCreated",
-                        "calculationReady",
-                        "calculationFailed"
-                      ]
-                    }
-                  }
-                ],
-                "requestBody": {
-                  "description": "",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/CalculationRequestResultBody"
-                      }
-                    }
-                  },
-                  "required": true
-                },
-                "responses": {
-                  "200": {
-                    "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
-                  },
-                  "400": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
-                  },
-                  "401": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
-                  },
-                  "403": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
-                  },
-                  "500": {
-                    "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
-                  }
                 }
               }
             }
