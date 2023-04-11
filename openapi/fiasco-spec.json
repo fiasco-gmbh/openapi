@@ -594,7 +594,8 @@
                   "enum": [
                     "common",
                     "other",
-                    "damage"
+                    "damage",
+                    "registration_paper"
                   ]
                 }
               }
