@@ -24,4 +24,5 @@ criteria. The following list shows our basic rule set for photos:
   - Photos should not contain hands / fingers to show or highlight something.
   - Photos should not contain deflectometry patterns (horizontal or vertical stripes).
   - Photos should not contain hail damage.
-  
+  - Re-encoding files (e.g. JPEG to JPEG or JPEG to PNG) should be avoided.
+  - Quality settings of file encoders (e.g. JPEG or PNG export) should be set to 90% or higher.
