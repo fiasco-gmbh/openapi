@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-    "version": "2.3.1",
+    "version": "2.4.0",
     "title": "FIASCO API",
     "contact": {
       "name": "FIASCO support",
@@ -565,6 +565,7 @@
         "properties": {
           "photos": {
             "type": "array",
+            "description": "Photos should meet certain requirements. Read more about that in the [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).",
             "items": {
               "type": "object",
               "required": [
@@ -574,7 +575,7 @@
                 "data": {
                   "type": "string",
                   "format": "byte",
-                  "description": "Base64-encoded image data. Formats: JPEG, PNG, HEIF, or WebP"
+                  "description": "Base64-encoded image data. Formats: JPEG, PNG, HEIC (HEVC encoded in HEIF), or WebP"
                 },
                 "contentType": {
                   "type": "string",
