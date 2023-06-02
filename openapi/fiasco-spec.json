@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-    "version": "2.4.0",
+    "version": "2.5.0",
     "title": "FIASCO API",
     "contact": {
       "name": "FIASCO support",
@@ -458,7 +458,7 @@
       "BearerToken": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Please provide your API key as the bearer token (via the HTTP header \"Authentication: Bearer $API_TOKEN\")."
+        "description": "Please provide your API key as the bearer token (via the HTTP header \"Authorization: Bearer $API_TOKEN\")."
       }
     },
     "schemas": {
@@ -503,7 +503,7 @@
             "default": 0.0,
             "minimum": -10.0,
             "maximum": 10.0,
-            "description": "Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 22 and 23]"
+            "description": "Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 20 and 21]"
           },
           "paintMaterialPercentage": {
             "type": "number",
@@ -511,7 +511,15 @@
             "default": 0.38,
             "minimum": 0.0,
             "maximum": 10.0,
-            "description": "Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on chosen paint system]"
+            "description": "Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]"
+          },
+          "paintMaterialVw": {
+            "type": "number",
+            "nullable": true,
+            "default": 0.00,
+            "minimum": 0.0,
+            "maximum": 999.0,
+            "description": "Paint material costs per unit in EUR for VW vehicles [Audatex block code 81]"
           },
           "smallPartsPercentage": {
             "type": "number",

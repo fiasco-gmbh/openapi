@@ -2,5 +2,8 @@
   "[markdown]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-  }
+  },
+
+  "markdown.preview.scrollEditorWithPreview": true,
+  "markdown.preview.scrollPreviewWithEditor": true
 }
