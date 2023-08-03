@@ -593,18 +593,22 @@
                 "filename": {
                   "type": "string",
                   "nullable": true,
-                  "description": "Filename of the photo"
+                  "description": "Filename of the photo."
                 },
                 "subject": {
                   "type": "string",
                   "nullable": true,
                   "default": "common",
-                  "description": "The subject of the photo (common picture of the car, photo of a damage, other/unspecified)",
+                  "description": "The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker` means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.",
                   "enum": [
                     "common",
                     "other",
+                    "dashboard",
                     "damage",
-                    "registration_paper"
+                    "registration_paper",
+                    "vehicle_front",
+                    "windshield",
+                    "glass_sticker"
                   ]
                 }
               }
