@@ -219,7 +219,7 @@
           }
         ],
         "requestBody": {
-          "description": "**Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as `\"required\"` are only required, if the field `doCalculation` is true.\n\nThe fields in the `VehicleData` schema can be used to pre-fill data for the end user (e.g. vehicle information).",
+          "description": "**Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as `\"required\"` are only required if the field `doCalculation` is true.\n\nThe fields in the `VehicleData` schema can be used to pre-fill data for the end user (e.g. vehicle information).",
           "content": {
             "application/json": {
               "schema": {
