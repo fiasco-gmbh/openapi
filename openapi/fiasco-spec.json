@@ -583,12 +583,12 @@
                 "data": {
                   "type": "string",
                   "format": "byte",
-                  "description": "Base64-encoded image data. Formats: JPEG, PNG, HEIC (HEVC encoded in HEIF), or WebP"
+                  "description": "Base64-encoded image data. Formats: JPEG, JPEG-XL, PNG, HEIC (HEVC encoded in HEIF), or WebP."
                 },
                 "contentType": {
                   "type": "string",
                   "nullable": true,
-                  "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/png', 'image/heic', 'image/webp'). If not provided, the MIME type will be detected automatically."
+                  "description": "The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp')."
                 },
                 "filename": {
                   "type": "string",
