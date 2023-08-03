@@ -677,7 +677,8 @@
                     "paint",
                     "dent",
                     "paint_dent",
-                    "crack"
+                    "crack",
+                    "crack_defect"
                   ]
                 }
               }
@@ -741,7 +742,8 @@
                     "paint",
                     "dent",
                     "paint_dent",
-                    "crack"
+                    "crack",
+                    "crack_defect"
                   ]
                 }
               }
