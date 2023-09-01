@@ -5,7 +5,7 @@ This document was last updated on September 1st, 2023.
 For our services to work reliably we require the photos you send us to meet or exceed certain
 criteria. The following list shows our basic rule set for photos:
 
-  - Photos should depict normal passenger cars as defined by regulation (EU) 2018/858, more specifically:
+  - Photos must depict normal passenger cars as defined by regulation (EU) 2018/858, more specifically:
     - Classes `M1` and `M1G` without platform types of `SA`, `SB`, `SC`, `SD`, `SG`, and `SH`.
     - Class `N1` without the platform types of `BA`, `BC`, `BD`, `BE`, `SB`, `SG`, `SM`, `SF`, `BCSL`, and `BX`.
     - Cars must be younger than 20 years.
