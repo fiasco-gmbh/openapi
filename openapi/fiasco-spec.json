@@ -1037,7 +1037,7 @@
             "nullable": true,
             "pattern": "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$",
             "example": "CommId:DE123456",
-            "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed bt the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'."
+            "description": "If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'."
           },
           "calculationEmailRecipient": {
             "type": "string",
