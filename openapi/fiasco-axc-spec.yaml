@@ -1,0 +1,49 @@
+openapi: "3.0.2"
+
+info:
+  title: "FIASCO AX Connector API"
+  description: |
+    We are providing several API endpoints for external partners which are described in this documentation.
+    All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
+    (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
+    respond with an application/json payload.
+  version: "1.0.0"
+  contact:
+    name: "FIASCO Support"
+    email: "info@fiasco.de"
+    url: "https://fiasco.de/"
+
+externalDocs:
+  url: "https://github.com/fiasco-gmbh/openapi/"
+  description: "Find more information (e.g. a changelog) in the GitHub repository."
+
+servers:
+  - url: "https://axc.staging.fiasco.de/"
+    description: "staging environment (connects to AX's CT (customer test) environment)"
+  - url: "https://axc.fiasco.de/"
+    description: "production environment (connects AX's production environment)"
+
+security:
+  - BearerToken: []
+
+tags:
+  - name: "Finding Tasks/Cases"
+    description: ""
+  - name: "Accessing Tasks/Cases"
+    description: ""
+
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'The access token needs to be used to authenticate against our service (via the HTTP header "Authorization: Bearer $TOKEN").'
+paths:
+  /name:
+    get:
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: OK
