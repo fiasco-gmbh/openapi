@@ -54,6 +54,10 @@ else
 	@SED_INPLACE="sed -i"
 endif
 
+.PHONY: changelog
+changelog: ## Opens the changelog and a list of latest commits in vim.
+	@git log `git describe --tags --abbrev=0`..HEAD --oneline | awk 'BEGIN { print "Commits since last tag:" }; {print "- " $$0}' | vim - -R +"vs CHANGELOG.md" +"set noro"
+
 .PHONY: release
 release: ## Creates a new release by tagging the current commit and pushing it to GitHub (the version in the spec and changelog must be equal).
 # If SPEC_VERSION, CHANGELOG_VERSION, and GIT_VERSION are equal
