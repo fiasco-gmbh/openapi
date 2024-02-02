@@ -2,11 +2,13 @@
 
 # Inspired by https://gist.github.com/ernstki/75bba9e99a85bf273e8ec0f17dba6cfe
 
-SPEC_FILE="openapi/fiasco-spec.json"
+SPEC1_FILE="openapi/fiasco-spec.json"
+SPEC2_FILE="openapi/fiasco-axc-spec.yaml"
 CHANGELOG_FILE="CHANGELOG.md"
 
 # Retrieves the version from the OpenAPI spec.
-SPEC_VERSION=$(shell jq -r '.info.version' ${SPEC_FILE})
+SPEC1_VERSION=$(shell jq -r '.info.version' ${SPEC1_FILE})
+SPEC2_VERSION=$(shell yq -r '.info.version' ${SPEC2_FILE})
 
 # Finds the first version header in the changelog (format "## [x.y.z]")
 CHANGELOG_VERSION=$(shell grep -Eo '\#\# \[.*\]' ${CHANGELOG_FILE} | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
@@ -14,8 +16,13 @@ CHANGELOG_VERSION=$(shell grep -Eo '\#\# \[.*\]' ${CHANGELOG_FILE} | head -n 1 |
 # Get the latest tag from git.
 GIT_VERSION=$(shell git describe --tags --abbrev=0 | awk -F .   '{OFS="."; print}')
 
-VERSIONS_EQUAL=$(shell [[ "${SPEC_VERSION}" = "${CHANGELOG_VERSION}" && \
-                          "$(SPEC_VERSION)" = "${GIT_VERSION}" ]] \
+VERSIONS_EQUAL=$(shell [[ "${SPEC1_VERSION}" = "${CHANGELOG_VERSION}" && \
+                          "$(SPEC1_VERSION)" = "${SPEC2_VERSION}" ]] \
+                          && printf "true" || printf "false")
+
+VERSIONS_WITH_GIT_EQUAL=$(shell [[ "${SPEC1_VERSION}" = "${CHANGELOG_VERSION}" && \
+                          "$(SPEC1_VERSION)" = "${SPEC2_VERSION}" && \
+                          "$(SPEC1_VERSION)" = "${GIT_VERSION}" ]] \
                           && printf "true" || printf "false")
 
 # Another way to use variables: https://pawamoy.github.io/posts/pass-makefile-args-as-typed-in-command-line/
@@ -60,8 +67,8 @@ changelog: ## Opens the changelog and a list of latest commits in vim.
 
 .PHONY: release
 release: ## Creates a new release by tagging the current commit and pushing it to GitHub (the version in the spec and changelog must be equal).
-# If SPEC_VERSION, CHANGELOG_VERSION, and GIT_VERSION are equal
-ifeq ("${SPEC_VERSION}","${CHANGELOG_VERSION}")
+# If SPEC VERSIONS and CHANGELOG_VERSION are equal, create a new tag and push it to GitHub.
+ifeq ("${VERSIONS_EQUAL}","true")
 	@$(call log,"Tagging new release as ${SPEC_VERSION} ...")
 	@git tag -a ${SPEC_VERSION} -m "Release ${SPEC_VERSION}" || $(call log_fatal,"Failed to tag new release.")
 	@$(call log,"Pushing code and tag ...")
@@ -69,14 +76,26 @@ ifeq ("${SPEC_VERSION}","${CHANGELOG_VERSION}")
 	@$(call log,"Release ${SPEC_VERSION} is now online.")
 else
 	@$(call log_error,"Version mismatch.")
-	@$(call log_error,"  spec ----------\> ${SPEC_VERSION}")
+	@$(call log_error,"  api spec ------\> ${SPEC1_VERSION}")
+	@$(call log_error,"  axc api spec --\> ${SPEC2_VERSION}")
 	@$(call log_error,"  changelog -----\> ${CHANGELOG_VERSION}")
+	@$(call log_error,"  git -----------\> ${GIT_VERSION}")
 	exit 1
 endif
 
 .PHONY: versions
 versions: ## Shows the current versions of spec, changelog, and git.
+ifeq ("${VERSIONS_WITH_GIT_EQUAL}","true")
 	@$(call log_success,"Versions:")
-	@$(call log,"  spec ----------\> ${SPEC_VERSION}")
+	@$(call log,"  api spec ------\> ${SPEC1_VERSION}")
+	@$(call log,"  axc api spec --\> ${SPEC2_VERSION}")
 	@$(call log,"  changelog -----\> ${CHANGELOG_VERSION}")
 	@$(call log,"  git -----------\> ${GIT_VERSION}")
+else
+	@$(call log_error,"Version mismatch:")
+	@$(call log_error,"  api spec ------\> ${SPEC1_VERSION}")
+	@$(call log_error,"  axc api spec --\> ${SPEC2_VERSION}")
+	@$(call log_error,"  changelog -----\> ${CHANGELOG_VERSION}")
+	@$(call log_error,"  git -----------\> ${GIT_VERSION}")
+	exit 1
+endif
