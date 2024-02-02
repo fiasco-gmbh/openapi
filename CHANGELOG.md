@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.2] - 2024-02-02
+
+### Changes
+
+- Changed the new maximum length for field `referenceId` to 160 characters (previously unspecified).
+- Switch back to OpenAPI version 3.0.2 (the VSCode plugin does not support previews with 3.1.0).
+- Introduction of our "ACX API" (Audatex Connector).
+
+
+## [2.6.1] - 2023-10-17
+
+### Changed
+
+- Switch the OpenAPI version from 3.0.1 to 3.1.0.
+
+
 ## [2.6.0] - 2023-08-03
 
 ### Added
@@ -36,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed `image/heif` from the list of supported image formats.
 
 
-- ## [2.3.1] - 2023-02-16
+## [2.3.1] - 2023-02-16
 
 ### Removed
 
@@ -137,6 +153,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[2.6.2]: https://github.com/fiasco-gmbh/openapi/compare/2.6.1...2.6.2
+[2.6.1]: https://github.com/fiasco-gmbh/openapi/compare/2.6.0...2.6.1
 [2.6.0]: https://github.com/fiasco-gmbh/openapi/compare/2.5.0...2.6.0
 [2.5.0]: https://github.com/fiasco-gmbh/openapi/compare/2.4.0...2.5.0
 [2.4.0]: https://github.com/fiasco-gmbh/openapi/compare/2.3.1...2.4.0

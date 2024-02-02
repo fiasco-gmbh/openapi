@@ -69,11 +69,11 @@ changelog: ## Opens the changelog and a list of latest commits in vim.
 release: ## Creates a new release by tagging the current commit and pushing it to GitHub (the version in the spec and changelog must be equal).
 # If SPEC VERSIONS and CHANGELOG_VERSION are equal, create a new tag and push it to GitHub.
 ifeq ("${VERSIONS_EQUAL}","true")
-	@$(call log,"Tagging new release as ${SPEC_VERSION} ...")
-	@git tag -a ${SPEC_VERSION} -m "Release ${SPEC_VERSION}" || $(call log_fatal,"Failed to tag new release.")
+	@$(call log,"Tagging new release as ${SPEC1_VERSION} ...")
+	@git tag -a ${SPEC1_VERSION} -m "Release ${SPEC1_VERSION}" || $(call log_fatal,"Failed to tag new release.")
 	@$(call log,"Pushing code and tag ...")
 	@git push && git push --tags || $(call log_fatal,"Failed to push code and tag.")
-	@$(call log,"Release ${SPEC_VERSION} is now online.")
+	@$(call log,"Release ${SPEC1_VERSION} is now online.")
 else
 	@$(call log_error,"Version mismatch.")
 	@$(call log_error,"  api spec ------\> ${SPEC1_VERSION}")
