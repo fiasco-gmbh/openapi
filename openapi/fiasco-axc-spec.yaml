@@ -1,35 +1,35 @@
-openapi: "3.0.2"
+openapi: 3.0.2
 
 info:
-  title: "FIASCO AX Connector API"
+  title: FIASCO AX Connector API
   description: |
     We are providing several API endpoints for external partners which are described in this documentation.
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an application/json payload.
-  version: "1.0.0"
+  version: 2.6.2
   contact:
-    name: "FIASCO Support"
-    email: "info@fiasco.de"
-    url: "https://fiasco.de/"
+    name: FIASCO Support
+    email: info@fiasco.de
+    url: https://fiasco.de/
 
 externalDocs:
-  url: "https://github.com/fiasco-gmbh/openapi/"
-  description: "Find more information (e.g. a changelog) in the GitHub repository."
+  url: https://github.com/fiasco-gmbh/openapi/
+  description: Find more information (e.g. a changelog) in the GitHub repository.
 
 servers:
-  - url: "https://axc.staging.fiasco.de/"
-    description: "staging environment (connects to AX's CT (customer test) environment)"
-  - url: "https://axc.fiasco.de/"
-    description: "production environment (connects AX's production environment)"
+  - url: https://axc.staging.fiasco.de/
+    description: staging environment (connects to AX's CT (customer test) environment)
+  - url: https://axc.fiasco.de/
+    description: production environment (connects AX's production environment)
 
 security:
   - BearerToken: []
 
 tags:
-  - name: "Finding Tasks/Cases"
+  - name: Task Operations
     description: ""
-  - name: "Accessing Tasks/Cases"
+  - name: Finding Tasks
     description: ""
 
 components:
@@ -39,11 +39,2102 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: 'The access token needs to be used to authenticate against our service (via the HTTP header "Authorization: Bearer $TOKEN").'
+  schemas:
+    task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: ID of the task.
+          example: 00000000-0000-0000-0000-000000000000
+        fiascoId:
+          type: string
+          description: |
+            Custom reference that each task can have. On 'get' operations, this value is taken
+            from the `ClaimNumber` field, on 'set' operations it is written to the `ClaimNumber`` and `ForeignCaseId` fields.
+          maxLength: 16
+          example: "Custom Reference"
+        caseId:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Case ID the task belongs to. One case can have multiple tasks.
+          example: 00000000-0000-0000-0000-000000000000
+        licensePlate:
+          type: string
+          description: License plate of the vehicle.
+          example: "S-AB 1234"
+        vin:
+          type: string
+          description: Vehicle Identification Number.
+          example: "WVWZZZ1JZ1W000000"
+        hsnTsn:
+          type: string
+          description: HSN/TSN (Hersteller- / Typschlüsselnummer; "KBA Number") of the vehicle.
+          example: "0603000"
+        registrationDate:
+          type: string
+          format: date
+          description: Date of the vehicle's first registration.
+          example: "01.01.2023"
+        damageLiability:
+          type: string
+          enum:
+            - ""
+            - CostEstimate
+            - PartialCoverage
+            - Liability
+            - FullCoverage
+          description: Insurance type available for the vehicle as configured in the task/case.
+          example: CostEstimate
+        mileage:
+          type: integer
+          description: Mileage of the vehicle (in kilometers).
+          example: 23000
+        calculation:
+          $ref: "#/components/schemas/calculation"
+        location:
+          type: object
+          properties:
+            zipCode:
+              type: string
+              description: Location of the vehicle (expressed as ZIP code).
+              example: "71011"
+        customer:
+          $ref: "#/components/schemas/contact"
+        vehicleOwner:
+          $ref: "#/components/schemas/contact"
+        attachments:
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/attachments"
+        comments:
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/comments"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2021-05-02T11:37:50.434+02:00"
+        vehicleIdentification:
+          $ref: "#/components/schemas/vehicle_identification"
+        vehicleEngineering:
+          $ref: "#/components/schemas/vehicle_engineering"
+    attachments:
+      type: array
+      description: Details about attachments to the task/case.
+      items:
+        $ref: "#/components/schemas/attachment"
+    attachment:
+      type: object
+      description: A single attachment (e.g. photo or a document).
+      readOnly: true
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: ID of the attachment.
+          example: 00000000-0000-0000-0000-000000000000
+        category:
+          type: string
+          enum:
+            - quote
+            - photos
+            - other
+          description: Category of the attachment.
+          example: "other"
+        property:
+          type: string
+          enum:
+            - photo
+            - document
+          description: Type of the attachment.
+          example: "document"
+        content:
+          type: string
+          enum:
+            - ""
+            - photos
+            - confirmation_of_acceptance
+            - ...
+          description: Defines the type of the attachment's content.
+          example: confirmation_of_acceptance
+        fileName:
+          type: string
+          description: Name of the attachment.
+          example: "contract.pdf"
+        fileSize:
+          type: string
+          description: Size of the attachment in bytes.
+          example: 100
+        fileSizeBase64:
+          type: string
+          description: Size of the attachment when encoded in base64.
+          example: 140
+        base64Data:
+          type: string
+          description: Base64-encoded content of the attachment.
+          example: "..."
+        status:
+          type: string
+          enum:
+            - ""
+            - Check
+          description: Wether an attachment is checked or not.
+          example: ""
+    comments:
+      type: array
+      description: Comments associated with the task/case.
+      items:
+        $ref: "#/components/schemas/comment"
+    comment:
+      type: object
+      readOnly: true
+      description: A single comment.
+      properties:
+        foreignKey:
+          type: string
+          example: ""
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update to this comment.
+          example: "2021-05-02T11:37:50.434+02:00"
+        author:
+          type: string
+          description: Name of the user who created the comment.
+          example: "Some.User@audatex.de"
+        text:
+          type: string
+          description: Content of the comment.
+          example: "What a great result."
+    vehicle_identification:
+      type: object
+      description: Contains details about the vehicle. The data can be the result of a VIN lookup or was manuelly entered.
+      properties:
+        manufacturerCodeAx:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: Manufacturer code (as used in the Audatex system).
+          example: 06
+        manufacturerName:
+          type: string
+          description: Name of the vehicle's manufacturer.
+          example: "VW"
+        modelCodeAx:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: Model code (as used in the Audatex system).
+          example: G1
+        modelName:
+          type: string
+          description: Textual representation of the vehicle's model.
+          example: "e-Golf VII (BE) ab 02/14-03-20"
+        subModelCodeAx:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: Submodel code (as used in the Audatex system).
+          example: 01
+        subModelName:
+          type: string
+          description: Textual representation of the vehicle's sub-model.
+          example: "E-Golf"
+        selectedAxMoCodes:
+          type: string
+          description: List of two-digit Audatex MO codes (w/o separator) that have been enabled for usage in the calculation.
+          example: CJC4C8D8F2F4F5F6F7F9G5G6G9H1H8H9I3I5I6I7I8J1J5J7J8K1K2K3K8M3M8N3P3Q3S6T1U9W8X1Y4Y5
+        vehicleSelection:
+          type: string
+          enum:
+            - ""
+            - VIN
+            - "..."
+          description: How the vehicle data was obtained.
+          example: VIN
+        vinApplied:
+          type: boolean
+          readOnly: true
+          description: Wether the VIN was applied to the task/case or not.
+          example: true
+        vinQueryTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp of the last VIN query.
+          example: "2021-05-02T11:37:50.434+02:00"
+        sellingTypeCode:
+          type: string
+          description: Selling type code (as used in the Audatex system).
+          example: "SGFBF1"
+        buldingDateFrom:
+          type: string
+          format: date
+          description: Date since this particular vehicle model was built.
+          example: "2017-02-01"
+        engineVariant:
+          type: string
+          description: Textual representation of the type of engine used in the vehicle.
+          example: 1968ccm (2.0 Ltr) 110kW
+        vehicleInterior:
+          type: string
+          description: Textual description of the interior configuration of the vehicle.
+          example: "Ausstattung Stoff"
+        paintVariant:
+          type: string
+          description: Textual representation of the paint variant used for the vehicle.
+          example: "Monsungrau Metallic (X7R)"
+        vehicleIdentificationMode:
+          type: string
+          example: "Normal"
+        vinQueryExecuted:
+          type: boolean
+          readOnly: true
+          description: Wether a VIN query was executed or not.
+          example: true
+        vinQueryGaveResult:
+          type: boolean
+          readOnly: true
+          description: Wether a VIN query returned a result or not.
+          example: true
+        manufactureDateRangeStart:
+          type: string
+          format: date
+          description: Start of the date range in which the vehicle was manufactured.
+          example: "2019-02-01"
+        manufactureDateRangeEnd:
+          type: string
+          format: date
+          description: End of the date range in which the vehicle was manufactured.
+          example: "2019-04-01"
+        vinQueryReturnCode:
+          type: string
+          readOnly: true
+          example: "00"
+        importedIntoCountry:
+          type: boolean
+          description: Wether the vehicle was imported into the country or not.
+          example: false
+        vinDisclaimer:
+          type: string
+          readOnly: true
+          description: Disclaimer text for the VIN query as given by the manufacturer / data provider.
+          example: "..."
+    vehicle_engineering:
+      type: object
+      description: Details about the vehicle's properties.
+      properties:
+        enginePower:
+          type: number
+          description: Engine power (see _enginePowerUnit_ for the value's unit).
+          example: 85
+        enginePowerUnit:
+          type: string
+          enum:
+            - kW
+            - PS
+            - ...
+          description: Unit of the engine power value.
+          example: kW
+        engineSize:
+          type: number
+          description: Volumetric size of the engine (in cm³).
+          example: 999
+        numberOfCylinders:
+          type: number
+          description: Number of cylinders in the engine.
+          example: 3
+        engineMountingDirection:
+          type: string
+          enum:
+            - ""
+            - "InlineEngine"
+            - "None"
+            - "..."
+        transmissionType:
+          type: string
+          enum:
+            - Automatic
+            - Manual
+            - ...
+          description: Type of the transmission used in the vehicle.
+        doorCount:
+          type: number
+          description: Number of doors the vehicle has.
+          example: 5
+        seatingCapacity:
+          type: number
+          description: Number of seats in the vehicle.
+          example: 5
+        curbWeight:
+          type: number
+          description: Curb weight of the vehicle (see _weightUnit_ for the value's unit).
+          example: 1280
+        grossWeight:
+          type: number
+          description: Gross weight of the vehicle (see _weightUnit_ for the value's unit).
+          example: 1790
+        payload:
+          type: number
+          description: Payload of the vehicle (see _weightUnit_ for the value's unit).
+          example: 510
+        weightUnit:
+          type: string
+          enum:
+            - kg
+            - ...
+          description: Unit of the weight values.
+          example: kg
+        mileage:
+          type: number
+          description: Mileage of the vehicle (see _mileageUnit_ for the value's unit).
+          example: 55854
+        mileageUnit:
+          type: string
+          enum:
+            - km
+            - ...
+          description: Unit of the mileage value.
+          example: km
+        vehicleKind:
+          type: string
+          enum:
+            - Car
+            - ...
+          description: Describes the kind of vehicle.
+          example: Car
+        vehicleClassification:
+          type: string
+          enum:
+            - ""
+            - LowerMiddleSegment
+            - MiddleSegment
+            - "..."
+          description: Describes the classification of the vehicle.
+          example: LowerMiddleSegment
+        bodyType:
+          type: string
+          enum:
+            - ""
+            - Sedan
+            - StationWagon
+            - Bus
+            - "..."
+          description: Describes the body type of the vehicle.
+          example: StationWagon
+        bodyVariant:
+          type: string
+          enum:
+            - ""
+            - Minivan
+            - "..."
+          description: Describes the body variant of the vehicle.
+          example: Minivan
+        pollutionClassification:
+          type: string
+          enum:
+            - ""
+            - EU4
+            - EU5
+            - E6T,EU6,E6b
+            - E6T
+            - "..."
+          description: Describes the pollution classification of the vehicle according to EU standards.
+          example: E6T
+        roofLoad:
+          type: number
+          description: Maximum roof load of the vehicle (see _weightUnit_ for the value's unit).
+          example: 75
+        trailingLoadWithBreaks:
+          type: number
+          description: Maximum trailing load (trailer has breaks) of the vehicle (see _weightUnit_ for the value's unit).
+          example: 1500
+        trailingLoadWithoutBreaks:
+          type: number
+          description: Maximum trailing load (trailer does not have breaks) of the vehicle (see _weightUnit_ for the value's unit).
+          example: 640
+        wheelDrive:
+          type: string
+          enum:
+            - ""
+            - FrontWheelDrive
+            - RearWheelDrive
+            - AllWheelDrive
+            - "..."
+          description: Describes the wheel drive of the vehicle.
+          example: FrontWheelDrive
+    find_task_results:
+      type: object
+      readOnly: true
+      properties:
+        success:
+          type: boolean
+          description: Indicates wether the operation was successful or not.
+          example: true
+        size:
+          type: integer
+          description: Contains the total number of records that match the search query. Can be used when paginating to determine the number of pages.
+          example: 35
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/find_task_result"
+    find_task_result:
+      type: object
+      readOnly: true
+      description: "Represents a single result of the search results."
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the task. Can be used with the `getTask` operation to retrieve the full task details.
+          example: 00000000-0000-0000-0000-000000000000
+        status:
+          type: string
+          description: Status of the task.
+          enum:
+            - Created
+            - Archived
+            - Closed
+            - ...
+          example: Created
+        vin:
+          type: string
+          description: Vehicle Identification Number.
+          example: "WVWZZZ1JZ1W000000"
+        licensePlate:
+          type: string
+          description: License plate of the vehicle.
+          example: "S-AB 1234"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of the task's creation.
+          example: "2021-05-02T11:37:50.434+02:00"
+        createdBy:
+          type: string
+          description: Name of the user who created the task/case.
+          example: "DE000000@audatex.de"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update. This might actually not be accurate to the second when the last change was made to a case.
+          example: "2021-05-02T11:37:50.434+02:00"
+    calculation:
+      type: object
+      description: "Details about the calculation belonging to the task."
+      properties:
+        paintSystem:
+          type: string
+          description: Paint system used in the calculation.
+          enum:
+            - AZT
+            - Manufacturer
+          default: Manufacturer
+          example: "Manufacturer"
+        workloadMechanics:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for mechanical work according to the calculation.
+          minimum: 0.0
+          example: 6.0
+        workloadElectronics:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for electrical work according to the calculation.
+          minimum: 0.0
+          example: 3.0
+        workloadBody:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for body work according to the calculation.
+          minimum: 0.0
+          example: 4.0
+        workloadHailDamage:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for hail damage work according to the calculation.
+          minimum: 0.0
+          example: 3.0
+        workloadPaint:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for paint work according to the calculation.
+          minimum: 0.0
+          example: 9.0
+        workloadCalibration:
+          type: number
+          format: float
+          readOnly: true
+          description: Number of work units for calibration work according to the calculation.
+          minimum: 0.0
+          example: 3.0
+        materialParts:
+          type: number
+          format: float
+          readOnly: true
+          description: Cost of parts according to the calculation.
+          minimum: 0.0
+          example: 187.0
+        materialPaint:
+          type: number
+          format: float
+          readOnly: true
+          description: Cost of paint according to the calculation.
+          minimum: 0.0
+          example: 240.0
+        hourlyWageMechanics:
+          type: number
+          format: float
+          description: Hourly wage for mechanical work.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        hourlyWageElectronics:
+          type: number
+          format: float
+          description: Hourly wage for electrical work.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        hourlyWageBody:
+          type: number
+          format: float
+          description: Hourly wage for body work.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        hourlyWageHailDamage:
+          type: number
+          format: float
+          description: Hourly wage for hail damage work.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        hourlyWageHybridSystem:
+          type: number
+          format: float
+          description: Hourly wage for working on hybrid systems.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        hourlyWagePaint:
+          type: number
+          format: float
+          description: Hourly wage for paint work.
+          minimum: 0.0
+          maximum: 999.9
+          example: 90.0
+        additionalCosts:
+          $ref: "#/components/schemas/additional_costs"
+        totalPrice:
+          type: number
+          format: float
+          readOnly: true
+          description: "Calculation total (net)."
+          example: 1820.0
+        text:
+          type: string
+          readOnly: true
+          description: |
+            Full text of the calculation (fixed-width plain-text format).
+          example: "..."
+        formattedText:
+          type: string
+          readOnly: true
+          description: |
+            Full text of the calculation (fixed-width plain-text format).
+            Includes formatting codes as prefixes for each line.
+          example: "..."
+        dv90:
+          type: string
+          readOnly: true
+          description: Full calculation in DV90 format.
+          example: "..."
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp of the last update. This might actually not be accurate to the second when the last change was made to a case.
+          example: "2021-05-02T11:37:50.434+02:00"
+        timeBase:
+          type: number
+          format: integer
+          readOnly: true
+          description: "Time base used for converting work units to hours (e.g. 12 ≘ one hour contains 12 work units ≘ one work unit equals 5 minutes)."
+          example: 12
+        partsPricesUpdatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp (or version) of the parts prices used in the calculation.
+          example: "2022-05-02T11:37:50.434+02:00"
+        numberOfSelectedParts:
+          type: number
+          format: integer
+          readOnly: true
+          description: Total number of parts selected in the calculation (not necessarily the number of replaced parts).
+          example: 5
+        language:
+          type: string
+          readOnly: true
+          description: ISO language code used for the calculation.
+          default: DE
+          example: DE
+        parts:
+          $ref: "#/components/schemas/parts"
+        blockCodes:
+          $ref: "#/components/schemas/block_codes"
+        standardPositions:
+          $ref: "#/components/schemas/standard_positions"
+    additional_costs:
+      type: object
+      description: Contains definitions for certain block codes. Deprecated, use `blockCodes` instead.
+      deprecated: true
+      properties:
+        hollowCavitySealantMaterial:
+          type: number
+          format: float
+          example: 0.0
+        adhesiveSealMaterial:
+          type: number
+          example: 0.0
+        underBodySealant:
+          type: number
+          example: 0.0
+        alluvialMaterial:
+          type: number
+          example: 0.0
+        paintMaterialPercentage:
+          type: number
+          example: 14.0
+        smallPartsPercentage:
+          type: number
+          example: 2.0
+    parts:
+      type: array
+      items:
+        $ref: "#/components/schemas/part"
+    part:
+      type: object
+      readOnly: true
+      properties:
+        repairType:
+          type: string
+          minLength: 1
+          maxLength: 3
+          enum:
+            - E
+            - I
+            - L
+            - ...
+          description: Type of repair.
+          example: E
+        guideNumber:
+          type: string
+          minLength: 1
+          maxLength: 4
+          description: Audatex guide number.
+          example: 1240
+        description:
+          type: string
+          description: Description/name of the part.
+          example: "Front bumper"
+        partNumber:
+          type: string
+          description: OE part number.
+          example: "3AA 805 977"
+        price:
+          type: number
+          format: float
+          minimum: 0.0
+          description: Price of the part (net).
+        priceCurrency:
+          type: string
+          enum:
+            - EUR
+            - ...
+          description: Currency of the price.
+          example: EUR
+        quantity:
+          type: number
+          format: float
+          description: Quantity of the part to be used in the repair.
+          example: 18
+        quantityUnit:
+          type: string
+          enum:
+            - ""
+            - l
+            - ...
+          description: Unit of the quantity.
+          example: ""
+        supplyQuantity:
+          type: number
+          format: float
+          description: Supply quantity of the part (= quantity you get when you buy it).
+        triggeredByParts:
+          type: array
+          items:
+            type: string
+            description: Guide number.
+          description: List of guide numbers that trigger this part.
+        triggersParts:
+          type: array
+          items:
+            type: string
+            description: Guide number.
+          description: List of guide numbers that are triggered by this part.
+    block_codes:
+      type: object
+      description: Collection of block codes (basically a kind of calculation parameters).
+      properties:
+        code40:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): von Lack-Lohn (%)"
+        code42:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): Pauschalbetr. Teile (EUR)"
+        code43:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): Pauschalbetr. RBK (EUR)"
+        code51:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): Flaeche AZT/Schwacke (%)"
+        code81:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): Lackmaterial Hersteller VW (06) (EUR)"
+        code84:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 1 (Lackiermaterial): Korrektur AZT Lackiervorb./Materialkonst. (EUR)"
+        code60:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Beschaffung Teile-Rep (EUR)"
+        code61:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Beschaffung RBK (EUR)"
+        code63:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Schwemmmaterial pauschal (EUR)"
+        code64:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Schwemmmaterial vom Lohn (%)"
+        code65:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Polsterarbeiten (EUR)"
+        code66:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Klebe-/Dichtmaterial (EUR)"
+        code67:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Polieren (EUR)"
+        code68:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Fzg-Verbringung (EUR)"
+        code69:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Notreparatur (EUR)"
+        code70:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Unterbodenschutz an Teilen (EUR)"
+        code71:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Unterbodenschutz RBK (EUR)"
+        code72:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Hohlraumkonservierung an Teilen (EUR)"
+          example: 2.0
+        code73:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Hohlraumkonservierung RBK (EUR)"
+        code74:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Vermessen (EUR)"
+        code76:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Entsorgung in % der Ersatzteile (%)"
+        code77:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 2 (Festbeträge und Sonstiges): Entsorgung als Pauschalbetrag (EUR)"
+        code20:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 4 (Auf- oder Abschläge bei Ersatzteilpreisen): Abschlag Endsumme (%)"
+        code21:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 4 (Auf- oder Abschläge bei Ersatzteilpreisen): Aufschlag Endsumme (%)"
+          example: 10.4
+        code22:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 4 (Auf- oder Abschläge bei Ersatzteilpreisen): Abschlag Einzelpreis (%)"
+        code23:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 4 (Auf- oder Abschläge bei Ersatzteilpreisen): Aufschlag Einzelpreis (%)"
+        code27:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 5 (Kleinersatzteile): KLEINERSATZTEILE pauschal (EUR)"
+        code28:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 5 (Kleinersatzteile): von Summe Ersatzteile (%)"
+        code29:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 5 (Kleinersatzteile): vom Lohn (%)"
+        code12:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): V-Achse II (EUR)"
+        code13:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): Teile-Rep (EUR)"
+        code14:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): RBK (EUR)"
+        code15:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): RBK kpl lackiert (EUR)"
+        code16:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): V-Achse (EUR)"
+        code17:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): H-Achse (EUR)"
+        code18:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 6 (Preisabzug für verwendbare Teile): H-Achse II (EUR)"
+        code11:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 8 (NFA-Abzüge/Vorteilsausgleich): pauschal von Ersatzteilen gesamt (EUR)"
+        code24:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 8 (NFA-Abzüge/Vorteilsausgleich): Ersatzteile Teile-Rep (%)"
+        code25:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 8 (NFA-Abzüge/Vorteilsausgleich): Ersatzteile Aggr., Opt (%)"
+        code56:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 8 (NFA-Abzüge/Vorteilsausgleich): Lack (EUR)"
+        code58:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 8 (NFA-Abzüge/Vorteilsausgleich): Lack (%)"
+        code88:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 9 (Sonstige Abzüge): Prozent Abzug auf Rep-Kosten (Ohne MWST) (%)"
+        code89:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 9 (Sonstige Abzüge): Pauschal Abzug auf Rep-Kosten (Ohne MWST) (EUR)"
+        code90:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 9 (Sonstige Abzüge): Vorschaden Dokumentat.m.MwSt (EUR)"
+        code91:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 9 (Sonstige Abzüge): Selbstbeteilig Dokumentat. (EUR)"
+        code95:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 9 (Sonstige Abzüge): Vorschaden rechnend o.MwSt (EUR)"
+        code02:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 10 (Kalkulation mit Pauschalbeträgen): MwSt-Prozentsatz-Änderung (%) // Seems like this is not supported anymore."
+        code10:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 10 (Kalkulation mit Pauschalbeträgen): Ersatzteile m. Detail-Text (EUR)"
+        code30:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 10 (Kalkulation mit Pauschalbeträgen): Lohn mit Detail-Text (EUR)"
+        code31:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 10 (Kalkulation mit Pauschalbeträgen): Lohn mit Detail-Text (AW)"
+        code32:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 9999999.99
+          description: "Gruppe 10 (Kalkulation mit Pauschalbeträgen): Sonderarbeiten (EUR)"
+    standard_positions:
+      type: array
+      description: List of standard calculation positions (parts and action codes).
+      items:
+        $ref: "#/components/schemas/standard_position"
+    standard_position:
+      type: object
+      properties:
+        action:
+          type: string
+          minLength: 1
+          maxLength: 3
+          enum:
+            - L
+            - I
+            - E
+            - ...
+          description: Type of action.
+          example: L
+        guideNumber:
+          type: string
+          minLength: 1
+          maxLength: 4
+          description: Audatex guide number.
+          example: 1240
+        workUnits:
+          type: number
+          format: integer
+          minimum: 0
+          maximum: 9999
+          description: Number of work units for the action (required for certain action codes, e.g. _I_).
+          example: 3
+    contact:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Max"
+        lastName:
+          type: string
+          example: "Mustermann"
+        address:
+          type: string
+          example: "Musterstr. 2"
+        zipCode:
+          type: string
+          example: "71011"
+        city:
+          type: string
+          example: "Stuttgart"
+        phone:
+          type: string
+          example: "0711-1234567"
+    error_response:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: Contains a textual representation of the error.
+          example: "invalid credentials / access denied / task not found / something bad happened / ..."
+  parameters:
+    taskId:
+      name: id
+      in: path
+      description: The ID of the task to work with.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 00000000-0000-0000-0000-000000000000
+    audatexUsername:
+      name: Username
+      in: header
+      description: Audatex username (used to authenticate against Audatex).
+      required: true
+      schema:
+        type: string
+        example: DE000000@audatex.de
+    audatexPassword:
+      name: Password
+      in: header
+      description: Audatex password (used to authenticate against Audatex).
+      required: true
+      schema:
+        type: string
+        example: "*************"
+
 paths:
-  /name:
-    get:
-      description: ""
-      parameters: []
+  /v1/audatex/task:
+    post:
+      operationId: createTask
+      tags:
+        - Task Operations
+      description: "Creates a task."
+      parameters:
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/task"
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+                  caseId:
+                    type: string
+                    description: ID of the case the task belongs to.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}:
+    get:
+      operationId: getTask
+      tags:
+        - Task Operations
+      description: "Retrieves a single task by its ID."
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the task to retrieve.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 00000000-0000-0000-0000-000000000000
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  task:
+                    $ref: "#/components/schemas/task"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+    put:
+      operationId: updateTask
+      tags:
+        - Task Operations
+      description: "Updates a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/task"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+                  caseId:
+                    type: string
+                    description: ID of the case the task belongs to.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+    delete:
+      operationId: deleteTask
+      tags:
+        - Task Operations
+      description: "Deletes a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}/files:
+    post:
+      operationId: addFilesToTask
+      tags:
+        - Task Operations
+      description: "Adds files (attachments like photos, documents, ...) to a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  enum:
+                    - ""
+                    - quote
+                    - photos
+                    - other
+                  default: photos
+                  description: Category of the files.
+                property:
+                  type: string
+                  enum:
+                    - ""
+                    - photo
+                    - document
+                  default: photo
+                  description: "Property of the files. Default for images: `photo`, default for non-images: `document`."
+                content:
+                  type: string
+                  enum:
+                    - ""
+                    - photos
+                    - confirmation_of_acceptance
+                  description: "Sub-type of the attachments (only relevant for documents). Default for images: `photos`, default for non-images: ``"
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                    description: File data.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+    delete:
+      operationId: deleteFilesFromTask
+      tags:
+        - Task Operations
+      description: "Deletes files (attachments) from a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                attachmentIds:
+                  type: string
+                  description: Comma-separated list of attachment IDs.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}/close:
+    put:
+      operationId: closeTask
+      tags:
+        - Task Operations
+      description: "Closes a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}/reopen:
+    put:
+      operationId: reopenTask
+      tags:
+        - Task Operations
+      description: "Reopens a task."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}/send-to/{recipient}?{createInsteadOfSend}:
+    post:
+      operationId: sendTask
+      tags:
+        - Task Operations
+      description: "Sends a task to a different AudaNet account."
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - name: recipient
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\\s]+)$"
+          example: CommId:DE123456
+          description: |
+            Recipient to send the task to.
+
+            Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the receiver.
+            The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'.
+        - name: createInsteadOfSend
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - yes
+              - no
+            description: |
+              If set to true, the task will be created as a new case inside the recipient's account instead of being transmitted.
+              For this to work knowledge of the recipient's accounts credentials is required.
+          example: false
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+        - name: RecipientUsername
+          in: header
+          description: Audatex username of the recipient.
+          required: false
+          schema:
+            type: string
+            example: DE000000@audatex.de
+        - name: RecipientPassword
+          in: header
+          description: Audatex password of the recipient.
+          required: false
+          schema:
+            type: string
+            example: "*************"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated. This will only be returned when the parameters `RecipientUsername` and `RecipientPassword` are provided and valid.
+                    example: 00000000-0000-0000-0000-000000000000
+                  caseId:
+                    type: string
+                    description: ID of the case the task belongs to. This will only be returned when the parameters `RecipientUsername` and `RecipientPassword` are provided and valid.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/tasks?{q}:
+    get:
+      operationId: findTasks
+      tags:
+        - Finding Tasks
+      description: |
+        Gets a paginated list of all tasks. Custom search queries are supported.
+
+        1. Call the endpoint with `MaxCount = n`.
+           The result contains _n_ records and `size` is _m_.
+        2. Call the endpoint repeatedly with `MaxCount = n, StartAtIndex = n*i`
+           (_i_ = number of invocation) until `i*n <= m`.
+      parameters:
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+        - name: View
+          in: header
+          description: Only return tasks that are part of this view.
+          required: false
+          schema:
+            type: string
+            default: "open"
+            enum:
+              - open
+              - sent
+              - closed
+              - deleted
+              - copied
+              - stopped
+              - historical_records
+              - all
+            example: "all"
+        - name: MaxCount
+          in: header
+          description: Maximum number of records to return (used for pagination).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 100
+        - name: StartsAtIndex
+          in: header
+          description: Offset from where to start to return records (used for pagination, 0-based).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 200
+        - name: q
+          in: query
+          description: |
+            Custom search query. It is possible to search for different values in different fields.
+            Please contact us for more information.
+          required: false
+          schema:
+            type: string
+            example: 'VIN = "WVW*" or PlateNumber = "*S-AB*" or ForeignCaseId = "*fiascoId*" or CaseId = "00000000-0000-0000-0000-000000000000"'
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/find_task_results"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/tasks/{ids}:
+    get:
+      operationId: findTasksByIds
+      tags:
+        - Finding Tasks
+      description: |
+        Gets a paginated list of all tasks matching the given IDs.
+
+        1. Call the endpoint with `MaxCount = n`.
+           The result contains _n_ records and `size` is _m_.
+        2. Call the endpoint repeatedly with `MaxCount = n, StartAtIndex = n*i`
+           (_i_ = number of invocation) until `i*n <= m`.
+      parameters:
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+        - name: View
+          in: header
+          description: Only return tasks that are part of this view.
+          required: false
+          schema:
+            type: string
+            default: "open"
+            enum:
+              - open
+              - sent
+              - closed
+              - deleted
+              - copied
+              - stopped
+              - historical_records
+              - all
+            example: "all"
+        - name: MaxCount
+          in: header
+          description: Maximum number of records to return (used for pagination).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 100
+        - name: StartsAtIndex
+          in: header
+          description: Offset from where to start to return records (used for pagination, 0-based).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 200
+        - name: ids
+          in: query
+          description: |
+            List of comma-separated task IDs to search.
+          required: false
+          schema:
+            type: string
+            example: "00000000-0000-0000-0000-000000000000,11111111-1111-1111-1111-111111111111"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/find_task_results"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /v1/audatex/tasks/fiasco-id/{fiasco-id}:
+    get:
+      operationId: findTaskByFiascoId
+      tags:
+        - Finding Tasks
+      description: |
+        Tries to find a task that contains the given "FIASCO ID" in its `ClaimNumber` field.
+
+        Caution: Multiple tasks with the same value in the `ClaimNumber` field can exist at the same time, but only one task is returned by this operation.
+      parameters:
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+        - name: fiasco-id
+          in: query
+          description: The value to search for (in the `ClaimNumber` field)
+          required: false
+          schema:
+            type: string
+            example: "My reference"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  task:
+                    $ref: "#/components/schemas/task"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
