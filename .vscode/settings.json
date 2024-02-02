@@ -5,6 +5,5 @@
   },
   "markdown.preview.scrollEditorWithPreview": true,
   "markdown.preview.scrollPreviewWithEditor": true,
-  "openapi.defaultPreviewRenderer": "swaggerui",
   "files.autoSaveWhenNoErrors": true
 }
