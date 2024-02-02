@@ -1767,6 +1767,71 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/error_response"
+  /v1/audatex/task/{id}/accept:
+    put:
+      operationId: acceptTask
+      tags:
+        - Task Operations
+      description: 'Accepts a task (moves it from status/view "copied" to "created").'
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/audatexUsername"
+        - $ref: "#/components/parameters/audatexPassword"
+      requestBody:
+        content:
+          application/json: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Wether the request was successful or not.
+                    example: true
+                  taskId:
+                    type: string
+                    description: ID of the task that was updated.
+                    example: 00000000-0000-0000-0000-000000000000
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "404":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
   /v1/audatex/task/{id}/send-to/{recipient}?{createInsteadOfSend}:
     post:
       operationId: sendTask
