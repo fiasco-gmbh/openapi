@@ -21,7 +21,7 @@ servers:
   - url: https://axc.staging.fiasco.de/
     description: staging environment (connects to AX's CT (customer test) environment)
   - url: https://axc.fiasco.de/
-    description: production environment (connects AX's production environment)
+    description: production environment (connects to AX's production environment)
 
 security:
   - BearerToken: []
