@@ -2,7 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "description": "We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.",
-    "version": "2.6.3",
+    "version": "2.6.4",
     "title": "FIASCO API",
     "contact": {
       "name": "FIASCO Support",
@@ -608,7 +608,13 @@
                     "registration_paper",
                     "vehicle_front",
                     "windshield",
-                    "glass_sticker"
+                    "glass_sticker",
+                    "glass_general",
+                    "glass_damage",
+                    "tires_general",
+                    "tires_damage",
+                    "interior_general",
+                    "interior_damage"
                   ]
                 }
               }
