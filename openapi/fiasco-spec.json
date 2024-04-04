@@ -614,7 +614,10 @@
                     "tires_general",
                     "tires_damage",
                     "interior_general",
-                    "interior_damage"
+                    "interior_damage",
+                    "body_dirt",
+                    "glass_dirt",
+                    "interior_dirt"
                   ]
                 }
               }
