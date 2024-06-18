@@ -426,7 +426,11 @@ components:
                 type: string
                 nullable: true
                 default: common
-                description: The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker` means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+                description: |-
+                  The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
+                  means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+
+                  Only photos __not__ marked "common" or "other" will be considered for damage detection.
                 enum:
                   - common
                   - other
