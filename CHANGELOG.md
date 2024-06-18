@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.6]
+
+### Added
+
+- Added support for "TIFF" images to calculation requests.
+
+
 ## [2.6.5] - 2024-04-04
 
 ### Added
@@ -177,6 +184,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[2.6.6]: https://github.com/fiasco-gmbh/openapi/compare/2.6.5...2.6.6
 [2.6.5]: https://github.com/fiasco-gmbh/openapi/compare/2.6.4...2.6.5
 [2.6.4]: https://github.com/fiasco-gmbh/openapi/compare/2.6.3...2.6.4
 [2.6.3]: https://github.com/fiasco-gmbh/openapi/compare/2.6.2...2.6.3

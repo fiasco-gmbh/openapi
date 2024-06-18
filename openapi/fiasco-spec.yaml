@@ -394,11 +394,11 @@ components:
               data:
                 type: string
                 format: byte
-                description: "Base64-encoded image data. Formats: JPEG, JPEG-XL, PNG, HEIC (HEVC encoded in HEIF), or WebP."
+                description: "Base64-encoded image data. Formats: JPEG, JPEG-XL, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
               contentType:
                 type: string
                 nullable: true
-                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp').
+                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
               filename:
                 type: string
                 nullable: true
