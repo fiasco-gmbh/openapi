@@ -449,6 +449,7 @@ components:
       type: object
       properties:
         damagesToConsider:
+          deprecated: true
           type: array
           minimum: 0
           description: |-
@@ -508,6 +509,7 @@ components:
                   - crack
                   - crack_defect
         damagesToExclude:
+          deprecated: true
           type: array
           minimum: 0
           description: |-

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for "TIFF" images to calculation requests.
 
+### Changed
+
+- Deprecated `damagesToConsider` and `damagesToExclude`.
+
 
 ## [2.6.5] - 2024-04-04
 
