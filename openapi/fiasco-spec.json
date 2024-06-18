@@ -113,7 +113,7 @@
             }
           },
           "500": {
-            "description": "An internal error has occured. Additional details might be provided in the response.",
+            "description": "An internal error has occurred. Additional details might be provided in the response.",
             "content": {
               "application/json": {
                 "schema": {
@@ -180,16 +180,16 @@
                     "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
                   },
                   "400": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "401": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "403": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "500": {
-                    "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
+                    "description": "A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
                   }
                 }
               }
@@ -271,7 +271,7 @@
             }
           },
           "500": {
-            "description": "An internal error has occured. Additional details might be provided in the response.",
+            "description": "An internal error has occurred. Additional details might be provided in the response.",
             "content": {
               "application/json": {
                 "schema": {
@@ -338,16 +338,16 @@
                     "description": "The webhook has been received successfully (all 2xx responses are considered to mean this)."
                   },
                   "400": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "401": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "403": {
-                    "description": "A client-side error occured (all 4xx responses are handled like this)."
+                    "description": "A client-side error occurred (all 4xx responses are handled like this)."
                   },
                   "500": {
-                    "description": "A server-side error occured (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
+                    "description": "A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times."
                   }
                 }
               }
@@ -440,7 +440,7 @@
             }
           },
           "500": {
-            "description": "An internal error has occured. Additional details might be provided in the response.",
+            "description": "An internal error has occurred. Additional details might be provided in the response.",
             "content": {
               "application/json": {
                 "schema": {
@@ -789,7 +789,7 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+            "description": "Either true (request was successfully created) of false (an error occurred). Always available.",
             "example": true
           },
           "message": {
@@ -880,7 +880,7 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+            "description": "Either true (request was successfully created) of false (an error occurred). Always available.",
             "example": true
           },
           "message": {
@@ -951,7 +951,7 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Either true (data was collected and (optionally) a calculation has been created) of false (an error occured). Always available.",
+            "description": "Either true (data was collected and (optionally) a calculation has been created) of false (an error occurred). Always available.",
             "example": true
           },
           "message": {
@@ -1016,7 +1016,7 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Either true (messages have been sent successfully) of false (an error occured). Always available.",
+            "description": "Either true (messages have been sent successfully) of false (an error occurred). Always available.",
             "example": false
           },
           "message": {
@@ -1131,7 +1131,7 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Either true (request was successfully created) of false (an error occured). Always available.",
+            "description": "Either true (request was successfully created) of false (an error occurred). Always available.",
             "example": true
           },
           "message": {
