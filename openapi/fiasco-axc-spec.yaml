@@ -183,7 +183,7 @@ components:
           enum:
             - ""
             - Check
-          description: Wether an attachment is checked or not.
+          description: Whether an attachment is checked or not.
           example: ""
     comments:
       type: array
@@ -213,7 +213,7 @@ components:
           example: "What a great result."
     vehicle_identification:
       type: object
-      description: Contains details about the vehicle. The data can be the result of a VIN lookup or was manuelly entered.
+      description: Contains details about the vehicle. The data can be the result of a VIN lookup or was manually entered.
       properties:
         manufacturerCodeAx:
           type: string
@@ -260,7 +260,7 @@ components:
         vinApplied:
           type: boolean
           readOnly: true
-          description: Wether the VIN was applied to the task/case or not.
+          description: Whether the VIN was applied to the task/case or not.
           example: true
         vinQueryTime:
           type: string
@@ -272,7 +272,7 @@ components:
           type: string
           description: Selling type code (as used in the Audatex system).
           example: "SGFBF1"
-        buldingDateFrom:
+        buildingDateFrom:
           type: string
           format: date
           description: Date since this particular vehicle model was built.
@@ -295,12 +295,12 @@ components:
         vinQueryExecuted:
           type: boolean
           readOnly: true
-          description: Wether a VIN query was executed or not.
+          description: Whether a VIN query was executed or not.
           example: true
         vinQueryGaveResult:
           type: boolean
           readOnly: true
-          description: Wether a VIN query returned a result or not.
+          description: Whether a VIN query returned a result or not.
           example: true
         manufactureDateRangeStart:
           type: string
@@ -318,7 +318,7 @@ components:
           example: "00"
         importedIntoCountry:
           type: boolean
-          description: Wether the vehicle was imported into the country or not.
+          description: Whether the vehicle was imported into the country or not.
           example: false
         vinDisclaimer:
           type: string
@@ -474,7 +474,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Indicates wether the operation was successful or not.
+          description: Indicates whether the operation was successful or not.
           example: true
         size:
           type: integer
@@ -1222,7 +1222,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1295,7 +1295,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   task:
                     $ref: "#/components/schemas/task"
@@ -1359,7 +1359,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1427,7 +1427,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1525,7 +1525,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1595,7 +1595,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1660,7 +1660,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1725,7 +1725,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1790,7 +1790,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -1893,7 +1893,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   taskId:
                     type: string
@@ -2163,7 +2163,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Wether the request was successful or not.
+                    description: Whether the request was successful or not.
                     example: true
                   task:
                     $ref: "#/components/schemas/task"
