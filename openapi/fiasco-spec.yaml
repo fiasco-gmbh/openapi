@@ -1,6 +1,10 @@
 openapi: 3.0.2
 info:
-  description: We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.
+  description: |-
+    We are providing several API endpoints for external partners which are described in this documentation.
+    All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
+    (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
+    respond with an application/json payload.
   version: 2.6.5
   title: FIASCO API
   contact:
@@ -19,9 +23,17 @@ security:
   - BearerToken: []
 tags:
   - name: Calculation Requests
-    description: ""
+    description: |-
+      Calculation requests are requests to calculate the costs of a repair based on the provided data.
+      The calculation is done asynchronously and the results are delivered via webhook.
   - name: Express Links
-    description: "WARNING: CURRENTLY NOT AVAILABLE"
+    description: |-
+      Express links are links towards a web app that collects information from an end user,
+      sends this data to our cloud, and optionally triggers a calculation.
+  - name: Calculations
+    description: |-
+      Calculations are the results of either a calculation request or an express link request.
+      They can be sent to an AudaNet recipient or via email to a specified recipient.
 paths:
   /api/v1/calculation_requests:
     post:
@@ -141,7 +153,9 @@ paths:
           example: partner-web-app/1.0
       requestBody:
         description: |-
-          **Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as `"required"` are only required if the field `doCalculation` is true.
+          **Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent
+          on a value of another field), the specification is slightly incomplete. The fields marked as `"required"` are only
+          required if the field `doCalculation` is true.
 
           The fields in the `VehicleData` schema can be used to pre-fill data for the end user (e.g. vehicle information).
         content:
@@ -371,7 +385,10 @@ components:
         firstRegistrationDate:
           type: string
           nullable: true
-          description: Date of first registration of the vehicle in the format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'. Required for total loss calculation if not enough data is available via VIN lookup.
+          description: |-
+            Date of first registration of the vehicle in the format as defined by full-date in
+            [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the
+            format 'dd.mm.yyyy'. Required for total loss calculation if not enough data is available via VIN lookup.
           format: date
         licensePlate:
           type: string
@@ -385,7 +402,9 @@ components:
       properties:
         photos:
           type: array
-          description: Photos should meet certain requirements. Read more about that in the [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
+          description: |-
+            Photos should meet certain requirements. Read more about that in the
+            [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
           items:
             type: object
             required:
@@ -432,7 +451,9 @@ components:
         damagesToConsider:
           type: array
           minimum: 0
-          description: If not empty, the union of damages detected in the photos and this list will be considered in the calculation. This is a way to limit the calculation to certain damages (e.g. a subset reported by a driver).
+          description: |-
+            If not empty, the union of damages detected in the photos and this list will be considered in the calculation.
+            This is a way to limit the calculation to certain damages (e.g. a subset reported by a driver).
           items:
             type: object
             required:
@@ -489,7 +510,9 @@ components:
         damagesToExclude:
           type: array
           minimum: 0
-          description: If not empty, the damages detected in the photos less the damages defined in this list will be considered in the calculation. This is a way to limit the calculation to certain damages (e.g. new vs. old damages).
+          description: |-
+            If not empty, the damages detected in the photos less the damages defined in this list will be considered in the
+            calculation. This is a way to limit the calculation to certain damages (e.g. new vs. old damages).
           items:
             type: object
             required:
@@ -658,7 +681,10 @@ components:
             expirationDate:
               type: string
               format: date
-              description: The date when the link will expire. If not specified, the link will expire after 30 days. Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'.
+              description: |-
+                The date on which the link will expire. If not specified, the link will expire after 30 days.
+                Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd').
+                Additionally we support the format 'dd.mm.yyyy'.
         - $ref: "#/components/schemas/CalculationParameters"
         - $ref: "#/components/schemas/CalculationRecipients"
         - $ref: "#/components/schemas/VehicleData"
@@ -696,7 +722,9 @@ components:
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
           description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
     LaborRates:
-      description: Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be overwritten by average labor rates for that ZIP code.
+      description: |-
+        Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be
+        overwritten by average labor rates for that ZIP code.
       anyOf:
         - $ref: "#/components/schemas/SpecificLaborRates"
         - $ref: "#/components/schemas/AverageLaborRatesViaZipCode"
@@ -734,12 +762,17 @@ components:
           nullable: true
           pattern: ^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\s]+)$
           example: CommId:DE123456
-          description: If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'.
+          description: |-
+            If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to
+            Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the
+            receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'.
         calculationEmailRecipient:
           type: string
           format: email
           nullable: true
-          description: If specified, the finished calculation will be sent via email to this email address. The calculation will be sent as plain text and PDF in a human-readable format.
+          description: |-
+            If specified, the finished calculation will be sent via email to this email address.
+            The calculation will be sent as plain text and PDF in a human-readable format.
     SpecificLaborRates:
       type: object
       required:
