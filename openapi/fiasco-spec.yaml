@@ -1,26 +1,31 @@
-openapi: 3.0.2
+openapi: 3.0.3
+
 info:
+  title: FIASCO API
   description: |-
     We are providing several API endpoints for external partners which are described in this documentation.
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
-    respond with an application/json payload.
+    respond with an `application/json` payload.
   version: 2.6.5
-  title: FIASCO API
   contact:
     name: FIASCO Support
     email: info@fiasco.de
     url: https://fiasco.de/
+
 externalDocs:
-  description: Find more information (e.g. a changelog) in the GitHub repository.
   url: https://github.com/fiasco-gmbh/openapi/
+  description: Find more information (e.g. a changelog) in the GitHub repository.
+
 servers:
   - url: https://cloud.staging.fiasco.de/
     description: staging server
   - url: https://cloud.fiasco.de/
     description: production server
+
 security:
   - BearerToken: []
+
 tags:
   - name: Calculation Requests
     description: |-
@@ -34,6 +39,7 @@ tags:
     description: |-
       Calculations are the results of either a calculation request or an express link request.
       They can be sent to an AudaNet recipient or via email to a specified recipient.
+
 paths:
   /api/v1/calculation_requests:
     post:
