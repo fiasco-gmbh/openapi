@@ -2,7 +2,7 @@
 
 # Inspired by https://gist.github.com/ernstki/75bba9e99a85bf273e8ec0f17dba6cfe
 
-SPEC1_FILE="openapi/fiasco-spec.json"
+SPEC1_FILE="openapi/fiasco-spec.yaml"
 SPEC2_FILE="openapi/fiasco-axc-spec.yaml"
 CHANGELOG_FILE="CHANGELOG.md"
 

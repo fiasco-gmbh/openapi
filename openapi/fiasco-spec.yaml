@@ -1,0 +1,810 @@
+openapi: 3.0.2
+info:
+  description: We are providing several API endpoints for external partners which are described in this documentation. All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and respond with an application/json payload.
+  version: 2.6.5
+  title: FIASCO API
+  contact:
+    name: FIASCO Support
+    email: info@fiasco.de
+    url: https://fiasco.de/
+externalDocs:
+  description: Find more information (e.g. a changelog) in the GitHub repository.
+  url: https://github.com/fiasco-gmbh/openapi/
+servers:
+  - url: https://cloud.staging.fiasco.de/
+    description: staging server
+  - url: https://cloud.fiasco.de/
+    description: production server
+security:
+  - BearerToken: []
+tags:
+  - name: Calculation Requests
+    description: ""
+  - name: Express Links
+    description: "WARNING: CURRENTLY NOT AVAILABLE"
+paths:
+  /api/v1/calculation_requests:
+    post:
+      operationId: v1_createCalculationRequest
+      tags:
+        - Calculation Requests
+      summary: Creates a new calculation request
+      description: Input data is processed asynchronously, results are delivered via webhook.
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCalculationRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been accepted and will be processed asynchronously. The response contains the ID of the created calculation request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCalculationRequestSuccessResponse"
+        "400":
+          description: One of the input parameters does not match the requirements. Details are provided in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCalculationRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCalculationRequestErrorResponse"
+        "403":
+          description: You are not authorized to create new calculation requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCalculationRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCalculationRequestErrorResponse"
+      callbacks:
+        calculationRequestCreated:
+          https://your-server.local/webhook-path:
+            post:
+              summary: Webhook for calculation request results
+              description: This webhook is called when the calculation request has been processed. The webhook is called at least once.
+              parameters:
+                - name: User-Agent
+                  description: Name and version of the application providing the calculation.
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: FIASCO Cloud/1.0
+                - name: Authorization
+                  description: An optional authorization token can be send as bearer token (provided by you).
+                  in: header
+                  required: false
+                  schema:
+                    type: string
+                - name: event
+                  description: A name identifiying this event.
+                  in: query
+                  required: true
+                  schema:
+                    type: string
+                    enum:
+                      - calculationReady
+                      - calculationRequestClosed
+                      - feedbackRequested
+              requestBody:
+                description: ""
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/CalculationRequestResultBody"
+                required: true
+              responses:
+                "200":
+                  description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+                "400":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "401":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "403":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "500":
+                  description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  /api/v1/express_links:
+    post:
+      operationId: v1_createExpressLink
+      tags:
+        - Express Links
+      summary: Creates a new express link to be used by an end user. If an email address and/or phone number are present, the link will be sent there.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+      requestBody:
+        description: |-
+          **Please note:** Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as `"required"` are only required if the field `doCalculation` is true.
+
+          The fields in the `VehicleData` schema can be used to pre-fill data for the end user (e.g. vehicle information).
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpressLinkRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been accepted and will be processed asynchronously. The response contains the ID of the created calculation request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateExpressLinkResponse"
+        "400":
+          description: One of the input parameters does not match the requirements. Details are provided in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateExpressLinkResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateExpressLinkResponse"
+        "403":
+          description: You are not authorized to create new calculation requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateExpressLinkResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateExpressLinkResponse"
+      callbacks:
+        expressLinkCompleted:
+          https://your-server.local/webhook-path:
+            post:
+              description: This webhook is called when the calculation request has been processed. The webhook is called at least once.
+              parameters:
+                - name: User-Agent
+                  description: Name and version of the application providing the calculation.
+                  in: header
+                  required: true
+                  schema:
+                    type: string
+                  example: FIASCO Cloud/1.0
+                - name: Authorization
+                  description: An optional authorization token can be send as bearer token (provided by you).
+                  in: header
+                  required: false
+                  schema:
+                    type: string
+                - name: event
+                  description: A name identifiying this event.
+                  in: query
+                  required: true
+                  schema:
+                    type: string
+                    enum:
+                      - dataReceivedByUser
+                      - calculationRequestCreated
+                      - calculationReady
+                      - calculationFailed
+              requestBody:
+                description: ""
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/ExpressLinkResultBody"
+                required: true
+              responses:
+                "200":
+                  description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+                "400":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "401":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "403":
+                  description: A client-side error occurred (all 4xx responses are handled like this).
+                "500":
+                  description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  /api/v1/calculations/{calculationId}/send:
+    post:
+      operationId: v1_sendCalculation
+      tags:
+        - Calculations
+      summary: Sends a finished calculation to an AudaNet and/or email recipient.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation finished calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculationRecipients"
+        required: true
+      responses:
+        "200":
+          description: The calculation has been sent to the specified recipients. Please note that there are no delivery guarantees for email recipients.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationSuccessResponse"
+        "400":
+          description: One of the input parameters does not match the requirements. Details are provided in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationErrorResponse"
+        "403":
+          description: You are not authorized to create new calculation requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationErrorResponse"
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      description: 'Please provide your API key as the bearer token (via the HTTP header "Authorization: Bearer $API_TOKEN").'
+  schemas:
+    AverageLaborRatesViaZipCode:
+      type: object
+      required:
+        - laborRatesZipCode
+      properties:
+        laborRatesCountry:
+          type: string
+          nullable: true
+          description: Country code (ISO 3166-1 ALPHA-2) for the ZIP code.
+          default: DE
+          enum:
+            - DE
+        laborRatesZipCode:
+          type: string
+          description: The zip code for which average labor rates should be determined.
+          example: "12345"
+    BasicCalculationParameters:
+      type: object
+      properties:
+        paintSystem:
+          type: string
+          nullable: true
+          enum:
+            - manufacturer
+            - azt
+          default: manufacturer
+          description: The paint system to base the calculation on (AZT or Manufacturer)
+        replacementPartsSurcharge:
+          type: number
+          nullable: true
+          default: 0
+          minimum: -10
+          maximum: 10
+          description: Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 20 and 21]
+        paintMaterialPercentage:
+          type: number
+          nullable: true
+          default: 0.38
+          minimum: 0
+          maximum: 10
+          description: Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]
+        paintMaterialVw:
+          type: number
+          nullable: true
+          default: 0
+          minimum: 0
+          maximum: 999
+          description: Paint material costs per unit in EUR for VW vehicles [Audatex block code 81]
+        smallPartsPercentage:
+          type: number
+          nullable: true
+          default: 0.02
+          minimum: 0
+          maximum: 10
+          description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
+    VehicleData:
+      type: object
+      required:
+        - vin
+      properties:
+        vin:
+          type: string
+          minLength: 17
+          maxLength: 18
+          nullable: true
+          description: Vehicle identification number (VIN; 17 chars) with optional check digit (18 chars).
+          pattern: ^[1234567890ABCDEFGHJKLMNPRSTUVWXYZ]{17,18}\d?$
+        mileage:
+          type: number
+          minimum: 0
+          nullable: true
+          description: Indicates the number of kilometers the vehicle has driven. Required for total loss calculation.
+        firstRegistrationDate:
+          type: string
+          nullable: true
+          description: Date of first registration of the vehicle in the format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'. Required for total loss calculation if not enough data is available via VIN lookup.
+          format: date
+        licensePlate:
+          type: string
+          maxLength: 15
+          nullable: true
+          description: Will be added to the calculation result (for further reference). Not required for the actual calculation.
+    VehicleAndDamagePhotos:
+      type: object
+      required:
+        - photos
+      properties:
+        photos:
+          type: array
+          description: Photos should meet certain requirements. Read more about that in the [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
+          items:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: string
+                format: byte
+                description: "Base64-encoded image data. Formats: JPEG, JPEG-XL, PNG, HEIC (HEVC encoded in HEIF), or WebP."
+              contentType:
+                type: string
+                nullable: true
+                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp').
+              filename:
+                type: string
+                nullable: true
+                description: Filename of the photo.
+              subject:
+                type: string
+                nullable: true
+                default: common
+                description: The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker` means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+                enum:
+                  - common
+                  - other
+                  - dashboard
+                  - damage
+                  - registration_paper
+                  - vehicle_front
+                  - windshield
+                  - glass_sticker
+                  - glass_general
+                  - glass_damage
+                  - tires_general
+                  - tires_damage
+                  - interior_general
+                  - interior_damage
+                  - body_dirt
+                  - glass_dirt
+                  - interior_dirt
+    VehicleDamagesToConsiderOrExclude:
+      type: object
+      properties:
+        damagesToConsider:
+          type: array
+          minimum: 0
+          description: If not empty, the union of damages detected in the photos and this list will be considered in the calculation. This is a way to limit the calculation to certain damages (e.g. a subset reported by a driver).
+          items:
+            type: object
+            required:
+              - damagedPart
+              - damageType
+            properties:
+              damagedPart:
+                type: string
+                description: The damaged part (e.g. 'bumber_rear', 'bumper_front', ...)
+                enum:
+                  - a_pillar_left
+                  - a_pillar_right
+                  - bumper_rear
+                  - bumper_front
+                  - door_rear_left
+                  - door_rear_right
+                  - door_front_left
+                  - door_front_right
+                  - engine_hood
+                  - fender_rear_left
+                  - fender_rear_right
+                  - fender_front_left
+                  - fender_front_right
+                  - fuel_filler_cap
+                  - headlight_left
+                  - headlight_right
+                  - rear_mirror_left
+                  - rear_mirror_right
+                  - rear_window
+                  - rim_rear_left
+                  - rim_rear_right
+                  - rim_front_left
+                  - rim_front_right
+                  - roof
+                  - side_rear_left
+                  - side_rear_right
+                  - sill_left
+                  - sill_right
+                  - tailgate
+                  - taillight_left
+                  - taillight_right
+                  - windschield
+                  - roof_window
+                  - trunk
+              damageType:
+                type: string
+                description: The type of the damage (e.g. 'paint', 'dent', ...)
+                enum:
+                  - paint
+                  - dent
+                  - paint_dent
+                  - crack
+                  - crack_defect
+        damagesToExclude:
+          type: array
+          minimum: 0
+          description: If not empty, the damages detected in the photos less the damages defined in this list will be considered in the calculation. This is a way to limit the calculation to certain damages (e.g. new vs. old damages).
+          items:
+            type: object
+            required:
+              - damagedPart
+              - damageType
+            properties:
+              damagedPart:
+                type: string
+                description: The damaged part (e.g. 'bumber_rear', 'bumper_front', ...)
+                enum:
+                  - a_pillar_left
+                  - a_pillar_right
+                  - bumper_rear
+                  - bumper_front
+                  - door_rear_left
+                  - door_rear_right
+                  - door_front_left
+                  - door_front_right
+                  - engine_hood
+                  - fender_rear_left
+                  - fender_rear_right
+                  - fender_front_left
+                  - fender_front_right
+                  - fuel_filler_cap
+                  - headlight_left
+                  - headlight_right
+                  - rear_mirror_left
+                  - rear_mirror_right
+                  - rear_window
+                  - rim_rear_left
+                  - rim_rear_right
+                  - rim_front_left
+                  - rim_front_right
+                  - roof
+                  - side_rear_left
+                  - side_rear_right
+                  - sill_left
+                  - sill_right
+                  - tailgate
+                  - taillight_left
+                  - taillight_right
+                  - windschield
+                  - roof_window
+                  - trunk
+              damageType:
+                type: string
+                description: The type of the damage (e.g. 'paint', 'dent', ...)
+                enum:
+                  - paint
+                  - dent
+                  - paint_dent
+                  - crack
+                  - crack_defect
+    BasicCalculationRequestData:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/VehicleData"
+        - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
+        - $ref: "#/components/schemas/VehicleAndDamagePhotos"
+    CalculationParameters:
+      allOf:
+        - $ref: "#/components/schemas/LaborRates"
+        - $ref: "#/components/schemas/BasicCalculationParameters"
+    CalculationRequestResultBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation request successfully processed
+        calculationRequestId:
+          type: string
+          format: uuid
+          description: ID of the newly created request. Only available when 'success' is true.
+          example: 12341234-1234-1234-1234-123412341234
+        calculationId:
+          type: string
+          format: uuid
+          description: ID of the finished calculation.
+          example: 12341234-1234-1234-1234-123412341234
+        calculationText:
+          type: string
+          description: The calculation text as returned by the calculation engine. Only available when 'success' is true.
+        calculationDV90:
+          type: string
+          description: The calculation in the DV90 format. Only available when 'success' is true.
+        referenceId:
+          type: string
+          description: The reference ID that was passed in the original request.
+        audaNetCaseId:
+          type: string
+          format: uuid
+          example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
+          description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
+    RequestMetaData:
+      type: object
+      properties:
+        referenceId:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference.
+    CreateCalculationRequestBody:
+      description: ""
+      allOf:
+        - $ref: "#/components/schemas/RequestMetaData"
+        - $ref: "#/components/schemas/BasicCalculationRequestData"
+        - $ref: "#/components/schemas/CalculationParameters"
+        - $ref: "#/components/schemas/CalculationRecipients"
+    CreateCalculationRequestErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        message:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Your token could not be authenticated
+    CreateCalculationRequestSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation successfully requested
+        calculationRequestId:
+          type: string
+          format: uuid
+          description: ID of the newly created request. Only available when 'success' is true.
+          example: 12341234-1234-1234-1234-123412341234
+    ExpressLinkRecipients:
+      type: object
+      description: An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.
+      properties:
+        emailRecipient:
+          type: string
+          format: email
+          nullable: true
+          description: An email address to send a request for data to.
+        smsRecipient:
+          type: string
+          format: phone
+          nullable: true
+          description: A mobile phone number to send a request for data to (via SMS).
+    ExpressLinkData:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            doCalculation:
+              type: boolean
+              default: true
+              description: If true, a calculation request will be created as soon as data has been collected from the end user.
+            expirationDate:
+              type: string
+              format: date
+              description: The date when the link will expire. If not specified, the link will expire after 30 days. Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the format 'dd.mm.yyyy'.
+        - $ref: "#/components/schemas/CalculationParameters"
+        - $ref: "#/components/schemas/CalculationRecipients"
+        - $ref: "#/components/schemas/VehicleData"
+        - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
+    ExpressLinkResultBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (data was collected and (optionally) a calculation has been created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation request successfully processed
+        calculationRequestId:
+          type: string
+          format: uuid
+          description: ID of the newly created request. Only available when 'success' is true.
+          example: 12341234-1234-1234-1234-123412341234
+        calculationId:
+          type: string
+          format: uuid
+          description: ID of the finished calculation.
+          example: 12341234-1234-1234-1234-123412341234
+        calculationText:
+          type: string
+          description: The calculation text as returned by the calculation engine. Only available when 'success' is true and if a calculation was originally requested.
+        referenceId:
+          type: string
+          description: The reference ID that was passed in the original request.
+        audaNetCaseId:
+          type: string
+          format: uuid
+          example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
+          description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
+    LaborRates:
+      description: Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be overwritten by average labor rates for that ZIP code.
+      anyOf:
+        - $ref: "#/components/schemas/SpecificLaborRates"
+        - $ref: "#/components/schemas/AverageLaborRatesViaZipCode"
+    CreateExpressLinkRequestBody:
+      allOf:
+        - $ref: "#/components/schemas/RequestMetaData"
+        - $ref: "#/components/schemas/ExpressLinkRecipients"
+        - $ref: "#/components/schemas/ExpressLinkData"
+    CreateExpressLinkResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (messages have been sent successfully) of false (an error occurred). Always available.
+          example: false
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: The phone number specified does not appear to be in an acceptable format
+        expressLinkId:
+          type: string
+          format: uuid
+          description: ID of the express link. Only available when 'success' is true.
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+        expressLinkUrl:
+          type: string
+          format: uri
+          description: The URL of the express link (this can be sent to end users). Only available when 'success' is true.
+          example: https://cloud.fiasco.de/express/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+    CalculationRecipients:
+      type: object
+      properties:
+        calculationAudaNetRecipient:
+          type: string
+          nullable: true
+          pattern: ^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\s]+)$
+          example: CommId:DE123456
+          description: If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'.
+        calculationEmailRecipient:
+          type: string
+          format: email
+          nullable: true
+          description: If specified, the finished calculation will be sent via email to this email address. The calculation will be sent as plain text and PDF in a human-readable format.
+    SpecificLaborRates:
+      type: object
+      required:
+        - laborRateMechanics
+        - laborRateElectronics
+        - laborRateBody
+        - laborRateHailDamage
+        - laborRatePaint
+      properties:
+        laborRateMechanics:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for mechanical work (Karosserieschlosser)
+          example: 80
+        laborRateElectronics:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for electrical work (Elektrik)
+          example: 80
+        laborRateBody:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for body work (Karosseriebau)
+          example: 80
+        laborRateHailDamage:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for hail damage (Hagelschaden)
+          example: 80
+        laborRatePaint:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for paint work (Lackarbeiten)
+          example: 80
+    SendCalculationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        message:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Your token could not be authenticated
+    SendCalculationSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation successfully requested
