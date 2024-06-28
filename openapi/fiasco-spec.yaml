@@ -703,6 +703,74 @@ components:
         - $ref: "#/components/schemas/CalculationRecipients"
         - $ref: "#/components/schemas/VehicleData"
         - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
+        - $ref: "#/components/schemas/Branding"
+    Branding:
+      type: object
+      required:
+        - imprintUrl
+        - privacyPolicyUrl
+        - customerInformationUrl
+      properties:
+        logo:
+          type: string
+          format: byte
+          nullable: true
+          description: "Base64-encoded logo image. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
+        logoUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: "URL to a logo image. The URL must be publicly accessible. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
+        primaryColor:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+          nullable: true
+          description: The primary color to be used in the branding (hex color code).
+          example: "#000000"
+        secondaryColor:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+          nullable: true
+          description: The secondary color to be used in the branding (hex color code).
+          example: "#00ff00"
+        companyName:
+          type: string
+          nullable: true
+          description: The name of the company that is displayed in the app.
+        companyDetails:
+          type: string
+          nullable: true
+          description: Additional details about the company that are displayed in the app (e.g. the name of the company's location).
+        phoneNumber:
+          type: string
+          format: phone
+          nullable: true
+          description: The phone number of the company.
+        emailAddress:
+          type: string
+          format: email
+          nullable: true
+          description: The email address of the company.
+        websiteUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: The URL to the website of the company.
+        imprintUrl:
+          type: string
+          format: uri
+          nullable: false
+          description: The URL to the imprint. The app will directly link to this.
+        privacyPolicyUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: The URL to the privacy policy. The app will directly link to this.
+        customerInformationUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: The URL to the customer information. The app will directly link to this.
     ExpressLinkResultBody:
       type: object
       properties:
