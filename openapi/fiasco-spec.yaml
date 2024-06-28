@@ -226,10 +226,12 @@ paths:
                   schema:
                     type: string
                     enum:
-                      - dataReceivedByUser
+                      - linkSentViaSMS
+                      - linkSentViaEmail
                       - calculationRequestCreated
                       - calculationReady
-                      - calculationFailed
+                      - calculationRequestClosed
+                      - feedbackRequested
               requestBody:
                 description: ""
                 content:
