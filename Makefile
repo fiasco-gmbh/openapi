@@ -7,7 +7,7 @@ SPEC2_FILE="openapi/fiasco-axc-spec.yaml"
 CHANGELOG_FILE="CHANGELOG.md"
 
 # Retrieves the version from the OpenAPI spec.
-SPEC1_VERSION=$(shell jq -r '.info.version' ${SPEC1_FILE})
+SPEC1_VERSION=$(shell yq -r '.info.version' ${SPEC1_FILE})
 SPEC2_VERSION=$(shell yq -r '.info.version' ${SPEC2_FILE})
 
 # Finds the first version header in the changelog (format "## [x.y.z]")
