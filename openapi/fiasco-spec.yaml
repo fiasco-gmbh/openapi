@@ -687,6 +687,8 @@ components:
       type: object
       allOf:
         - type: object
+          required:
+            - configurationName
           properties:
             doCalculation:
               type: boolean
@@ -699,6 +701,10 @@ components:
                 The date on which the link will expire. If not specified, the link will expire after 30 days.
                 Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd').
                 Additionally we support the format 'dd.mm.yyyy'.
+            configurationName:
+              type: string
+              example: "demo_v1"
+              description: Name of the app configuration to use. This is defined by FIASCO and given to each partner.
         - $ref: "#/components/schemas/CalculationParameters"
         - $ref: "#/components/schemas/CalculationRecipients"
         - $ref: "#/components/schemas/VehicleData"
