@@ -776,7 +776,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Either true (data was collected and (optionally) a calculation has been created) of false (an error occurred). Always available.
+          description: Either true (data was collected and (optionally) a calculation has been created) or false (an error occurred). Always available.
           example: true
         message:
           type: string
