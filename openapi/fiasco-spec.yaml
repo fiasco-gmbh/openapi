@@ -803,6 +803,62 @@ components:
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
           description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
+        answers:
+          type: object
+          description: Additional data collected during an app's user journey.
+          properties:
+            groups:
+              type: array
+              description: List of items by which `fields` are grouped together.
+              items:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    nullable: false
+                    description: Name of the group.
+                  label:
+                    type: string
+                    description: |
+                      Label for the name of the group. Should be used when showing the item to a user.
+                      If this property is empty or missing, use the value in `name` instead.
+            fields:
+              type: array
+              description: List of fields that have been collected.
+              items:
+                type: object
+                required:
+                  - name
+                properties:
+                  group:
+                    type: string
+                    nullable: true
+                    description: Name of a group. All items with the same group name should be ordered together.
+                  name:
+                    type: string
+                    nullable: false
+                    description: Name of the item.
+                  label:
+                    type: string
+                    description: |
+                      Label for the name of the item. Should be used when showing the item to a user.
+                      If this property is empty or missing, use the value in `name` instead.
+                  value:
+                    type: string
+                    nullable: true
+                    description: Value of the item.
+                  valueLabel:
+                    type: string
+                    nullable: true
+                    description: |
+                      Label for the value of the item. Should be used when showing the value to a user.
+                      If this property is empty or missing, use the value in `value` instead.
+                  sortIndex:
+                    type: integer
+                    nullable: true
+                    description: Index for sorting the items. Items with a lower index should be shown first.
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be
