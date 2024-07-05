@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2024-07-07
+
+### Added
+
+- Added support for hail damage requests.
+- Added support for specifying the calculation provider to be used for each request.
+
+### Changed
+
+- Reorganized the spec file and renamed schemas.
+- Fixed minor spelling mistakes.
+
+
 ## [2.7.0] - 2024-06-28
 
 ### Added
@@ -196,6 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[3.0.0]: https://github.com/fiasco-gmbh/openapi/compare/2.7.0...3.0.0
 [2.7.0]: https://github.com/fiasco-gmbh/openapi/compare/2.6.6...2.7.0
 [2.6.6]: https://github.com/fiasco-gmbh/openapi/compare/2.6.5...2.6.6
 [2.6.5]: https://github.com/fiasco-gmbh/openapi/compare/2.6.4...2.6.5

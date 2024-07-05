@@ -318,61 +318,68 @@ components:
       scheme: bearer
       description: 'Please provide your API key as the bearer token (via the HTTP header "Authorization: Bearer $API_TOKEN").'
   schemas:
-    AverageLaborRatesViaZipCode:
-      type: object
-      required:
-        - laborRatesZipCode
-      properties:
-        laborRatesCountry:
-          type: string
-          nullable: true
-          description: Country code (ISO 3166-1 ALPHA-2) for the ZIP code.
-          default: DE
-          enum:
-            - DE
-        laborRatesZipCode:
-          type: string
-          description: The zip code for which average labor rates should be determined.
-          example: "12345"
-    BasicCalculationParameters:
+    CreateCalculationRequestBody:
+      description: ""
+      allOf:
+        - $ref: "#/components/schemas/RequestMetaData"
+        - $ref: "#/components/schemas/CalculationRequestType"
+        - $ref: "#/components/schemas/DamageOrHailRequest"
+        - $ref: "#/components/schemas/CalculationRecipients"
+
+    RequestMetaData:
       type: object
       properties:
-        paintSystem:
+        referenceId:
           type: string
+          maxLength: 50
           nullable: true
+          description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference.
+
+    CalculationRequestType:
+      type: object
+      properties:
+        calculationType:
+          type: string
+          default: damage
           enum:
-            - manufacturer
-            - azt
-          default: manufacturer
-          description: The paint system to base the calculation on (AZT or Manufacturer)
-        replacementPartsSurcharge:
-          type: number
+            - damage
+            - hail damage
           nullable: true
-          default: 0
-          minimum: -10
-          maximum: 10
-          description: Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 20 and 21]
-        paintMaterialPercentage:
-          type: number
+          example: damage
+          description: |-
+            Defines the type of calculation that should be performed. Either a normal "damage" calculation or a "hail damage" calculation (mainly fixing dents).
+            Depending on the type of calculation, different parameters are required.
+        calculationProvider:
+          type: string
+          default: audatex
+          enum:
+            - audatex
+            - dat
           nullable: true
-          default: 0.38
-          minimum: 0
-          maximum: 10
-          description: Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]
-        paintMaterialVw:
-          type: number
-          nullable: true
-          default: 0
-          minimum: 0
-          maximum: 999
-          description: Paint material costs per unit in EUR for VW vehicles [Audatex block code 81]
-        smallPartsPercentage:
-          type: number
-          nullable: true
-          default: 0.02
-          minimum: 0
-          maximum: 10
-          description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
+          example: audatex
+          description: |-
+            Via this parameter it is possible to select the calculation provider. The default is "audatex".
+
+    DamageOrHailRequest:
+      oneOf:
+        - $ref: "#/components/schemas/DamageRequestData"
+        - $ref: "#/components/schemas/HailDamageRequestData"
+
+    DamageRequestData:
+      description: The data required for a damage calculation.
+      allOf:
+        - $ref: "#/components/schemas/VehicleData"
+        - $ref: "#/components/schemas/VehicleAndDamagePhotos"
+        - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
+        - $ref: "#/components/schemas/CalculationParameters"
+
+    HailDamageRequestData:
+      description: The data required for a hail damage calculation.
+      allOf:
+        - $ref: "#/components/schemas/VehicleData"
+        - $ref: "#/components/schemas/CalculationParameters"
+        - $ref: "#/components/schemas/HailDamageData"
+
     VehicleData:
       type: object
       required:
@@ -385,11 +392,13 @@ components:
           nullable: true
           description: Vehicle identification number (VIN; 17 chars) with optional check digit (18 chars).
           pattern: ^[1234567890ABCDEFGHJKLMNPRSTUVWXYZ]{17,18}\d?$
+          example: M2Y3ULY19D85CCCNN5
         mileage:
           type: number
           minimum: 0
           nullable: true
           description: Indicates the number of kilometers the vehicle has driven. Required for total loss calculation.
+          example: 142000
         firstRegistrationDate:
           type: string
           nullable: true
@@ -398,11 +407,13 @@ components:
             [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the
             format 'dd.mm.yyyy'. Required for total loss calculation if not enough data is available via VIN lookup.
           format: date
+          example: 2020-04-14
         licensePlate:
           type: string
           maxLength: 15
           nullable: true
           description: Will be added to the calculation result (for further reference). Not required for the actual calculation.
+          example: S-AB 1234
     VehicleAndDamagePhotos:
       type: object
       required:
@@ -475,7 +486,7 @@ components:
             properties:
               damagedPart:
                 type: string
-                description: The damaged part (e.g. 'bumber_rear', 'bumper_front', ...)
+                description: The damaged part (e.g. 'bumper_rear', 'bumper_front', ...)
                 enum:
                   - a_pillar_left
                   - a_pillar_right
@@ -535,7 +546,7 @@ components:
             properties:
               damagedPart:
                 type: string
-                description: The damaged part (e.g. 'bumber_rear', 'bumper_front', ...)
+                description: The damaged part (e.g. 'bumper_rear', 'bumper_front', ...)
                 enum:
                   - a_pillar_left
                   - a_pillar_right
@@ -580,16 +591,182 @@ components:
                   - paint_dent
                   - crack
                   - crack_defect
-    BasicCalculationRequestData:
+    HailDamageData:
       type: object
-      allOf:
-        - $ref: "#/components/schemas/VehicleData"
-        - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
-        - $ref: "#/components/schemas/VehicleAndDamagePhotos"
+      properties:
+        parts:
+          type: array
+          description: A list of parts that are affected by hail damage.
+          items:
+            type: object
+            required:
+              - partId
+              - repairMethod
+              - orientation
+              - repairTechniques
+            properties:
+              partId:
+                type: string
+                description: The FIASCO part ID of the part that is affected by hail damage.
+                nullable: false
+              isPlastic:
+                description: Set this to true if the part is made out of plastic.
+                type: boolean
+                default: false
+                nullable: true
+              repairMethod:
+                description: The repair method for the part.
+                type: string
+                enum:
+                  - replace
+                  - repair
+                nullable: false
+              numberOfDents:
+                description: The number of dents on the part.
+                type: integer
+                minimum: 0
+                maximum: 100
+                default: 0
+                nullable: true
+              avgDentSize:
+                description: The average size of the dents in millimeters.
+                type: integer
+                minimum: 0
+                maximum: 100
+                default: 0
+                nullable: true
+              orientation:
+                description: The orientation of the dents.
+                type: string
+                enum:
+                  - horizontal
+                  - vertical
+                nullable: false
+              repairTechniques:
+                description: |-
+                  The repair techniques that can be used for the part. One ore more techniques must
+                  be specified.
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - prePrint
+                    - aluminium
+                    - overlapZone
+                    - glue
+
     CalculationParameters:
+      description: |-
+        Contains all parameters necessary for an actual cost calculation (e.g. labor rates).
       allOf:
         - $ref: "#/components/schemas/LaborRates"
-        - $ref: "#/components/schemas/BasicCalculationParameters"
+        - type: object
+          properties:
+            paintSystem:
+              type: string
+              nullable: true
+              enum:
+                - manufacturer
+                - azt
+              default: manufacturer
+              description: The paint system to base the calculation on (AZT or Manufacturer)
+            replacementPartsSurcharge:
+              type: number
+              nullable: true
+              default: 0
+              minimum: -10
+              maximum: 10
+              description: Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 20 and 21]
+            paintMaterialPercentage:
+              type: number
+              nullable: true
+              default: 0.38
+              minimum: 0
+              maximum: 10
+              description: Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]
+            paintMaterialVw:
+              type: number
+              nullable: true
+              default: 0
+              minimum: 0
+              maximum: 999
+              description: Paint material costs per unit in EUR for VW vehicles [Audatex block code 81]
+            smallPartsPercentage:
+              type: number
+              nullable: true
+              default: 0.02
+              minimum: 0
+              maximum: 10
+              description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
+    LaborRates:
+      description: |-
+        Defines the labor rates to be used for the cost calculation.
+        If a ZIP code is given any specific labor rates will be
+        overwritten by average labor rates for that ZIP code.
+      oneOf:
+        - $ref: "#/components/schemas/SpecificLaborRates"
+        - $ref: "#/components/schemas/AverageLaborRatesViaZipCode"
+    SpecificLaborRates:
+      type: object
+      required:
+        - laborRateMechanics
+        - laborRateElectronics
+        - laborRateBody
+        - laborRateHailDamage
+        - laborRatePaint
+      properties:
+        laborRateMechanics:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for mechanical work (Karosserieschlosser)
+          example: 80
+        laborRateElectronics:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for electrical work (Elektrik)
+          example: 80
+        laborRateBody:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for body work (Karosseriebau)
+          example: 80
+        laborRateHailDamage:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for hail damage (Hagelschaden)
+          example: 80
+        laborRatePaint:
+          type: number
+          minimum: 0
+          maximum: 999.99
+          nullable: true
+          description: Labor rate for paint work (Lackarbeiten)
+          example: 80
+    AverageLaborRatesViaZipCode:
+      type: object
+      required:
+        - laborRatesZipCode
+      properties:
+        laborRatesCountry:
+          type: string
+          nullable: true
+          description: Country code (ISO 3166-1 ALPHA-2) for the ZIP code.
+          default: DE
+          enum:
+            - DE
+        laborRatesZipCode:
+          type: string
+          description: The zip code for which average labor rates should be determined.
+          example: "12345"
+
     CalculationRequestResultBody:
       type: object
       properties:
@@ -625,21 +802,6 @@ components:
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
           description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
-    RequestMetaData:
-      type: object
-      properties:
-        referenceId:
-          type: string
-          maxLength: 50
-          nullable: true
-          description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference.
-    CreateCalculationRequestBody:
-      description: ""
-      allOf:
-        - $ref: "#/components/schemas/RequestMetaData"
-        - $ref: "#/components/schemas/BasicCalculationRequestData"
-        - $ref: "#/components/schemas/CalculationParameters"
-        - $ref: "#/components/schemas/CalculationRecipients"
     CreateCalculationRequestErrorResponse:
       type: object
       properties:
@@ -669,6 +831,7 @@ components:
           format: uuid
           description: ID of the newly created request. Only available when 'success' is true.
           example: 12341234-1234-1234-1234-123412341234
+
     ExpressLinkRecipients:
       type: object
       description: An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.
@@ -777,6 +940,32 @@ components:
           format: uri
           nullable: true
           description: The URL to the customer information. The app will directly link to this.
+    CreateExpressLinkRequestBody:
+      allOf:
+        - $ref: "#/components/schemas/RequestMetaData"
+        - $ref: "#/components/schemas/ExpressLinkRecipients"
+        - $ref: "#/components/schemas/ExpressLinkData"
+    CreateExpressLinkResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (messages have been sent successfully) of false (an error occurred). Always available.
+          example: false
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: The phone number specified does not appear to be in an acceptable format
+        expressLinkId:
+          type: string
+          format: uuid
+          description: ID of the express link. Only available when 'success' is true.
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+        expressLinkUrl:
+          type: string
+          format: uri
+          description: The URL of the express link (this can be sent to end users). Only available when 'success' is true.
+          example: https://cloud.fiasco.de/express/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
     ExpressLinkResultBody:
       type: object
       properties:
@@ -865,39 +1054,6 @@ components:
                     type: integer
                     nullable: true
                     description: Index for sorting the items. Items with a lower index should be shown first.
-    LaborRates:
-      description: |-
-        Defines the labor rates to be used for the cost calculation. If a ZIP code is given any specific labor rates will be
-        overwritten by average labor rates for that ZIP code.
-      anyOf:
-        - $ref: "#/components/schemas/SpecificLaborRates"
-        - $ref: "#/components/schemas/AverageLaborRatesViaZipCode"
-    CreateExpressLinkRequestBody:
-      allOf:
-        - $ref: "#/components/schemas/RequestMetaData"
-        - $ref: "#/components/schemas/ExpressLinkRecipients"
-        - $ref: "#/components/schemas/ExpressLinkData"
-    CreateExpressLinkResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Either true (messages have been sent successfully) of false (an error occurred). Always available.
-          example: false
-        message:
-          type: string
-          description: Describes the return status (e.g. error details). Can be null or empty.
-          example: The phone number specified does not appear to be in an acceptable format
-        expressLinkId:
-          type: string
-          format: uuid
-          description: ID of the express link. Only available when 'success' is true.
-          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
-        expressLinkUrl:
-          type: string
-          format: uri
-          description: The URL of the express link (this can be sent to end users). Only available when 'success' is true.
-          example: https://cloud.fiasco.de/express/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
     CalculationRecipients:
       type: object
       properties:
@@ -910,6 +1066,8 @@ components:
             If specified, the finished calculation will be sent via AudaNet to this recipient. Format according to
             Audatex B2B interface. The value contains a type prefix followed by a colon followed by the ID of the
             receiver. The type prefix can be 'MemberId', 'LoginId', 'CustomerId', 'CommId', or 'ExternalOrganisationId'.
+
+            This is only respected if the calculation was requested with the 'audatex' calculation provider.
         calculationEmailRecipient:
           type: string
           format: email
@@ -917,50 +1075,7 @@ components:
           description: |-
             If specified, the finished calculation will be sent via email to this email address.
             The calculation will be sent as plain text and PDF in a human-readable format.
-    SpecificLaborRates:
-      type: object
-      required:
-        - laborRateMechanics
-        - laborRateElectronics
-        - laborRateBody
-        - laborRateHailDamage
-        - laborRatePaint
-      properties:
-        laborRateMechanics:
-          type: number
-          minimum: 0
-          maximum: 999.99
-          nullable: true
-          description: Labor rate for mechanical work (Karosserieschlosser)
-          example: 80
-        laborRateElectronics:
-          type: number
-          minimum: 0
-          maximum: 999.99
-          nullable: true
-          description: Labor rate for electrical work (Elektrik)
-          example: 80
-        laborRateBody:
-          type: number
-          minimum: 0
-          maximum: 999.99
-          nullable: true
-          description: Labor rate for body work (Karosseriebau)
-          example: 80
-        laborRateHailDamage:
-          type: number
-          minimum: 0
-          maximum: 999.99
-          nullable: true
-          description: Labor rate for hail damage (Hagelschaden)
-          example: 80
-        laborRatePaint:
-          type: number
-          minimum: 0
-          maximum: 999.99
-          nullable: true
-          description: Labor rate for paint work (Lackarbeiten)
-          example: 80
+
     SendCalculationErrorResponse:
       type: object
       properties:
