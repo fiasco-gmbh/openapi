@@ -343,7 +343,7 @@ components:
           default: damage
           enum:
             - damage
-            - hail damage
+            - hail_damage
           nullable: true
           example: damage
           description: |-
@@ -594,7 +594,7 @@ components:
     HailDamageData:
       type: object
       properties:
-        parts:
+        hailDamages:
           type: array
           description: A list of parts that are affected by hail damage.
           items:
