@@ -649,12 +649,12 @@ components:
           description: The number of dents on the part.
           type: integer
           minimum: 1
-          maximum: 100
+          maximum: 800
         avgDentSize:
-          description: The average size of the dents in millimeters.
+          description: The average size of the dents in millimeters. Values can only be given in 10mm interval steps.
           type: integer
           minimum: 10
-          maximum: 100
+          maximum: 80
           default: 10
         orientation:
           description: The orientation of the dents.
