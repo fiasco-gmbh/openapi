@@ -334,6 +334,19 @@ components:
           maxLength: 50
           nullable: true
           description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference.
+        billTo:
+          type: string
+          pattern: "^fiasco-cust-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          minLength: 48
+          maxLength: 48
+          nullable: true
+          example: fiasco-cust-12341234-1234-1234-1234-123412341234
+          description: |-
+            If this field is set, the calculation request will be billed to the company associated with the value of this field. If no such company exists, the request
+            will be denied. If the field is empty or not set, the request will be billed to the company associated with the API token. Possible values will be provided
+            by FIASCO open request.
+
+            The format of this field is that of a UUID with the prefix "fiasco-cust-".
 
     CalculationRequestType:
       type: object
