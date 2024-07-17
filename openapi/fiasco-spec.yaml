@@ -591,6 +591,90 @@ components:
                   - paint_dent
                   - crack
                   - crack_defect
+    HailDamagePart:
+      type: object
+      description: |-
+        Data required to calculate hail damage costs. If a part shall be replaced, only a subset of information
+        is required (basically just the part id). If a part shall be repaired, more information is required.
+      allOf:
+        - $ref: "#/components/schemas/HailDamagePartMetaData"
+      oneOf:
+        - $ref: "#/components/schemas/HailDamagePartRepair"
+        - $ref: "#/components/schemas/HailDamagePartReplace"
+    HailDamagePartMetaData:
+      type: object
+      description: Meta data about a part that was damaged by hail.
+      required:
+        - partId
+      properties:
+        partId:
+          type: string
+          description: The FIASCO part ID of the part that is affected by hail damage.
+          nullable: false
+    HailDamagePartRepair:
+      type: object
+      description: Data required to calculate repair costs after a hail damage.
+      required:
+        - partId
+        - repairMethod
+        - numberOfDents
+        - avgDentSize
+        - orientation
+        - repairTechniques
+      properties:
+        isPlastic:
+          description: Set this to true if the part is made out of plastic.
+          type: boolean
+          default: false
+          nullable: true
+        repairMethod:
+          description: The repair method for the part.
+          type: string
+          enum:
+            - repair
+          nullable: false
+        numberOfDents:
+          description: The number of dents on the part.
+          type: integer
+          minimum: 1
+          maximum: 100
+        avgDentSize:
+          description: The average size of the dents in millimeters.
+          type: integer
+          minimum: 10
+          maximum: 100
+          default: 10
+        orientation:
+          description: The orientation of the dents.
+          type: string
+          enum:
+            - horizontal
+            - vertical
+          nullable: false
+        repairTechniques:
+          description: |-
+            The repair techniques that can be used for the part. One ore more techniques must
+            be specified.
+          type: array
+          items:
+            type: string
+            enum:
+              - prePrint
+              - aluminium
+              - overlapZone
+              - glue
+    HailDamagePartReplace:
+      type: object
+      description: Data required to calculate replacement costs after a hail damage.
+      required:
+        - repairMethod
+      properties:
+        repairMethod:
+          description: The repair method for the part.
+          type: string
+          enum:
+            - replace
+          nullable: false
     HailDamageData:
       type: object
       properties:
@@ -598,62 +682,7 @@ components:
           type: array
           description: A list of parts that are affected by hail damage.
           items:
-            type: object
-            required:
-              - partId
-              - repairMethod
-              - orientation
-              - repairTechniques
-            properties:
-              partId:
-                type: string
-                description: The FIASCO part ID of the part that is affected by hail damage.
-                nullable: false
-              isPlastic:
-                description: Set this to true if the part is made out of plastic.
-                type: boolean
-                default: false
-                nullable: true
-              repairMethod:
-                description: The repair method for the part.
-                type: string
-                enum:
-                  - replace
-                  - repair
-                nullable: false
-              numberOfDents:
-                description: The number of dents on the part.
-                type: integer
-                minimum: 0
-                maximum: 100
-                default: 0
-                nullable: true
-              avgDentSize:
-                description: The average size of the dents in millimeters.
-                type: integer
-                minimum: 0
-                maximum: 100
-                default: 0
-                nullable: true
-              orientation:
-                description: The orientation of the dents.
-                type: string
-                enum:
-                  - horizontal
-                  - vertical
-                nullable: false
-              repairTechniques:
-                description: |-
-                  The repair techniques that can be used for the part. One ore more techniques must
-                  be specified.
-                type: array
-                items:
-                  type: string
-                  enum:
-                    - prePrint
-                    - aluminium
-                    - overlapZone
-                    - glue
+            $ref: "#/components/schemas/HailDamagePart"
 
     CalculationParameters:
       description: |-
