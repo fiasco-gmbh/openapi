@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.1.0
+  version: 3.1.1
   contact:
     name: FIASCO Support
     email: info@fiasco.de
@@ -633,7 +633,6 @@ components:
         - numberOfDents
         - avgDentSize
         - orientation
-        - repairTechniques
       properties:
         isPlastic:
           description: Set this to true if the part is made out of plastic.
@@ -669,6 +668,8 @@ components:
             The repair techniques that can be used for the part. One ore more techniques must
             be specified.
           type: array
+          nullable: true
+          default: []
           items:
             type: string
             enum:

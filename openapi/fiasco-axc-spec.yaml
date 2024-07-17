@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an application/json payload.
-  version: 3.1.0
+  version: 3.1.1
   contact:
     name: FIASCO Support
     email: info@fiasco.de
