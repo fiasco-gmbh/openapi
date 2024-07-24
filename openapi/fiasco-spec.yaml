@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.1.1
+  version: 3.2.0
   contact:
     name: FIASCO Support
     email: info@fiasco.de
@@ -311,6 +311,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SendCalculationErrorResponse"
+  /api/v1/parts:
+    get:
+      operationId: v1_listParts
+      tags:
+        - Parts
+      summary: Returns a list of all available part numbers.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+      responses:
+        "200":
+          description: A JSON containing a list of all parts available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPartsSuccessResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPartsErrorResponse"
+        "403":
+          description: You are not authorized to list parts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPartsErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPartsErrorResponse"
 components:
   securitySchemes:
     BearerToken:
@@ -1175,3 +1215,43 @@ components:
           type: string
           description: Describes the return status (e.g. error details). Can be null or empty.
           example: Calculation successfully requested
+    ListPartsSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        parts:
+          type: array
+          description: A list of all parts available.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The part number (also called "FIASCO Part ID").
+                example: 1130
+              label_de:
+                type: string
+                description: Name of the part in German.
+                example: "Leist. Grill U"
+              kind:
+                type: string
+                enum:
+                  - primary
+                  - secondary
+                  - regular
+                description: Categorization of the part.
+    ListPartsErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        message:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Your token could not be authenticated
