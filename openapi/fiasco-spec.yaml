@@ -840,7 +840,7 @@ components:
         calculationRequestId:
           type: string
           format: uuid
-          description: ID of the newly created request. Only available when 'success' is true.
+          description: ID of the newly created request. Only available when `success` is true.
           example: 12341234-1234-1234-1234-123412341234
         calculationId:
           type: string
@@ -849,10 +849,24 @@ components:
           example: 12341234-1234-1234-1234-123412341234
         calculationText:
           type: string
-          description: The calculation text as returned by the calculation engine. Only available when 'success' is true.
+          description: |-
+            The calculation text as returned by the calculation engine.
+            Only available when `success` is true.
         calculationDV90:
           type: string
-          description: The calculation in the DV90 format. Only available when 'success' is true.
+          description: |-
+            The calculation in the DV90 format.
+            Only available when `success` is true.
+        calculationVSX:
+          type: string
+          description: |-
+            The calculation in the VSX format.
+            Only available when `success` is true and the calculation provider was DAT.
+        calculationPDF:
+          type: string
+          description: |-
+            Base64-encoded PDF that contains the results of the calculation.
+            Only available when `success` is true and the calculation provider was DAT.
         referenceId:
           type: string
           description: The reference ID that was passed in the original request.
@@ -860,7 +874,9 @@ components:
           type: string
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
-          description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
+          description: |-
+            The AudaNet case ID. Only available when `success` is true and if an `audaNetRecipient`
+            was specified when the calculation was requested.
     CreateCalculationRequestErrorResponse:
       type: object
       properties:
