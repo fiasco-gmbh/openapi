@@ -257,6 +257,7 @@ was renamed has not been in production use, yet.
 
 
 
+[3.2.1]: https://github.com/fiasco-gmbh/openapi/compare/3.2.0...3.2.1
 [3.2.0]: https://github.com/fiasco-gmbh/openapi/compare/3.1.2...3.2.0
 [3.1.2]: https://github.com/fiasco-gmbh/openapi/compare/3.1.1...3.1.2
 [3.1.1]: https://github.com/fiasco-gmbh/openapi/compare/3.1.0...3.1.1
