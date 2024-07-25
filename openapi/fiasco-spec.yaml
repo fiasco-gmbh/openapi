@@ -688,14 +688,14 @@ components:
         allowRepairMethodOptimization:
           description: |-
             If set to true, the calculation engine is allowed to choose the best possible repair method
-            and repair techniques based on the total price.
+            and techniques. In this context, "best" refers to the cost.
           type: boolean
           default: false
           nullable: true
-        repairInsteadOfReplaceThreshold:
+        optimizedRepairMethodThreshold:
           description: |-
-            If repair method optimization is enabled, this threshold controls how much the delta in costs
-            between repair and replace must be before changing methods.
+            If repair method optimization is enabled, this threshold controls how big the difference
+            between different repair methods and techniques must be before a method or technique are changed.
           type: number
           minimum: 0.0
           maximum: 1.0
