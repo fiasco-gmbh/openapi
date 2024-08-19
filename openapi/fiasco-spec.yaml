@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.2.1
+  version: 3.3.0
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -961,34 +961,7 @@ components:
           format: phone
           nullable: true
           description: A mobile phone number to send a request for data to (via SMS).
-    ExpressLinkData:
-      type: object
-      allOf:
-        - type: object
-          required:
-            - configurationName
-          properties:
-            doCalculation:
-              type: boolean
-              default: true
-              description: If true, a calculation request will be created as soon as data has been collected from the end user.
-            expirationDate:
-              type: string
-              format: date
-              description: |-
-                The date on which the link will expire. If not specified, the link will expire after 30 days.
-                Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd').
-                Additionally we support the format 'dd.mm.yyyy'.
-            configurationName:
-              type: string
-              example: "demo_v1"
-              description: Name of the app configuration to use. This is defined by FIASCO and given to each partner.
-        - $ref: "#/components/schemas/CalculationParameters"
-        - $ref: "#/components/schemas/CalculationRecipients"
-        - $ref: "#/components/schemas/VehicleData"
-        - $ref: "#/components/schemas/VehicleDamagesToConsiderOrExclude"
-        - $ref: "#/components/schemas/Branding"
-    Branding:
+    ExpressLinkStyling:
       type: object
       required:
         - imprintUrl
@@ -1017,49 +990,76 @@ components:
           nullable: true
           description: The secondary color to be used in the branding (hex color code).
           example: "#00ff00"
-        companyName:
+        title:
           type: string
           nullable: true
-          description: The name of the company that is displayed in the app.
-        companyDetails:
+          description: The title (e.g. name of the company) that is to shown in the app.
+          maxLength: 255
+        introduction:
           type: string
           nullable: true
-          description: Additional details about the company that are displayed in the app (e.g. the name of the company's location).
+          description: Additional details (e.g. address of the company, instructions, ...) that are to shown in the app (e.g. the name of the company's location).
+          maxLength: 4096
         phoneNumber:
           type: string
           format: phone
           nullable: true
           description: The phone number of the company.
+          maxLength: 35
         emailAddress:
           type: string
           format: email
           nullable: true
           description: The email address of the company.
+          maxLength: 70
         websiteUrl:
           type: string
           format: uri
           nullable: true
           description: The URL to the website of the company.
+          maxLength: 255
         imprintUrl:
           type: string
           format: uri
           nullable: false
           description: The URL to the imprint. The app will directly link to this.
+          maxLength: 255
         privacyPolicyUrl:
           type: string
           format: uri
           nullable: true
           description: The URL to the privacy policy. The app will directly link to this.
+          maxLength: 255
         customerInformationUrl:
           type: string
           format: uri
           nullable: true
           description: The URL to the customer information. The app will directly link to this.
+          maxLength: 255
     CreateExpressLinkRequestBody:
-      allOf:
-        - $ref: "#/components/schemas/RequestMetaData"
-        - $ref: "#/components/schemas/ExpressLinkRecipients"
-        - $ref: "#/components/schemas/ExpressLinkData"
+      properties:
+        expirationDate:
+          type: string
+          format: date
+          description: |-
+            The date on which the link will expire. If not specified, the link will expire after 30 days.
+            Format as defined by full-date in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd').
+            Additionally we support the format 'dd.mm.yyyy'.
+        configurationName:
+          type: string
+          example: "demo_v1"
+          description: Name of the app configuration to use. This is defined by FIASCO and given to each partner.
+        maximumUses:
+          type: integer
+          minimum: 1
+          default: 1
+          nullable: true
+          description: The maximum number of times the express link can be used. If not set, the link can be used once.
+        calculationParameters:
+          $ref: "#/components/schemas/CreateCalculationRequestBody"
+        styling:
+          $ref: "#/components/schemas/ExpressLinkStyling"
+
     CreateExpressLinkResponse:
       type: object
       properties:
@@ -1080,7 +1080,7 @@ components:
           type: string
           format: uri
           description: The URL of the express link (this can be sent to end users). Only available when 'success' is true.
-          example: https://cloud.fiasco.de/express/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+          example: https://demo.fiasco.de/#elt=something-unique
     ExpressLinkResultBody:
       type: object
       properties:
