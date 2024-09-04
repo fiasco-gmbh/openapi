@@ -847,7 +847,7 @@ components:
     AverageLaborRatesViaZipCode:
       type: object
       required:
-        - laborRatesZipCode
+        - laborRatesArea
       properties:
         laborRatesCountry:
           type: string
@@ -856,9 +856,14 @@ components:
           default: DE
           enum:
             - DE
-        laborRatesZipCode:
+        laborRatesArea:
           type: string
-          description: The zip code for which average labor rates should be determined.
+          description: The area in the country (usually a zip code) for which average labor rates should be determined.
+          example: "12345"
+        laborRatesZipCode:
+          deprecated: true
+          type: string
+          description: "The zip code for which average labor rates should be determined. DEPRECATED: Use `laborRatesArea` instead."
           example: "12345"
 
     CalculationRequestResultBody:
