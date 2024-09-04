@@ -816,37 +816,32 @@ components:
       properties:
         laborRateMechanics:
           type: number
-          minimum: 0
+          minimum: 0.01
           maximum: 999.99
-          nullable: true
           description: Labor rate for mechanical work (Karosserieschlosser)
           example: 80
         laborRateElectronics:
           type: number
-          minimum: 0
+          minimum: 0.01
           maximum: 999.99
-          nullable: true
           description: Labor rate for electrical work (Elektrik)
           example: 80
         laborRateBody:
           type: number
-          minimum: 0
+          minimum: 0.01
           maximum: 999.99
-          nullable: true
           description: Labor rate for body work (Karosseriebau)
           example: 80
         laborRateHailDamage:
           type: number
-          minimum: 0
+          minimum: 0.01
           maximum: 999.99
-          nullable: true
           description: Labor rate for hail damage (Hagelschaden)
           example: 80
         laborRatePaint:
           type: number
-          minimum: 0
+          minimum: 0.01
           maximum: 999.99
-          nullable: true
           description: Labor rate for paint work (Lackarbeiten)
           example: 80
     AverageLaborRatesViaZipCode:
