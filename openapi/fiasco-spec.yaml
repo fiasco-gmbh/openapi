@@ -973,11 +973,11 @@ components:
           format: byte
           nullable: true
           description: "Base64-encoded logo image. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
-        logoUrl:
-          type: string
-          format: uri
-          nullable: true
-          description: "URL to a logo image. The URL must be publicly accessible. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
+        # logoUrl:
+        #   type: string
+        #   format: uri
+        #   nullable: true
+        #   description: "URL to a logo image. The URL must be publicly accessible. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
         primaryColor:
           type: string
           pattern: ^#[0-9a-fA-F]{6}$
