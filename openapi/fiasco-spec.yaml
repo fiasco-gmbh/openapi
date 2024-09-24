@@ -1055,6 +1055,12 @@ components:
           default: 1
           nullable: true
           description: The maximum number of times the express link can be used. If not set, the link can be used once.
+        doCalculate:
+          type: boolean
+          default: true
+          nullable: true
+          description: |-
+            If set to false, the express link will only collect and process data without triggering a calculation.
         calculationParameters:
           $ref: "#/components/schemas/CreateCalculationRequestBody"
         styling:
