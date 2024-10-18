@@ -340,7 +340,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SendCalculationSuccessResponse"
+                $ref: "#/components/schemas/GetCalculationSuccessResponse"
         "401":
           description: Your credentials could not be authenticated.
           content:
@@ -387,6 +387,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPartsErrorResponse"
+  /api/v1/calculations/{calculationId}/photos/{photoId}:
+    get:
+      operationId: v1_getCalculationPhoto
+      tags:
+        - Calculations
+      summary: Returns the details of a calculation.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+        - name: photoId
+          description: The ID of the photo.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        '200':
+          content: 
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+                example: ''
+          description: The photo has been found and is returned as a JPEG image.
+        '401': 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCalculationPhotoErrorResponse'
+          description: Your credentials could not be authenticated.
 components:
   securitySchemes:
     BearerToken:
@@ -1389,6 +1435,17 @@ components:
           description: A list of urls for the photos of the calculation.(All the links must be authenticated to with the same bearer token)
           items:
             type: string
+      example:
+        success: true
+        message: calculation request retrieved
+        calculation:
+          id: 1bb39da6-29fe-4141-bc65-0dec22e93551
+          status: calculating
+          fiasco_id: D2024-DL-13F8
+          is_test_case: 
+        answers: {}
+        photos:
+        - https://cloud.staging.fiasco.de/api/v1/calculations/1bb39da6-29fe-4141-bc65-0dec22e93551/photos/7725ecdf-7285-49b7-a2eb-b3bc6e543aad
     ListPartsSuccessResponse:
       type: object
       properties:
@@ -1429,3 +1486,16 @@ components:
       example:
         success: false
         message: Your token could not be authenticated
+    GetCalculationPhotoErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        error:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Unauthorized
