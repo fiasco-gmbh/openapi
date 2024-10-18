@@ -311,6 +311,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SendCalculationErrorResponse"
+  /api/v1/calculations/{calculationId}:
+    get:
+      operationId: v1_getCalculation
+      tags:
+        - Calculations
+      summary: Returns the details of a calculation.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        "200":
+          description: The calculation data has been retreieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationSuccessResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCalculationErrorResponse"
   /api/v1/parts:
     get:
       operationId: v1_listParts
@@ -1301,6 +1337,58 @@ components:
           type: string
           description: Describes the return status (e.g. error details). Can be null or empty.
           example: Calculation successfully requested
+    GetCalculationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        error:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Unauthorized
+    GetCalculationSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation successfully requested
+        calculation:
+          type: object
+          description: The calculation that was sent.
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The ID of the calculation.
+              example: 12341234-1234-1234-1234-123412341234
+            fiasco_id:
+              type: string
+              description: Unique identifier for the calculation
+            status:
+              type: string
+              example: preprocessing
+              description: The current status of the calculation.
+            is_test_case:
+              type: boolean
+              example: false
+              description: Whether the calculation is a test case.
+        answers:
+          type: object
+          description: Additional data collected during an app's user journey.
+        photos:
+          type: array
+          description: A list of urls for the photos of the calculation.(All the links must be authenticated to with the same bearer token)
+          items:
+            type: string
     ListPartsSuccessResponse:
       type: object
       properties:
