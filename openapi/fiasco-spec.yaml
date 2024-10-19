@@ -1432,7 +1432,7 @@ components:
           description: Additional data collected during an app's user journey.
         photos:
           type: array
-          description: A list of urls for the photos of the calculation.(All the links must be authenticated to with the same bearer token)
+          description: A list of ids for the photos of the calculation.
           items:
             type: string
       example:
@@ -1445,7 +1445,7 @@ components:
           is_test_case: 
         answers: {}
         photos:
-        - https://cloud.staging.fiasco.de/api/v1/calculations/1bb39da6-29fe-4141-bc65-0dec22e93551/photos/7725ecdf-7285-49b7-a2eb-b3bc6e543aad
+        - 7725ecdf-7285-49b7-a2eb-b3bc6e543aad
     ListPartsSuccessResponse:
       type: object
       properties:
