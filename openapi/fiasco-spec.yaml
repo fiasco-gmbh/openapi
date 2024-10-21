@@ -934,6 +934,10 @@ components:
               minimum: 0
               maximum: 10
               description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
+            colorMatchingAllowed:
+              type: boolean
+              default: true
+              description: Allow paint color fading on adjecent parts.
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
@@ -1136,6 +1140,7 @@ components:
           description: A mobile phone number to send a request for data to (via SMS).
     ExpressLinkStyling:
       type: object
+      description: 'Please note: Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as "required" are only required if the field doCalculate is true.'
       required:
         - imprintUrl
         - privacyPolicyUrl
