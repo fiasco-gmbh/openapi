@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.3.4
+  version: 3.3.5
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -946,6 +946,17 @@ components:
           format: uuid
           description: ID of the newly created request. Only available when 'success' is true.
           example: 12341234-1234-1234-1234-123412341234
+        photos:
+          type: array
+          description: |-
+            A list of photos that were successfully uploaded. The order of this list equals the order of the list received during the request.
+          items:
+            type: object
+            properties:
+              filename:
+                type: string
+                description: The filename of the photo.
+                example: "fi-img-952a6927-5c6c-49ab-881a-3d29b4399292.jpeg"
 
     ExpressLinkRecipients:
       type: object
