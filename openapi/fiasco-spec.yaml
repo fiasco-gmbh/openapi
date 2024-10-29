@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.3.5
+  version: 3.4.0
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -142,6 +142,73 @@ paths:
                   description: A client-side error occurred (all 4xx responses are handled like this).
                 "500":
                   description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  /api/v1/calculation_request/{calculationRequestId}/update:
+    post:
+      operationId: v1_updateCalculationRequest
+      tags:
+        - Calculation Requests
+      summary: Overwrites a subset of fields in an existing calculation request. Triggers a new calculation based on the updates.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationRequestId
+          description: The ID of the calculation request.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCalculationRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been updated and will be processed asynchronously.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestSuccessResponse"
+        "400":
+          description: One of the input parameters does not match the requirements. Details are provided in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "403":
+          description: You are not authorized to create new calculation requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "409":
+          description: Calculation is not ready yet.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
   /api/v1/express_links:
     post:
       operationId: v1_createExpressLink
@@ -347,6 +414,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetCalculationErrorResponse"
+  /api/v1/calculations/{calculationId}/possible_parts:
+    get:
+      operationId: v1_possibleParts
+      tags:
+        - Calculations
+        - Parts
+      summary: Returns a list of parts which apply to the vehicle in the given request.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation finished calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        "200":
+          description: A list of parts applicable to the requests vehicle.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPartsSuccessResponse"
+        "404":
+          description: Calculation not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PossiblePartsErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PossiblePartsErrorResponse"
+        "409":
+          description: Calculation is not ready yet.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PossiblePartsErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PossiblePartsErrorResponse"
   /api/v1/parts:
     get:
       operationId: v1_listParts
@@ -447,6 +569,18 @@ components:
         - $ref: "#/components/schemas/CalculationRequestType"
         - $ref: "#/components/schemas/DamageOrHailRequest"
         - $ref: "#/components/schemas/CalculationRecipients"
+
+    UpdateCalculationRequestBody:
+      description: ""
+      type: object
+      required:
+        - hailDamages
+      properties:
+        hailDamages:
+          type: array
+          description: A list of parts that are affected by hail damage. Can be empty and updated later.
+          items:
+            $ref: "#/components/schemas/HailDamagePart"
 
     RequestMetaData:
       type: object
@@ -830,9 +964,12 @@ components:
     HailDamageData:
       type: object
       properties:
+        hailTriggerVariant:
+          type: string
+          description: Variant to use for calculation matrix and rules. Please contact support to acquire possible values.
         hailDamages:
           type: array
-          description: A list of parts that are affected by hail damage.
+          description: A list of parts that are affected by hail damage. Can be empty and updated later.
           items:
             $ref: "#/components/schemas/HailDamagePart"
 
@@ -879,6 +1016,10 @@ components:
               minimum: 0
               maximum: 10
               description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
+            colorMatchingAllowed:
+              type: boolean
+              default: true
+              description: Allow paint color fading on adjecent parts.
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
@@ -1040,6 +1181,31 @@ components:
                 description: The filename of the photo.
                 example: "fi-img-952a6927-5c6c-49ab-881a-3d29b4399292.jpeg"
 
+    UpdateCalculationRequestSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation successfully updated
+    UpdateCalculationRequestErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        message:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Your token could not be authenticated
+
     ExpressLinkRecipients:
       type: object
       description: An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.
@@ -1056,6 +1222,7 @@ components:
           description: A mobile phone number to send a request for data to (via SMS).
     ExpressLinkStyling:
       type: object
+      description: 'Please note: Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as "required" are only required if the field doCalculate is true.'
       required:
         - imprintUrl
         - privacyPolicyUrl
@@ -1370,6 +1537,21 @@ components:
           description: |-
             If specified, the finished calculation will be sent via email to this email address.
             The calculation will be sent as plain text and PDF in a human-readable format.
+
+    PossiblePartsErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        message:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Your token could not be authenticated
+
     SendCalculationErrorResponse:
       type: object
       properties:
@@ -1465,7 +1647,7 @@ components:
           description: Either true of false. Always available.
         parts:
           type: array
-          description: A list of all parts available.
+          description: A list of parts.
           items:
             type: object
             properties:
@@ -1473,17 +1655,29 @@ components:
                 type: integer
                 description: The part number (also called "FIASCO Part ID").
                 example: 1130
-              label_de:
+              label:
                 type: string
                 description: Name of the part in German.
                 example: "Leist. Grill U"
-              kind:
+              group:
                 type: string
+                description: The primary group of the part.
+                example: "roof"
+              locations:
+                type: array
+                description: A set of location specifiers.
                 enum:
-                  - primary
-                  - secondary
-                  - regular
-                description: Categorization of the part.
+                  - left
+                  - right
+                  - top
+                  - bottom
+                  - middle
+                  - front
+                  - back
+                example: "['left', 'top']"
+              parents:
+                type: array
+                description: A list of parent parts IDs.
     ListPartsErrorResponse:
       type: object
       properties:
