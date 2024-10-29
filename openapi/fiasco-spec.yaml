@@ -295,7 +295,7 @@ paths:
                     enum:
                       - linkSentViaSMS
                       - linkSentViaEmail
-                      - calculationRequestCreated
+                      - requestReceived
                       - calculationReady
                       - calculationRequestClosed
                       - feedbackRequested
@@ -378,6 +378,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SendCalculationErrorResponse"
+  /api/v1/calculations/{calculationId}:
+    get:
+      operationId: v1_getCalculation
+      tags:
+        - Calculations
+      summary: Returns the details of a calculation.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        "200":
+          description: The calculation data has been retreieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCalculationSuccessResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCalculationErrorResponse"
   /api/v1/calculations/{calculationId}/possible_parts:
     get:
       operationId: v1_possibleParts
@@ -473,6 +509,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPartsErrorResponse"
+  /api/v1/calculations/{calculationId}/photos/{photoId}:
+    get:
+      operationId: v1_getCalculationPhoto
+      tags:
+        - Calculations
+      summary: Returns the details of a calculation.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationId
+          description: The ID of the calculation (you receive this via webhook).
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+        - name: photoId
+          description: The ID of the photo.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        '200':
+          content: 
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+                example: ''
+          description: The photo has been found and is returned as a JPEG image.
+        '401': 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCalculationPhotoErrorResponse'
+          description: Your credentials could not be authenticated.
 components:
   securitySchemes:
     BearerToken:
@@ -1413,83 +1495,27 @@ components:
           type: string
           description: Describes the return status (e.g. error details). Can be null or empty.
           example: Calculation request successfully processed
-        calculationRequestId:
+        expressLinkRequestId:
           type: string
           format: uuid
-          description: ID of the newly created request. Only available when 'success' is true.
+          description: ID of the used express link request.
           example: 12341234-1234-1234-1234-123412341234
         calculationId:
           type: string
           format: uuid
-          description: ID of the finished calculation.
+          description: ID of the created calculation. You can use this to later get the information about the created request(photos, answers...)
           example: 12341234-1234-1234-1234-123412341234
         calculationText:
           type: string
           description: The calculation text as returned by the calculation engine. Only available when 'success' is true and if a calculation was originally requested.
         referenceId:
           type: string
-          description: The reference ID that was passed in the original request.
+          description: The reference ID that was passed in the original express link request.(will be similar across all requests for the same express link)
         audaNetCaseId:
           type: string
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
-          description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the calculation was requested.
-        answers:
-          type: object
-          description: Additional data collected during an app's user journey.
-          properties:
-            groups:
-              type: array
-              description: List of items by which `fields` are grouped together.
-              items:
-                type: object
-                required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    nullable: false
-                    description: Name of the group.
-                  label:
-                    type: string
-                    description: |
-                      Label for the name of the group. Should be used when showing the item to a user.
-                      If this property is empty or missing, use the value in `name` instead.
-            fields:
-              type: array
-              description: List of fields that have been collected.
-              items:
-                type: object
-                required:
-                  - name
-                properties:
-                  group:
-                    type: string
-                    nullable: true
-                    description: Name of a group. All items with the same group name should be ordered together.
-                  name:
-                    type: string
-                    nullable: false
-                    description: Name of the item.
-                  label:
-                    type: string
-                    description: |
-                      Label for the name of the item. Should be used when showing the item to a user.
-                      If this property is empty or missing, use the value in `name` instead.
-                  value:
-                    type: string
-                    nullable: true
-                    description: Value of the item.
-                  valueLabel:
-                    type: string
-                    nullable: true
-                    description: |
-                      Label for the value of the item. Should be used when showing the value to a user.
-                      If this property is empty or missing, use the value in `value` instead.
-                  sortIndex:
-                    type: integer
-                    nullable: true
-                    description: Index for sorting the items. Items with a lower index should be shown first.
+          description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the express link request was requested.
     CalculationRecipients:
       type: object
       properties:
@@ -1550,6 +1576,69 @@ components:
           type: string
           description: Describes the return status (e.g. error details). Can be null or empty.
           example: Calculation successfully requested
+    GetCalculationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        error:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Unauthorized
+    GetCalculationSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully created) of false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Calculation successfully requested
+        calculation:
+          type: object
+          description: The calculation that was sent.
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The ID of the calculation.
+              example: 12341234-1234-1234-1234-123412341234
+            fiasco_id:
+              type: string
+              description: Unique identifier for the calculation
+            status:
+              type: string
+              example: preprocessing
+              description: The current status of the calculation.
+            is_test_case:
+              type: boolean
+              example: false
+              description: Whether the calculation is a test case.
+        answers:
+          type: object
+          description: Additional data collected during an app's user journey.
+        photos:
+          type: array
+          description: A list of ids for the photos of the calculation.
+          items:
+            type: string
+      example:
+        success: true
+        message: calculation request retrieved
+        calculation:
+          id: 1bb39da6-29fe-4141-bc65-0dec22e93551
+          status: calculating
+          fiasco_id: D2024-DL-13F8
+          is_test_case: 
+        answers: {}
+        photos:
+        - 7725ecdf-7285-49b7-a2eb-b3bc6e543aad
     ListPartsSuccessResponse:
       type: object
       properties:
@@ -1602,3 +1691,16 @@ components:
       example:
         success: false
         message: Your token could not be authenticated
+    GetCalculationPhotoErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true of false. Always available.
+        error:
+          type: string
+          nullable: true
+          description: Describes the return status (e.g. error details). Can be null or empty.
+      example:
+        success: false
+        message: Unauthorized
