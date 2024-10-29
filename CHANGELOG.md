@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a route to update `CalculationRequest` with hail damages.
 - Added a route to retrieve "FIASCO parts" that apply to the vehicle in a calculation.
 - Added `colorMatchingAllowed` to the `CalculationParameters` schema.
+- Added `requestReceived` to the webhook payload for 'expressLinkCompleted'.
 
 ## [3.3.5] - 2024-10-21
 
