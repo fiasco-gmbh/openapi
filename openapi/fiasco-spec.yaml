@@ -142,6 +142,73 @@ paths:
                   description: A client-side error occurred (all 4xx responses are handled like this).
                 "500":
                   description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  /api/v1/calculation_request/{calculationRequestId}/update:
+    post:
+      operationId: v1_updateCalculationRequest
+      tags:
+        - Calculation Requests
+      summary: Overwrites a subset of fields in an existing calculation request. Triggers a new calculation based on the updates.
+      description: ""
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: calculationRequestId
+          description: The ID of the calculation request.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCalculationRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been updated and will be processed asynchronously.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestSuccessResponse"
+        "400":
+          description: One of the input parameters does not match the requirements. Details are provided in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "403":
+          description: You are not authorized to create new calculation requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "409":
+          description: Calculation is not ready yet.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
   /api/v1/express_links:
     post:
       operationId: v1_createExpressLink
@@ -354,7 +421,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PossiblePartsErrorResponse"
-        "425":
+        "409":
           description: Calculation is not ready yet.
           content:
             application/json:
@@ -366,73 +433,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PossiblePartsErrorResponse"
-  /api/v1/calculations/{calculationId}/update:
-    post:
-      operationId: v1_updateCalculation
-      tags:
-        - Calculations
-      summary: Overwrites a subset of fields in an existing calculation. Triggers a new calculation based on the updates.
-      description: ""
-      parameters:
-        - name: User-Agent
-          description: Please provide the name and version of your application here.
-          in: header
-          required: true
-          schema:
-            type: string
-          example: partner-web-app/1.0
-        - name: calculationId
-          description: The ID of the calculation finished calculation (you receive this via webhook).
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateCalculationRequestBody"
-        required: true
-      responses:
-        "200":
-          description: The request has been updated and will be processed asynchronously.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestSuccessResponse"
-        "400":
-          description: One of the input parameters does not match the requirements. Details are provided in the response body.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
-        "401":
-          description: Your credentials could not be authenticated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
-        "403":
-          description: You are not authorized to create new calculation requests.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
-        "425":
-          description: Calculation is not ready yet.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
-        "500":
-          description: An internal error has occurred. Additional details might be provided in the response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UpdateCalculationRequestErrorResponse"
   /api/v1/parts:
     get:
       operationId: v1_listParts
