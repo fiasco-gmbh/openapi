@@ -121,6 +121,8 @@ paths:
                   schema:
                     type: string
                     enum:
+                      - requestReceived
+                      - vinLookupError
                       - calculationReady
                       - calculationRequestClosed
                       - feedbackRequested
@@ -296,6 +298,7 @@ paths:
                       - linkSentViaSMS
                       - linkSentViaEmail
                       - requestReceived
+                      - vinLookupError
                       - calculationReady
                       - calculationRequestClosed
                       - feedbackRequested
