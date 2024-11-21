@@ -1129,10 +1129,10 @@ components:
           description: |-
             The calculation in the DV90 format.
             Only available when `success` is true.
-        calculationVSX:
+        calculationVXS:
           type: string
           description: |-
-            The calculation in the VSX format.
+            The calculation in the VXS format.
             Only available when `success` is true and the calculation provider was DAT.
         calculationPDF:
           type: string
@@ -1149,6 +1149,33 @@ components:
           description: |-
             The AudaNet case ID. Only available when `success` is true and if an `audaNetRecipient`
             was specified when the calculation was requested.
+        totalPrice:
+          type: number
+          format: float
+          description: The total price of the calculation without tax.
+        totalPriceWithTax:
+          type: number
+          format: float
+          description: The total price of the calculation including tax.
+        totalTax:
+          type: number
+          format: float
+          description: The total tax amount.
+        taxRates:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: number
+                format: float
+                description: The tax rate percentage
+              amount:
+                type: number
+                format: float
+                description: The tax amount for this rate
+          description: |-
+            The tax rates that were applied in the calculation.
     CreateCalculationRequestErrorResponse:
       type: object
       properties:
