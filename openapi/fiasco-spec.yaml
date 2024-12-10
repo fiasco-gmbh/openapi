@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.4.3
+  version: 3.4.4
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -926,6 +926,18 @@ components:
           maximum: 1.0
           default: 0.01
           nullable: true
+        repairMethodOptimizationMethods:
+          description: |-
+            If repair method optimization is enabled, this field determines which optimization methods will be used for repair.
+          type: array
+          nullable: true
+          default: []
+          items:
+            type: string
+            enum:
+              - hail_repair
+              - repair
+              - replace
         numberOfDents:
           description: The number of dents on the part.
           type: integer
