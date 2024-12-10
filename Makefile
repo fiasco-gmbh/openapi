@@ -24,7 +24,7 @@ VERSIONS_WITH_GIT_EQUAL=$(shell [[ "${SPEC1_VERSION}" = "${CHANGELOG_VERSION}" &
                           "$(SPEC1_VERSION)" = "${SPEC2_VERSION}" && \
                           "$(SPEC1_VERSION)" = "${GIT_VERSION}" ]] \
                           && printf "true" || printf "false")
-
+mm
 # Another way to use variables: https://pawamoy.github.io/posts/pass-makefile-args-as-typed-in-command-line/
 args = $(foreach a,$($(subst -,_,$1)_args),$(if $(value $a),--$a="$($a)"))
 
