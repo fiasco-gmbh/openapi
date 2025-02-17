@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2025-02-17
+
+### Added
+
+- Added new fields to the `standard_positions` schema: `numberOfDents`, `dentSize`, `dentOrienation`, `prePressCount`,
+  `surchargeForAluminumParts`, `surchargeForGlueing`, `surchargeForFinishingSteps`.
+
 
 ## [3.4.5] - 2025-01-21
 
@@ -12,11 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Corrected allowed values for `repairMethodOptimizationMethods`.
 
+
 ## [3.4.4] - 2024-12-10
 
 ### Added
 
 - Added `repairMethodOptimizationMethods`.
+
 
 ## [3.4.3] - 2024-12-03
 
@@ -28,17 +37,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed VSX --> VXS typo wherever it occurred. This also concerns the switch from `calculationVSX` to `calculationVXS`.
 
+
 ## [3.4.2] - 2024-11-08
 
 ### Added
 
 - Added `requestReceived` and `vinLookupError` events to calculation.
 
+
 ## [3.4.1] - 2024-11-06
 
 ### Added
 
 - Added support for specifying custom webhook auth tokens per calculation or express link request.
+
 
 ## [3.4.0] - 2024-10-29
 
