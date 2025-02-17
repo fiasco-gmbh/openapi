@@ -358,6 +358,12 @@ was renamed has not been in production use, yet.
 
 
 
+[3.5.0]: https://github.com/fiasco-gmbh/openapi/compare/3.4.5...3.5.0
+[3.4.5]: https://github.com/fiasco-gmbh/openapi/compare/3.4.4...3.4.5
+[3.4.4]: https://github.com/fiasco-gmbh/openapi/compare/3.4.3...3.4.4
+[3.4.3]: https://github.com/fiasco-gmbh/openapi/compare/3.4.2...3.4.3
+[3.4.2]: https://github.com/fiasco-gmbh/openapi/compare/3.4.1...3.4.2
+[3.4.1]: https://github.com/fiasco-gmbh/openapi/compare/3.4.0...3.4.1
 [3.4.0]: https://github.com/fiasco-gmbh/openapi/compare/3.3.5...3.4.0
 [3.3.5]: https://github.com/fiasco-gmbh/openapi/compare/3.3.4...3.3.5
 [3.3.4]: https://github.com/fiasco-gmbh/openapi/compare/3.3.3...3.3.4
