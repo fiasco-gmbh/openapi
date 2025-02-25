@@ -1167,6 +1167,12 @@ components:
           nullable: true
           description: Orientation of the dents (for dent repairs with action "D").
           example: "H"
+        prePressEnabled:
+          type: boolean
+          nullable: true
+          default: false
+          description: If enabled, sets up the "D" position for another "LI" position (which should be manually set) to denote "pre press this part".
+          example: false
         prePressCount:
           type: number
           format: integer
