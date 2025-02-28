@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.5.1
+  version: 3.5.2
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -1021,7 +1021,7 @@ components:
               nullable: true
               default: 0.38
               minimum: 0
-              maximum: 10
+              maximum: 1
               description: Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]
             paintMaterialVw:
               type: number
@@ -1035,7 +1035,7 @@ components:
               nullable: true
               default: 0.02
               minimum: 0
-              maximum: 10
+              maximum: 1
               description: Relative percentage of small parts material in relation to labor costs (e.g. 0.01 for 1%) [Audatex block codes 40 and 51 depending on chosen paint system]
             colorMatchingAllowed:
               type: boolean
