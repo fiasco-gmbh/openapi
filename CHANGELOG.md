@@ -5,43 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.5.2] - 2025-02-28
+## [3.5.3] - 2025-02-28
 
 ### Added
 
 - Added `callbackUrl` to the `CreateCalculationRequestBody` schema.
-  
 
-## [3.5.1] - 2025-02-25
+## [3.5.1][3.5.1] - 2025-02-25
 
 ### Added
 
 - Added `prePressEnabled` to the `standard_positions` schema.
 
-
-## [3.5.0] - 2025-02-17
+## [3.5.0][3.5.0] - 2025-02-17
 
 ### Added
 
 - Added new fields to the `standard_positions` schema: `numberOfDents`, `dentSize`, `dentOrienation`, `prePressCount`,
   `surchargeForAluminumParts`, `surchargeForGlueing`, `surchargeForFinishingSteps`.
 
-
-## [3.4.5] - 2025-01-21
+## [3.4.5][3.4.5] - 2025-01-21
 
 ### Added
 
 - Corrected allowed values for `repairMethodOptimizationMethods`.
 
-
-## [3.4.4] - 2024-12-10
+## [3.4.4][3.4.4] - 2024-12-10
 
 ### Added
 
 - Added `repairMethodOptimizationMethods`.
 
-
-## [3.4.3] - 2024-12-03
+## [3.4.3][3.4.3] - 2024-12-03
 
 ### Added
 
@@ -51,22 +46,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed VSX --> VXS typo wherever it occurred. This also concerns the switch from `calculationVSX` to `calculationVXS`.
 
-
-## [3.4.2] - 2024-11-08
+## [3.4.2][3.4.2] - 2024-11-08
 
 ### Added
 
 - Added `requestReceived` and `vinLookupError` events to calculation.
 
-
-## [3.4.1] - 2024-11-06
+## [3.4.1][3.4.1] - 2024-11-06
 
 ### Added
 
 - Added support for specifying custom webhook auth tokens per calculation or express link request.
 
-
-## [3.4.0] - 2024-10-29
+## [3.4.0][3.4.0] - 2024-10-29
 
 ### Added
 
@@ -75,52 +67,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `colorMatchingAllowed` to the `CalculationParameters` schema.
 - Added `requestReceived` to the webhook payload for 'expressLinkCompleted'.
 
-
-## [3.3.5] - 2024-10-21
+## [3.3.5][3.3.5] - 2024-10-21
 
 ### Added
 
 - Added `photos` to the `CreateCalculationRequestSuccessResponse` schema.
 
-
-## [3.3.4] - 2024-10-02
+## [3.3.4][3.3.4] - 2024-10-02
 
 ### Added
 
 - Added `doCalculate` to the `CreateExpressLinkRequestBody` schema.
 
-
-## [3.3.3] - 2024-09-08
+## [3.3.3][3.3.3] - 2024-09-08
 
 ### Changed
 
 - Remove up-to-now unsupported field `logoUrl` from the documentation.
 
-
-## [3.3.2] - 2024-09-04
+## [3.3.2][3.3.2] - 2024-09-04
 
 ### Changed
 
 - For specifying labor rates, the field `laborRatesZipCode` has been deprecated in favor of a new field
   `laborRatesArea`.
 
-
-## [3.3.1] - 2024-09-04
+## [3.3.1][3.3.1] - 2024-09-04
 
 ### Changed
 
 - If given, the minimum value for specific labor rates must be `0.01`. This change might break some implementations,
   but should not have a real impact.
 
-
-## [3.3.0] - 2024-08-19
+## [3.3.0][3.3.0] - 2024-08-19
 
 ### Changed
 
 - **breaking** Updated the generation of express links.
 
-
-## [3.2.1] - 2024-07-25
+## [3.2.1][3.2.1] - 2024-07-25
 
 Although this versions contains a breaking change, it is considered a minor change. The field that
 was renamed has not been in production use, yet.
@@ -129,8 +114,7 @@ was renamed has not been in production use, yet.
 
 - **breaking** Renamed `repairInsteadOfReplaceThreshold` to `optimizedRepairMethodThreshold`.
 
-
-## [3.2.0] - 2024-07-24
+## [3.2.0][3.2.0] - 2024-07-24
 
 ### Added
 
@@ -139,22 +123,19 @@ was renamed has not been in production use, yet.
 - Added fields to the callback payload when calculation processing is done: `calculationVSX` and `calculationPDF`.
 - Added a route to get a list of all "FIASCO parts" supported.
 
-
-## [3.1.2] - 2024-07-17
+## [3.1.2][3.1.2] - 2024-07-17
 
 ### Changed
 
 - Clarification re. limits and intervals for fields `numberOfDents` and `avgDentSize`.
 
-
-## [3.1.1] - 2024-07-17
+## [3.1.1][3.1.1] - 2024-07-17
 
 ### Changed
 
 - `repairTechniques` can be empty or not set.
 
-
-## [3.1.0] - 2024-07-17
+## [3.1.0][3.1.0] - 2024-07-17
 
 ### Added
 
@@ -167,8 +148,7 @@ was renamed has not been in production use, yet.
 - **breaking** Require fields `numberOfDents` and `avgDentSize` for hail-damaged parts and change their minimum values.
 - More detailed schemas for hail-damaged parts (some fields are only required in case the repair method is `repair`).
 
-
-## [3.0.0] - 2024-07-07
+## [3.0.0][3.0.0] - 2024-07-07
 
 ### Added
 
@@ -180,15 +160,13 @@ was renamed has not been in production use, yet.
 - Reorganized the spec file and renamed schemas.
 - Fixed minor spelling mistakes.
 
-
-## [2.7.0] - 2024-06-28
+## [2.7.0][2.7.0] - 2024-06-28
 
 ### Added
 
 - Added a new required field `configurationName` to express link requests.
 
-
-## [2.6.6] - 2024-06-28
+## [2.6.6][2.6.6] - 2024-06-28
 
 ### Added
 
@@ -199,29 +177,25 @@ was renamed has not been in production use, yet.
 
 - Deprecated `damagesToConsider` and `damagesToExclude`.
 
-
-## [2.6.5] - 2024-04-04
+## [2.6.5][2.6.5] - 2024-04-04
 
 ### Added
 
 - Added more items to the list of possible photo subjects (`body_dirt`, `glass_dirt`, `interior_dirt`).
 
-
-## [2.6.4] - 2024-02-23
+## [2.6.4][2.6.4] - 2024-02-23
 
 ### Added
 
 - Added more items to the list of possible photo subjects.
 
-
-## [2.6.3] - 2024-02-02
+## [2.6.3][2.6.3] - 2024-02-02
 
 ### Added
 
 - AXC API: Operation to accept a task.
 
-
-## [2.6.2] - 2024-02-02
+## [2.6.2][2.6.2] - 2024-02-02
 
 ### Changed
 
@@ -232,15 +206,13 @@ was renamed has not been in production use, yet.
 
 - Introduction of our "AXC API" (Audatex Connector).
 
-
-## [2.6.1] - 2023-10-17
+## [2.6.1][2.6.1] - 2023-10-17
 
 ### Changed
 
 - Switch the OpenAPI version from 3.0.1 to 3.1.0.
 
-
-## [2.6.0] - 2023-08-03
+## [2.6.0][2.6.0] - 2023-08-03
 
 ### Added
 
@@ -248,8 +220,7 @@ was renamed has not been in production use, yet.
 - Added `crack_defect` to the list of supported damage types.
 - Added support for `JPEG-XL`.
 
-
-## [2.5.0] - 2023-06-02
+## [2.5.0][2.5.0] - 2023-06-02
 
 ### Added
 
@@ -260,7 +231,7 @@ was renamed has not been in production use, yet.
 - Fixed a word describing the HTTP header used to hold the authorization token (`"Authentication" --> "Authorization"`).
 - Corrected documentation about Audatex block codes regarding relative surcharge for replacement parts.
 
-## [2.4.0] - 2023-04-11
+## [2.4.0][2.4.0] - 2023-04-11
 
 ### Added
 
@@ -270,52 +241,45 @@ was renamed has not been in production use, yet.
 
 - Removed `image/heif` from the list of supported image formats.
 
-
-## [2.3.1] - 2023-02-16
+## [2.3.1][2.3.1] - 2023-02-16
 
 ### Removed
 
 - Removed an errenously added webhook from `POST /api/v1/calculations/{calculationId}/send`. This should not have been there and was never supported.
 
-
-## [2.3.0] - 2023-02-14
+## [2.3.0][2.3.0] - 2023-02-14
 
 ### Changed
 
 - Changed events for the calculation requests webhook.
 - Added `calculationDV90` to the webhook payload for calculation requests.
 
-
-## [2.2.2] - 2023-02-10
+## [2.2.2][2.2.2] - 2023-02-10
 
 ### Changed
 
 - Added `image/webp` as a supported image type.
 - Added `damagesToExclude` to calculation requests.
 
-
-## [2.2.1] - 2023-01-12
+## [2.2.1][2.2.1] - 2023-01-12
 
 ### Changed
 
 - Updated URLs for creating calculation requests, creating express links, and sending calculations via AudaNet. The old URLs will be kept for backwards-compatibility.
 
-
-## [2.2.0] - 2023-01-02
+## [2.2.0][2.2.0] - 2023-01-02
 
 ### Added
 
 - New schema `VehicleDamagesToConsider` (allows specification of parts and damages to be considered for calculation, acts as a filter after detecting damages in photos).
 
-
-## [2.1.0] - 2023-01-02
+## [2.1.0][2.1.0] - 2023-01-02
 
 ### Added
 
 - Finished calculations can be send to AudaNet or email recipients (`POST "/api/v1/calculation/{calculationId}/send"`).
 
-
-## [2.0.0] - 2023-01-02
+## [2.0.0][2.0.0] - 2023-01-02
 
 ### Added
 
@@ -332,8 +296,7 @@ was renamed has not been in production use, yet.
 - **breaking** Renamed the property `"audaNetRecipient"` to `"calculationAudaNetRecipient"`.
 - **breaking** Renamed the property `"calculationId"` to `"calculationRequestId"` (schema `CreateCalculationRequestSuccessResponse`).
 
-
-## [1.1.2] - 2022-12-20
+## [1.1.2][1.1.2] - 2022-12-20
 
 ### Added
 
@@ -347,8 +310,7 @@ was renamed has not been in production use, yet.
   - `/api/v1/calculationRequest` -> `/api/v1/calculation_request`
   - `/api/v1/expressLink` -> `/api/v1/express_link`
 
-
-## [1.1.1] - 2022-11-29
+## [1.1.1][1.1.1] - 2022-11-29
 
 ### Added
 
@@ -362,15 +324,11 @@ was renamed has not been in production use, yet.
 - Referenced the GitHub repo from within the OpenAPI spec (useful to get to the CHANGELOG.md).
 - Renamed "SendExpressLink..." to "CreateExpressLink..." (no URLs have changed)
 
-
-
-## [1.0.0] - 2022-10-18
+## [1.0.0][1.0.0] - 2022-10-18
 
 ### Added
 
 - Initial revision.
-
-
 
 [3.5.1]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.1
 [3.5.0]: https://github.com/fiasco-gmbh/openapi/compare/3.4.5...3.5.0
