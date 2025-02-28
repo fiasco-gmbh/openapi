@@ -11,7 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `callbackUrl` to the `CreateCalculationRequestBody` schema.
 
-## [3.5.1][3.5.1] - 2025-02-25
+## [3.5.2] - 2025-02-26
+
+### Changed
+
+- Corrected maximum value for `paintMaterialPercentage` and `smallPartsPercentage` in `CalculationParameters` schema.
+
+## [3.5.1] - 2025-02-25
 
 ### Added
 
@@ -330,6 +336,9 @@ was renamed has not been in production use, yet.
 
 - Initial revision.
 
+
+[3.5.3]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.3
+[3.5.2]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.2
 [3.5.1]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.1
 [3.5.0]: https://github.com/fiasco-gmbh/openapi/compare/3.4.5...3.5.0
 [3.4.5]: https://github.com/fiasco-gmbh/openapi/compare/3.4.4...3.4.5
