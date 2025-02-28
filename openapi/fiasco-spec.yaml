@@ -599,6 +599,10 @@ components:
           description: |-
             If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
             a value configured for your account will be used.
+        callbackUrl:
+          type: string
+          nullable: true
+          description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
         billTo:
           type: string
           pattern: "^fiasco-cust-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
