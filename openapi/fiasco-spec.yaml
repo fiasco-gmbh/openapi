@@ -375,6 +375,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SendCalculationErrorResponse"
+        "409":
+          description: The Calculation is not ready. Maybe try again later.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendCalculationErrorResponse"
         "500":
           description: An internal error has occurred. Additional details might be provided in the response.
           content:
