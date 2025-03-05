@@ -376,7 +376,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SendCalculationErrorResponse"
         "409":
-          description: The Calculation is not ready. Maybe try again later.
+          description: The calculation is not in a state in which it can be send. One such reason might be that the calculation has not been finished, yet. Requests that return this error should be retried at a later time.
           content:
             application/json:
               schema:
