@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload.
-  version: 3.5.3
+  version: 3.5.4
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -907,7 +907,6 @@ components:
         - repairMethod
         - numberOfDents
         - avgDentSize
-        - orientation
       properties:
         isPlastic:
           description: Set this to true if the part is made out of plastic.
@@ -920,6 +919,12 @@ components:
           enum:
             - repair
           nullable: false
+        resetErrorMemory:
+          description: |-
+            If set to true, a position to reset the error memory will be added to the calculation. If set
+            to false, it will not be added. If omitted, a context specific default is applied.
+          type: boolean
+          nullable: true
         allowRepairMethodOptimization:
           description: |-
             If set to true, the calculation engine is allowed to choose the best possible repair method
@@ -959,13 +964,6 @@ components:
           minimum: 10
           maximum: 80
           default: 10
-        orientation:
-          description: The orientation of the dents.
-          type: string
-          enum:
-            - horizontal
-            - vertical
-          nullable: false
         repairTechniques:
           description: |-
             The repair techniques that can be used for the part. One ore more techniques must
@@ -977,7 +975,6 @@ components:
             type: string
             enum:
               - prePrint
-              - aluminium
               - overlapZone
               - glue
     HailDamagePartReplace:
