@@ -919,12 +919,6 @@ components:
           enum:
             - repair
           nullable: false
-        resetErrorMemory:
-          description: |-
-            If set to true, a position to reset the error memory will be added to the calculation. If set
-            to false, it will not be added. If omitted, a context specific default is applied.
-          type: boolean
-          nullable: true
         allowRepairMethodOptimization:
           description: |-
             If set to true, the calculation engine is allowed to choose the best possible repair method
@@ -1048,6 +1042,12 @@ components:
               type: boolean
               default: true
               description: Allow paint color fading on adjecent parts.
+            resetErrorMemory:
+              description: |-
+                If set to true, a position to reset the error memory will be added to the calculation. If set
+                to false, it will not be added. If omitted, a context specific default is applied.
+              type: boolean
+              nullable: true
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
