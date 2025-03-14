@@ -1,9 +1,9 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [keep a change log][keep-a-changelog],
+and this project tries to adhere to [semantic versioning][semver-spec].
 
 ## [3.5.4] - 2025-03-10
 
@@ -13,8 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed `orientation` from `HailDamagePartRepair` schema. Orientation will now be inferred by part andvehicle model.
-- Removed `aluminium` from `repairTechniques` in `HailDamagePartRepair` schema. Material will now be inferred by part andvehicle model.
+- Removed `orientation` from `HailDamagePartRepair` schema. Orientation will now
+  be inferred by part and vehicle model.
+- Removed `aluminium` from `repairTechniques` in `HailDamagePartRepair` schema.
+  Material will now be inferred by part and vehicle model.
+
 
 ## [3.5.3] - 2025-02-28
 
@@ -22,11 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `callbackUrl` to the `CreateCalculationRequestBody` schema.
 
+
 ## [3.5.2] - 2025-02-26
 
 ### Changed
 
-- Corrected maximum value for `paintMaterialPercentage` and `smallPartsPercentage` in `CalculationParameters` schema.
+- Corrected maximum value for `paintMaterialPercentage` and
+  `smallPartsPercentage` in `CalculationParameters` schema.
+
 
 ## [3.5.1] - 2025-02-25
 
@@ -39,8 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added new fields to the `standard_positions` schema: `numberOfDents`, `dentSize`, `dentOrienation`, `prePressCount`,
-  `surchargeForAluminumParts`, `surchargeForGlueing`, `surchargeForFinishingSteps`.
+- Added new fields to the `standard_positions` schema: `numberOfDents`,
+  `dentSize`, `dentOrienation`, `prePressCount`,
+  `surchargeForAluminumParts`, `surchargeForGlueing`,
+  `surchargeForFinishingSteps`.
 
 
 ## [3.4.5] - 2025-01-21
@@ -61,11 +69,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `totalPrice`, `totalPriceWithTax`, `totalTax`, and `taxRates` to the `CalculationRequestResultBody` schema.
+- Added `totalPrice`, `totalPriceWithTax`, `totalTax`, and `taxRates` to the 
+  `CalculationRequestResultBody` schema.
 
 ### Changed
 
-- Fixed VSX --> VXS typo wherever it occurred. This also concerns the switch from `calculationVSX` to `calculationVXS`.
+- Fixed VSX ⇒ VXS typo wherever it occurred. This also concerns the switch from
+  `calculationVSX` to `calculationVXS`.
 
 
 ## [3.4.2] - 2024-11-08
@@ -79,7 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added support for specifying custom webhook auth tokens per calculation or express link request.
+- Added support for specifying custom webhook auth tokens per calculation or
+  express link request.
 
 
 ## [3.4.0] - 2024-10-29
@@ -87,9 +98,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a route to update `CalculationRequest` with hail damages.
-- Added a route to retrieve "FIASCO parts" that apply to the vehicle in a calculation.
+- Added a route to retrieve "FIASCO parts" that apply to the vehicle in a
+  calculation.
 - Added `colorMatchingAllowed` to the `CalculationParameters` schema.
-- Added `requestReceived` to the webhook payload for 'expressLinkCompleted'.
+- Added `requestReceived` to the webhook payload for `expressLinkCompleted`.
 
 
 ## [3.3.5] - 2024-10-21
@@ -117,33 +129,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- For specifying labor rates, the field `laborRatesZipCode` has been deprecated in favor of a new field
-  `laborRatesArea`.
+- For specifying labor rates, the field `laborRatesZipCode` has been deprecated
+  in favor of a new field `laborRatesArea`.
 
 
 ## [3.3.1] - 2024-09-04
 
 ### Changed
 
-- If given, the minimum value for specific labor rates must be `0.01`. This change might break some implementations,
-  but should not have a real impact.
+- If given, the minimum value for specific labor rates must be `0.01`. This
+  change might break some implementations, but should not have a real impact.
 
 
 ## [3.3.0] - 2024-08-19
 
 ### Changed
 
-- **breaking** Updated the generation of express links.
+- **Breaking** Updated the generation of express links.
 
 
 ## [3.2.1] - 2024-07-25
 
-Although this versions contains a breaking change, it is considered a minor change. The field that
-was renamed has not been in production use, yet.
+Although this versions contains a breaking change, it is considered a minor
+change. The field that was renamed has not been in production use, yet.
 
 ### Changed
 
-- **breaking** Renamed `repairInsteadOfReplaceThreshold` to `optimizedRepairMethodThreshold`.
+- **Breaking** Renamed `repairInsteadOfReplaceThreshold` to
+  `optimizedRepairMethodThreshold`.
 
 
 ## [3.2.0] - 2024-07-24
@@ -152,7 +165,8 @@ was renamed has not been in production use, yet.
 
 - Added `allowRepairMethodOptimization`.
 - Added `repairInsteadOfReplaceThreshold`.
-- Added fields to the callback payload when calculation processing is done: `calculationVSX` and `calculationPDF`.
+- Added fields to the callback payload when calculation processing is done:
+  `calculationVSX` and `calculationPDF`.
 - Added a route to get a list of all "FIASCO parts" supported.
 
 
@@ -160,7 +174,8 @@ was renamed has not been in production use, yet.
 
 ### Changed
 
-- Clarification re. limits and intervals for fields `numberOfDents` and `avgDentSize`.
+- Clarification re. limits and intervals for fields `numberOfDents` and
+  `avgDentSize`.
 
 
 ## [3.1.1] - 2024-07-17
@@ -178,10 +193,13 @@ was renamed has not been in production use, yet.
 
 ### Changed
 
-- **breaking** Renamed a possible value for the field `calculationType` (`hail damage` --> `hail_damage`).
-- **breaking** Renamed field `parts` to `hailDamages`.
-- **breaking** Require fields `numberOfDents` and `avgDentSize` for hail-damaged parts and change their minimum values.
-- More detailed schemas for hail-damaged parts (some fields are only required in case the repair method is `repair`).
+- **Breaking** Renamed a possible value for the field `calculationType`
+  (`hail damage` ⇒ `hail_damage`).
+- **Breaking** Renamed field `parts` to `hailDamages`.
+- **Breaking** Require fields `numberOfDents` and `avgDentSize` for hail-damaged
+  parts and change their minimum values.
+- More detailed schemas for hail-damaged parts (some fields are only required in
+  case the repair method is `repair`).
 
 
 ## [3.0.0] - 2024-07-07
@@ -189,7 +207,8 @@ was renamed has not been in production use, yet.
 ### Added
 
 - Added support for hail damage requests.
-- Added support for specifying the calculation provider to be used for each request.
+- Added support for specifying the calculation provider to be used for each
+  request.
 
 ### Changed
 
@@ -220,7 +239,8 @@ was renamed has not been in production use, yet.
 
 ### Added
 
-- Added more items to the list of possible photo subjects (`body_dirt`, `glass_dirt`, `interior_dirt`).
+- Added more items to the list of possible photo subjects (`body_dirt`,
+  `glass_dirt`, `interior_dirt`).
 
 
 ## [2.6.4] - 2024-02-23
@@ -241,8 +261,10 @@ was renamed has not been in production use, yet.
 
 ### Changed
 
-- Changed the new maximum length for field `referenceId` to 160 characters (previously unspecified).
-- Switch back to OpenAPI version 3.0.2 (the VSCode plugin does not support previews with 3.1.0).
+- Changed the new maximum length for field `referenceId` to 160 characters
+  (previously unspecified).
+- Switch back to OpenAPI version 3.0.2 (the VSCode plugin does not support
+  previews with 3.1.0).
 
 ### Added
 
@@ -260,7 +282,8 @@ was renamed has not been in production use, yet.
 
 ### Added
 
-- Added more image subjects: `dashboard`, `vehicle_front`, `windshield`, `glass_sticker`.
+- Added more image subjects: `dashboard`, `vehicle_front`, `windshield`,
+  `glass_sticker`.
 - Added `crack_defect` to the list of supported damage types.
 - Added support for `JPEG-XL`.
 
@@ -273,14 +296,17 @@ was renamed has not been in production use, yet.
 
 ### Changed
 
-- Fixed a word describing the HTTP header used to hold the authorization token (`"Authentication" --> "Authorization"`).
-- Corrected documentation about Audatex block codes regarding relative surcharge for replacement parts.
+- Fixed a word describing the HTTP header used to hold the authorization token
+  (`"Authentication" --> "Authorization"`).
+- Corrected documentation about Audatex block codes regarding relative surcharge
+  for replacement parts.
 
 ## [2.4.0] - 2023-04-11
 
 ### Added
 
-- Added `registration_paper` to the list of possible values for the `subject` field of a photo.
+- Added `registration_paper` to the list of possible values for the `subject`
+  field of a photo.
 
 ### Removed
 
@@ -291,7 +317,9 @@ was renamed has not been in production use, yet.
 
 ### Removed
 
-- Removed an errenously added webhook from `POST /api/v1/calculations/{calculationId}/send`. This should not have been there and was never supported.
+- Removed an erroneously added webhook from
+  `POST /api/v1/calculations/{calculationId}/send`. This should not have been
+  there and was never supported.
 
 
 ## [2.3.0] - 2023-02-14
@@ -314,39 +342,51 @@ was renamed has not been in production use, yet.
 
 ### Changed
 
-- Updated URLs for creating calculation requests, creating express links, and sending calculations via AudaNet. The old URLs will be kept for backwards-compatibility.
+- Updated URLs for creating calculation requests, creating express links, and
+  sending calculations via AudaNet. The old URLs will be kept for
+  backwards-compatibility.
 
 
 ## [2.2.0] - 2023-01-02
 
 ### Added
 
-- New schema `VehicleDamagesToConsider` (allows specification of parts and damages to be considered for calculation, acts as a filter after detecting damages in photos).
+- New schema `VehicleDamagesToConsider` (allows specification of parts and
+  damages to be considered for calculation, acts as a filter after detecting
+  damages in photos).
 
 
 ## [2.1.0] - 2023-01-02
 
 ### Added
 
-- Finished calculations can be send to AudaNet or email recipients (`POST "/api/v1/calculation/{calculationId}/send"`).
+- Finished calculations can be sent to AudaNet or email recipients
+  (`POST "/api/v1/calculation/{calculationId}/send"`).
 
 
 ## [2.0.0] - 2023-01-02
 
 ### Added
 
-- Vehicle data can be provided when creating express links. This can be used to pre-fill data that would otherwise be asked from the end user.
-- Results of calculations can be send to email recipient (via `"calculationEmailRecipient"`).
+- Vehicle data can be provided when creating express links. This can be used to
+  pre-fill data that would otherwise be asked from the end user.
+- Results of calculations can be sent to email recipient (via
+  `"calculationEmailRecipient"`).
 
 ### Changed
 
-- **breaking** An authorization token is required via `Authorization` header (in the form of a bearer token) instead of its own `Token` header.
-- Updated descriptions and formats for some fields to provide for better validation methods.
-- **breaking** Changed the name of the property `"content_type"` to `"contentType"`.
-- **breaking** Fixed spelling of the word `"success"` (was sometimes spelled as `"sucess"`).
-- **possibly breaking** Removed the `"billed"` property everywhere.
-- **breaking** Renamed the property `"audaNetRecipient"` to `"calculationAudaNetRecipient"`.
-- **breaking** Renamed the property `"calculationId"` to `"calculationRequestId"` (schema `CreateCalculationRequestSuccessResponse`).
+- **Breaking** An authorization token is required via `Authorization` header (in
+  the form of a bearer token) instead of its own `Token` header.
+- Updated descriptions and formats for some fields to provide for better
+  validation methods.
+- **Breaking** Changed the name of the property `"content_type"` to
+  `"contentType"`.
+- **Breaking** Fixed spelling of the word `"success"` (was sometimes spelled as
+  `"sucess"`).
+- **Possibly Breaking** Removed the `"billed"` property everywhere.
+- **Breaking** Renamed the property `"audaNetRecipient"` to `"calculationAudaNetRecipient"`.
+- **Breaking** Renamed the property `"calculationId"` to
+  `"calculationRequestId"` (schema `CreateCalculationRequestSuccessResponse`).
 
 
 ## [1.1.2] - 2022-12-20
@@ -360,8 +400,8 @@ was renamed has not been in production use, yet.
 ### Changed
 
 - Changed URLs
-  - `/api/v1/calculationRequest` -> `/api/v1/calculation_request`
-  - `/api/v1/expressLink` -> `/api/v1/express_link`
+  - `/api/v1/calculationRequest` ⇒ `/api/v1/calculation_request`
+  - `/api/v1/expressLink` ⇒ `/api/v1/express_link`
 
 
 ## [1.1.1] - 2022-11-29
@@ -369,14 +409,18 @@ was renamed has not been in production use, yet.
 ### Added
 
 - CHANGELOG.md.
-- Support for HEIF image formats (`image/heic` and `image/heif`) has been added. See https://mimetype.io/image/heic and https://mimetype.io/image/heif for an explanation of the types.
+- Support for HEIF image formats (`image/heic` and `image/heif`) has been added.
+  See https://mimetype.io/image/heic and https://mimetype.io/image/heif for an
+  explanation of the types.
 - Attribute for photos: `subject`.
-- When sending an express link, the express link URL will be returned as `expressLinkUrl`.
+- When sending an express link, the express link URL will be returned as
+  `expressLinkUrl`.
 
 ### Changed
 
-- Referenced the GitHub repo from within the OpenAPI spec (useful to get to the CHANGELOG.md).
-- Renamed "SendExpressLink..." to "CreateExpressLink..." (no URLs have changed)
+- Referenced the GitHub repo from within the OpenAPI spec (useful to get to the
+  CHANGELOG.md).
+- Renamed `SendExpressLink...` to `CreateExpressLink...` (no URLs have changed).
 
 
 
@@ -387,8 +431,9 @@ was renamed has not been in production use, yet.
 - Initial revision.
 
 
-[3.5.3]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.3
-[3.5.2]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.2
+[3.5.4]: https://github.com/fiasco-gmbh/openapi/compare/3.5.3...3.5.4
+[3.5.3]: https://github.com/fiasco-gmbh/openapi/compare/3.5.2...3.5.3
+[3.5.2]: https://github.com/fiasco-gmbh/openapi/compare/3.5.1...3.5.2
 [3.5.1]: https://github.com/fiasco-gmbh/openapi/compare/3.5.0...3.5.1
 [3.5.0]: https://github.com/fiasco-gmbh/openapi/compare/3.4.5...3.5.0
 [3.4.5]: https://github.com/fiasco-gmbh/openapi/compare/3.4.4...3.4.5
@@ -429,3 +474,7 @@ was renamed has not been in production use, yet.
 [1.1.2]: https://github.com/fiasco-gmbh/openapi/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/fiasco-gmbh/openapi/compare/1.0.0...1.1.1
 [1.0.0]: https://github.com/fiasco-gmbh/openapi/releases/tag/1.0.0
+
+
+[keep-a-changelog]: https://keepachangelog.com/en/1.0.0/
+[semver-spec]: https://semver.org/spec/v2.0.0.html

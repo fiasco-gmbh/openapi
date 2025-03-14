@@ -5,7 +5,8 @@
   "recommendations": [
     "takumii.markdowntable",
     "yzhang.markdown-all-in-one",
-    "42crunch.vscode-openapi"
+    "42crunch.vscode-openapi",
+    "ltex-plus.vscode-ltex-plus"
   ],
   // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
   "unwantedRecommendations": []
