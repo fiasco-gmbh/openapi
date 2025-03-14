@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.1
 
 info:
   title: FIASCO AX Connector API
@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an application/json payload.
-  version: 3.5.4
+  version: 3.5.5
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -1133,70 +1133,79 @@ components:
           description: Audatex guide number.
           example: 1240
         workUnits:
-          type: number
+          type:
+            - number
+            - "null"
           format: integer
           minimum: 0
           maximum: 9999
-          nullable: true
           description: Number of work units for the action (required for certain action codes, e.g. _I_).
           example: 3
         numberOfDents:
-          type: number
+          type:
+            - number
+            - "null"
           format: integer
           minimum: 0
           maximum: 999
-          nullable: true
           description: Number of dents on the parts (for dent repairs with action "D")
           example: 5
         dentSize:
-          type: number
+          type:
+            - number
+            - "null"
           format: integer
           minimum: 0
           maximum: 80
-          nullable: true
           description: Size of the dents in millimeters (for dent repairs with action "D"). Must be multiples of 10 (e.g. 10, 20, 30, ...).
           example: 20
         dentOrienation:
-          type: string
+          type:
+            - string
+            - "null"
           minLength: 1
           maxLength: 1
           enum:
             - "H"
             - "V"
             - ""
-          nullable: true
           description: Orientation of the dents (for dent repairs with action "D").
           example: "H"
         prePressEnabled:
-          type: boolean
-          nullable: true
+          type:
+            - boolean
+            - "null"
           default: false
           description: If enabled, sets up the "D" position for another "LI" position (which should be manually set) to denote "pre press this part".
           example: false
         prePressCount:
-          type: number
+          type:
+            - number
+            - "null"
           format: integer
           minimum: 0
           maximum: 999
           description: Number of pre-presses (for dent repairs with action "D")
           example: 2
-          nullable: true
         surchargeForAluminumParts:
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: false
-          nullable: false
           description: Whether a surcharge for aluminum parts is applied or not.
           example: false
         surchargeForGlueing:
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: false
-          nullable: false
           description: Whether a surcharge for glueing is applied or not.
           example: false
         surchargeForFinishingSteps:
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: false
-          nullable: false
           description: Whether a surcharge for finishing steps is applied or not.
           example: false
     contact:

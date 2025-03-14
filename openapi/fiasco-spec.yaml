@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.1
 
 info:
   title: FIASCO API
@@ -6,8 +6,9 @@ info:
     We are providing several API endpoints for external partners which are described in this documentation.
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
-    respond with an `application/json` payload.
-  version: 3.5.4
+    respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
+    with a JSON payload describing events).
+  version: 3.5.5
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -94,56 +95,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateCalculationRequestErrorResponse"
-      callbacks:
-        calculationRequestCreated:
-          https://your-server.local/webhook-path:
-            post:
-              summary: Webhook for calculation request results
-              description: This webhook is called when the calculation request has been processed. The webhook is called at least once.
-              parameters:
-                - name: User-Agent
-                  description: Name and version of the application providing the calculation.
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: FIASCO Cloud/1.0
-                - name: Authorization
-                  description: An optional authorization token can be send as bearer token (provided by you).
-                  in: header
-                  required: false
-                  schema:
-                    type: string
-                - name: event
-                  description: A name identifiying this event.
-                  in: query
-                  required: true
-                  schema:
-                    type: string
-                    enum:
-                      - requestReceived
-                      - vinLookupError
-                      - calculationReady
-                      - calculationRequestClosed
-                      - feedbackRequested
-              requestBody:
-                description: ""
-                content:
-                  application/json:
-                    schema:
-                      $ref: "#/components/schemas/CalculationRequestResultBody"
-                required: true
-              responses:
-                "200":
-                  description: The webhook has been received successfully (all 2xx responses are considered to mean this).
-                "400":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "401":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "403":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "500":
-                  description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
   /api/v1/calculation_request/{calculationRequestId}/update:
     post:
       operationId: v1_updateCalculationRequest
@@ -269,57 +220,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateExpressLinkResponse"
-      callbacks:
-        expressLinkCompleted:
-          https://your-server.local/webhook-path:
-            post:
-              description: This webhook is called when the calculation request has been processed. The webhook is called at least once.
-              parameters:
-                - name: User-Agent
-                  description: Name and version of the application providing the calculation.
-                  in: header
-                  required: true
-                  schema:
-                    type: string
-                  example: FIASCO Cloud/1.0
-                - name: Authorization
-                  description: An optional authorization token can be send as bearer token (provided by you).
-                  in: header
-                  required: false
-                  schema:
-                    type: string
-                - name: event
-                  description: A name identifiying this event.
-                  in: query
-                  required: true
-                  schema:
-                    type: string
-                    enum:
-                      - linkSentViaSMS
-                      - linkSentViaEmail
-                      - requestReceived
-                      - vinLookupError
-                      - calculationReady
-                      - calculationRequestClosed
-                      - feedbackRequested
-              requestBody:
-                description: ""
-                content:
-                  application/json:
-                    schema:
-                      $ref: "#/components/schemas/ExpressLinkResultBody"
-                required: true
-              responses:
-                "200":
-                  description: The webhook has been received successfully (all 2xx responses are considered to mean this).
-                "400":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "401":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "403":
-                  description: A client-side error occurred (all 4xx responses are handled like this).
-                "500":
-                  description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
   /api/v1/calculations/{calculationId}/send:
     post:
       operationId: v1_sendCalculation
@@ -564,6 +464,107 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetCalculationPhotoErrorResponse"
           description: Your credentials could not be authenticated.
+
+webhooks:
+  calculationRequestCreated:
+    post:
+      summary: Webhook for calculation request events.
+      description: This webhook is called for events that occur when processing calculation requests.
+      parameters:
+        - name: User-Agent
+          description: Name and version of the application providing the calculation.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: FIASCO Cloud/1.0
+        - name: Authorization
+          description: An optional authorization token can be send as bearer token (provided by you).
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: event
+          description: A name identifiying this event.
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - requestReceived
+              - vinLookupError
+              - calculationReady
+              - calculationRequestClosed
+              - feedbackRequested
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculationRequestResultBody"
+        required: true
+      responses:
+        "200":
+          description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+        "400":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "401":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "403":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "500":
+          description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  expressLinkCompleted:
+    post:
+      summary: Webhook for express link events.
+      description: This webhook is called for events surrounding express links.
+      parameters:
+        - name: User-Agent
+          description: Name and version of the application providing the calculation.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: FIASCO Cloud/1.0
+        - name: Authorization
+          description: An optional authorization token can be send as bearer token (provided by you).
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: event
+          description: A name identifiying this event.
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - linkSentViaSMS
+              - linkSentViaEmail
+              - requestReceived
+              - vinLookupError
+              - calculationReady
+              - calculationRequestClosed
+              - feedbackRequested
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpressLinkResultBody"
+        required: true
+      responses:
+        "200":
+          description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+        "400":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "401":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "403":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "500":
+          description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+
 components:
   securitySchemes:
     BearerToken:
@@ -595,26 +596,30 @@ components:
       type: object
       properties:
         referenceId:
-          type: string
+          type:
+            - string
+            - "null"
           maxLength: 50
-          nullable: true
           description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.). Set this to something for your own reference.
         webhookAuthToken:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: |-
             If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
             a value configured for your account will be used.
         callbackUrl:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
         billTo:
-          type: string
+          type:
+            - string
+            - "null"
           pattern: "^fiasco-cust-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
           minLength: 48
           maxLength: 48
-          nullable: true
           example: fiasco-cust-12341234-1234-1234-1234-123412341234
           description: |-
             If this field is set, the calculation request will be billed to the company associated with the value of this field. If no such company exists, the request
@@ -627,23 +632,25 @@ components:
       type: object
       properties:
         calculationType:
-          type: string
+          type:
+            - string
+            - "null"
           default: damage
           enum:
             - damage
             - hail_damage
-          nullable: true
           example: damage
           description: |-
             Defines the type of calculation that should be performed. Either a normal "damage" calculation or a "hail damage" calculation (mainly fixing dents).
             Depending on the type of calculation, different parameters are required.
         calculationProvider:
-          type: string
+          type:
+            - string
+            - "null"
           default: audatex
           enum:
             - audatex
             - dat
-          nullable: true
           example: audatex
           description: |-
             Via this parameter it is possible to select the calculation provider. The default is "audatex".
@@ -674,22 +681,25 @@ components:
         - vin
       properties:
         vin:
-          type: string
+          type:
+            - string
+            - "null"
           minLength: 17
           maxLength: 18
-          nullable: true
           description: Vehicle identification number (VIN; 17 chars) with optional check digit (18 chars).
           pattern: ^[1234567890ABCDEFGHJKLMNPRSTUVWXYZ]{17,18}\d?$
           example: M2Y3ULY19D85CCCNN5
         mileage:
-          type: number
+          type:
+            - number
+            - "null"
           minimum: 0
-          nullable: true
           description: Indicates the number of kilometers the vehicle has driven. Required for total loss calculation.
           example: 142000
         firstRegistrationDate:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: |-
             Date of first registration of the vehicle in the format as defined by full-date in
             [RFC3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ('yyyy-mm-dd'). Additionally we support the
@@ -697,9 +707,10 @@ components:
           format: date
           example: 2020-04-14
         licensePlate:
-          type: string
+          type:
+            - string
+            - "null"
           maxLength: 15
-          nullable: true
           description: Will be added to the calculation result (for further reference). Not required for the actual calculation.
           example: S-AB 1234
     VehicleAndDamagePhotos:
@@ -722,16 +733,19 @@ components:
                 format: byte
                 description: "Base64-encoded image data. Formats: JPEG, JPEG-XL, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
               contentType:
-                type: string
-                nullable: true
+                type:
+                  - string
+                  - "null"
                 description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
               filename:
-                type: string
-                nullable: true
+                type:
+                  - string
+                  - "null"
                 description: Filename of the photo.
               subject:
-                type: string
-                nullable: true
+                type:
+                  - string
+                  - "null"
                 default: common
                 description: |-
                   The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
@@ -896,9 +910,10 @@ components:
         - partId
       properties:
         partId:
-          type: string
+          type:
+            - string
+            - "null"
           description: The FIASCO part ID of the part that is affected by hail damage.
-          nullable: false
     HailDamagePartRepair:
       type: object
       description: Data required to calculate repair costs after a hail damage.
@@ -910,36 +925,41 @@ components:
       properties:
         isPlastic:
           description: Set this to true if the part is made out of plastic.
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: false
-          nullable: true
         repairMethod:
           description: The repair method for the part.
-          type: string
+          type:
+            - string
+            - "null"
           enum:
             - repair
-          nullable: false
         allowRepairMethodOptimization:
           description: |-
             If set to true, the calculation engine is allowed to choose the best possible repair method
             and techniques. In this context, "best" refers to the cost.
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: false
-          nullable: true
         optimizedRepairMethodThreshold:
           description: |-
             If repair method optimization is enabled, this threshold controls how big the difference
             between different repair methods and techniques must be before a method or technique are changed.
-          type: number
+          type:
+            - number
+            - "null"
           minimum: 0.0
           maximum: 1.0
           default: 0.01
-          nullable: true
         repairMethodOptimizationMethods:
           description: |-
             If repair method optimization is enabled, this field determines which optimization methods will be used for repair.
-          type: array
-          nullable: true
+          type:
+            - array
+            - "null"
           default: []
           items:
             type: string
@@ -962,8 +982,9 @@ components:
           description: |-
             The repair techniques that can be used for the part. One ore more techniques must
             be specified.
-          type: array
-          nullable: true
+          type:
+            - array
+            - "null"
           default: []
           items:
             type: string
@@ -979,10 +1000,11 @@ components:
       properties:
         repairMethod:
           description: The repair method for the part.
-          type: string
+          type:
+            - string
+            - "null"
           enum:
             - replace
-          nullable: false
     HailDamageData:
       type: object
       properties:
@@ -1003,37 +1025,42 @@ components:
         - type: object
           properties:
             paintSystem:
-              type: string
-              nullable: true
+              type:
+                - string
+                - "null"
               enum:
                 - manufacturer
                 - azt
               default: manufacturer
               description: The paint system to base the calculation on (AZT or Manufacturer)
             replacementPartsSurcharge:
-              type: number
-              nullable: true
+              type:
+                - number
+                - "null"
               default: 0
               minimum: -10
               maximum: 10
               description: Relative surcharge for replacement parts (e.g. 0.1 for 10%, -0.2 for a 20% discount) [Audatex block codes 20 and 21]
             paintMaterialPercentage:
-              type: number
-              nullable: true
+              type:
+                - number
+                - "null"
               default: 0.38
               minimum: 0
               maximum: 1
               description: Relative percentage of paint material in relation to labor costs (e.g. 0.3 for 30%) [Audatex block codes 40 and 51 depending on the chosen paint system]
             paintMaterialVw:
-              type: number
-              nullable: true
+              type:
+                - number
+                - "null"
               default: 0
               minimum: 0
               maximum: 999
               description: Paint material costs per unit in EUR for VW vehicles [Audatex block code 81]
             smallPartsPercentage:
-              type: number
-              nullable: true
+              type:
+                - number
+                - "null"
               default: 0.02
               minimum: 0
               maximum: 1
@@ -1046,8 +1073,9 @@ components:
               description: |-
                 If set to true, a position to reset the error memory will be added to the calculation. If set
                 to false, it will not be added. If omitted, a context specific default is applied.
-              type: boolean
-              nullable: true
+              type:
+                - boolean
+                - "null"
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
@@ -1101,8 +1129,9 @@ components:
         - laborRatesArea
       properties:
         laborRatesCountry:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Country code (ISO 3166-1 ALPHA-2) for the ZIP code.
           default: DE
           enum:
@@ -1202,8 +1231,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         message:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1254,8 +1284,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         message:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1266,14 +1297,16 @@ components:
       description: An express link can be sent via email or SMS. If both targets a specified, the link will be sent to both.
       properties:
         emailRecipient:
-          type: string
+          type:
+            - string
+            - "null"
           format: email
-          nullable: true
           description: An email address to send a request for data to.
         smsRecipient:
-          type: string
+          type:
+            - string
+            - "null"
           format: phone
-          nullable: true
           description: A mobile phone number to send a request for data to (via SMS).
     ExpressLinkStyling:
       type: object
@@ -1284,9 +1317,10 @@ components:
         - customerInformationUrl
       properties:
         logo:
-          type: string
+          type:
+            - string
+            - "null"
           format: byte
-          nullable: true
           description: "Base64-encoded logo image. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
           example: |-
             iVBORw0KGgoAAAANSUhEUgAAAlgAAAC6CAIAAAD9F6QrAAAAAXNSR0IArs4c6QAAL1ZJREFUeNrtnXd4VVXat+ev7311nGIZx9HpMzpdASkKKnaxYUcB6QEB
@@ -1431,61 +1465,71 @@ components:
         #   nullable: true
         #   description: "URL to a logo image. The URL must be publicly accessible. Supported formats: SVG, JPEG, PNG, HEIC (HEVC encoded in HEIF), WebP, or TIFF."
         primaryColor:
-          type: string
+          type:
+            - string
+            - "null"
           pattern: ^#[0-9a-fA-F]{6}$
-          nullable: true
           description: The primary color to be used in the branding (hex color code).
           example: "#000000"
         secondaryColor:
-          type: string
+          type:
+            - string
+            - "null"
           pattern: ^#[0-9a-fA-F]{6}$
-          nullable: true
           description: The secondary color to be used in the branding (hex color code).
           example: "#00ff00"
         title:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: The title (e.g. name of the company) that is to shown in the app.
           maxLength: 255
         introduction:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Additional details (e.g. address of the company, instructions, ...) that are to shown in the app (e.g. the name of the company's location).
           maxLength: 4096
         phoneNumber:
-          type: string
+          type:
+            - string
+            - "null"
           format: phone
-          nullable: true
           description: The phone number of the company.
           maxLength: 35
         emailAddress:
-          type: string
+          type:
+            - string
+            - "null"
           format: email
-          nullable: true
           description: The email address of the company.
           maxLength: 70
         websiteUrl:
-          type: string
+          type:
+            - string
+            - "null"
           format: uri
-          nullable: true
           description: The URL to the website of the company.
           maxLength: 255
         imprintUrl:
-          type: string
+          type:
+            - string
+            - "null"
           format: uri
-          nullable: false
           description: The URL to the imprint. The app will directly link to this.
           maxLength: 255
         privacyPolicyUrl:
-          type: string
+          type:
+            - string
+            - "null"
           format: uri
-          nullable: true
           description: The URL to the privacy policy. The app will directly link to this.
           maxLength: 255
         customerInformationUrl:
-          type: string
+          type:
+            - string
+            - "null"
           format: uri
-          nullable: true
           description: The URL to the customer information. The app will directly link to this.
           maxLength: 255
     CreateExpressLinkRequestBody:
@@ -1502,15 +1546,17 @@ components:
           example: "demo_v1"
           description: Name of the app configuration to use. This is defined by FIASCO and given to each partner.
         maximumUses:
-          type: integer
+          type:
+            - integer
+            - "null"
           minimum: 1
           default: 1
-          nullable: true
           description: The maximum number of times the express link can be used. If not set, the link can be used once.
         doCalculate:
-          type: boolean
+          type:
+            - boolean
+            - "null"
           default: true
-          nullable: true
           description: |-
             If set to false, the express link will only collect and process data without triggering a calculation.
         calculationParameters:
@@ -1575,8 +1621,9 @@ components:
       type: object
       properties:
         calculationAudaNetRecipient:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           pattern: ^((MemberId)|(LoginId)|(CustomerId)|(CommId)|(ExternalOrganisationId)):([^\s]+)$
           example: CommId:DE123456
           description: |-
@@ -1586,9 +1633,10 @@ components:
 
             This is only respected if the calculation was requested with the 'audatex' calculation provider.
         calculationEmailRecipient:
-          type: string
+          type:
+            - string
+            - "null"
           format: email
-          nullable: true
           description: |-
             If specified, the finished calculation will be sent via email to this email address.
             The calculation will be sent as plain text and PDF in a human-readable format.
@@ -1600,8 +1648,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         message:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1614,8 +1663,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         message:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1638,8 +1688,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         error:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1740,8 +1791,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         message:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false
@@ -1753,8 +1805,9 @@ components:
           type: boolean
           description: Either true of false. Always available.
         error:
-          type: string
-          nullable: true
+          type:
+            - string
+            - "null"
           description: Describes the return status (e.g. error details). Can be null or empty.
       example:
         success: false

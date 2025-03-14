@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
+## [3.5.5] - 2025-03-14
+
+### Changed
+
+- Migrated both specs to OpenAPI 3.1.1.
+
+
 ## [3.5.4] - 2025-03-10
 
 ### Added
@@ -431,6 +438,7 @@ change. The field that was renamed has not been in production use, yet.
 - Initial revision.
 
 
+[3.5.5]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
 [3.5.4]: https://github.com/fiasco-gmbh/openapi/compare/3.5.3...3.5.4
 [3.5.3]: https://github.com/fiasco-gmbh/openapi/compare/3.5.2...3.5.3
 [3.5.2]: https://github.com/fiasco-gmbh/openapi/compare/3.5.1...3.5.2
