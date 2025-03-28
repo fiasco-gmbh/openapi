@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
+## [3.5.6] - 2025-03-28
+
+### Changed
+
+- Added `paintAllAssemblyPartsDismounted` to `CalculationParameters` schema.
+
+
 ## [3.5.5] - 2025-03-14
 
 ### Changed
