@@ -643,6 +643,36 @@ components:
           readOnly: true
           description: "Calculation total (net)."
           example: 1820.0
+        totalPriceWithTax:
+          type: number
+          format: float
+          description: "Calculation total (with tax)."
+          example: 2165.8
+        totalTax:
+          type: number
+          format: float
+          description: The total tax amount.
+          example: 345.8
+        totalPriceLabor:
+          type: number
+          format: float
+          description: The total amount for labor.
+          example: 1200.0
+        totalPricePaint:
+          type: number
+          format: float
+          description: The total amount for paint.
+          example: 240.0
+        totalPriceParts:
+          type: number
+          format: float
+          description: The total amount for parts.
+          example: 187.0
+        totalPriceAdditional:
+          type: number
+          format: float
+          description: The total additional amount.
+          example: 138.0
         text:
           type: string
           readOnly: true
