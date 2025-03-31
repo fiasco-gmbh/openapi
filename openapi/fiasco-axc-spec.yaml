@@ -7,7 +7,7 @@ info:
     All endpoints are using a REST-like interface, meaning they are called via HTTP with a specific payload
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an application/json payload.
-  version: 3.5.6
+  version: 3.6.0
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -643,6 +643,36 @@ components:
           readOnly: true
           description: "Calculation total (net)."
           example: 1820.0
+        totalPriceWithTax:
+          type: number
+          format: float
+          readOnly: true
+          description: "Calculation total (including tax)."
+          example: 2165.8
+        totalPriceLabor:
+          type: number
+          format: float
+          readOnly: true
+          description: "The total price for labor (net)."
+          example: 1200.0
+        totalPricePaint:
+          type: number
+          format: float
+          readOnly: true
+          description: "The total price for paint-related work (net)."
+          example: 240.0
+        totalPriceParts:
+          type: number
+          format: float
+          readOnly: true
+          description: "The total price for replacement parts (net)."
+          example: 187.0
+        totalPriceAdditional:
+          type: number
+          format: float
+          readOnly: true
+          description: "The total price of additional costs that do not fit any other category (net)."
+          example: 138.0
         text:
           type: string
           readOnly: true

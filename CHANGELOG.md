@@ -5,9 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
+## [3.6.0] - 2025-03-31
+
+### Added
+
+- Added new fields to calculation results:
+  - `totalPriceWithTax`
+  - `totalPriceLabor`
+  - `totalPricePaint`
+  - `totalPriceParts`
+  - `totalPriceAdditional`
+
+
 ## [3.5.6] - 2025-03-28
 
-### Changed
+### Added
 
 - Added `paintAllAssemblyPartsDismounted` to `CalculationParameters` schema.
 
@@ -445,6 +457,7 @@ change. The field that was renamed has not been in production use, yet.
 - Initial revision.
 
 
+[3.5.6]: https://github.com/fiasco-gmbh/openapi/compare/3.5.5...3.5.6
 [3.5.5]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
 [3.5.4]: https://github.com/fiasco-gmbh/openapi/compare/3.5.3...3.5.4
 [3.5.3]: https://github.com/fiasco-gmbh/openapi/compare/3.5.2...3.5.3
