@@ -721,6 +721,17 @@ components:
           description: ISO language code used for the calculation.
           default: DE
           example: DE
+        hailFormula:
+          type: string
+          readOnly: true
+          description: Hail formula used in the calculation. `""` means no hail formula was used (e.g. for calculation without hail damages), `"unknown"` means an unsupported value was set.
+          default: hailExpert
+          example: bvat
+          enum:
+            - "hailExpert"
+            - "bvat"
+            - ""
+            - "unknown"
         parts:
           $ref: "#/components/schemas/parts"
         blockCodes:
