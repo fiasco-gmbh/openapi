@@ -1312,6 +1312,60 @@ components:
             - "null"
           format: phone
           description: A mobile phone number to send a request for data to (via SMS).
+
+    ExpressLinkVehicleOwnerDetails:
+      type: object
+      properties:
+        firstName:
+          type:
+            - string
+            - "null"
+          description: The first name of the vehicle owner.
+          maxLength: 128
+        lastName:
+          type:
+            - string
+            - "null"
+          description: The last name of the vehicle owner.
+          maxLength: 128
+        street:
+          type:
+            - string
+            - "null"
+          description: The street name and number of the vehicle owner.
+          maxLength: 128
+        city:
+          type:
+            - string
+            - "null"
+          description: The city of the vehicle owner.
+          maxLength: 128
+        zipCode:
+          type:
+            - string
+            - "null"
+          description: The ZIP code of the vehicle owner.
+          example: 12345
+        country:
+          type:
+            - string
+            - "null"
+          description: The country of the vehicle owner.
+        phoneNumber:
+          type:
+            - string
+            - "null"
+          format: phone
+          description: The phone number of the vehicle owner.
+          maxLength: 35
+        emailAddress:
+          type:
+            - string
+            - "null"
+          format: email
+          description: The email address of the vehicle owner.
+          maxLength: 160
+
     ExpressLinkStyling:
       type: object
       description: 'Please note: Due to certain limitations in the OpenAPI specification (required fields cannot be defined as dependent on a value of another field), the specification is slightly incomplete. The fields marked as "required" are only required if the field doCalculate is true.'
@@ -1563,8 +1617,31 @@ components:
           default: true
           description: |-
             If set to false, the express link will only collect and process data without triggering a calculation.
+        recipientProviderAccountId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: The provider account ID for the recipient.
+          example: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+        # We plan to change this to emailRecipient for better readability.
+        email:
+          type:
+            - string
+            - "null"
+          format: email
+          description: An email address to send the express link to.
+        # We plan to change this to smsRecipient for better readability.
+        phoneNumber:
+          type:
+            - string
+            - "null"
+          format: phone
+          description: An phone number to send the express link to.
         calculationParameters:
           $ref: "#/components/schemas/CreateCalculationRequestBody"
+        vehicleOwnerDetails:
+          $ref: "#/components/schemas/ExpressLinkVehicleOwnerDetails"
         styling:
           $ref: "#/components/schemas/ExpressLinkStyling"
 
