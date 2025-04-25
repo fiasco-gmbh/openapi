@@ -9,19 +9,5 @@
   },
   "markdown.preview.scrollEditorWithPreview": true,
   "markdown.preview.scrollPreviewWithEditor": true,
-  "files.autoSaveWhenNoErrors": true,
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": true,
-    "markdown": true,
-    "scminput": false,
-    "typescript": true,
-    "typescriptreact": true,
-    "json": true,
-    "elixir": true,
-    "toml": true,
-    "github-actions-workflow": false,
-    "css": true,
-    "properties": true
-  }
+  "files.autoSaveWhenNoErrors": true
 }
