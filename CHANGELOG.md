@@ -5,12 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
-## [xxx] - xxx
+
+## [3.6.1] - 2025-04-25
 
 ### Added
 
+- Added new fields to the `CreateExpressLinkRequestBody` schema:
+  - `recipientProviderAccountId`
+  - `phoneNumber`
+  - `email`
+  - `vehicleOwnerDetails`
 - Added `hailFormula` to the calculation data.
-
+  
 
 ## [3.6.0] - 2025-03-31
 
@@ -463,8 +469,7 @@ change. The field that was renamed has not been in production use, yet.
 
 - Initial revision.
 
-
-[xxx]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...xxx
+[3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
 [3.6.0]: https://github.com/fiasco-gmbh/openapi/compare/3.5.6...3.6.0
 [3.5.6]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
 [3.5.5]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
