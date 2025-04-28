@@ -713,6 +713,13 @@ components:
           maxLength: 15
           description: Will be added to the calculation result (for further reference). Not required for the actual calculation.
           example: S-AB 1234
+        hsnTsn:
+        type:
+          - string
+          - "null"
+        maxLength: 7
+        description: Will be added to the calculation result (for further reference). Not required for the actual calculation.
+        example: 1234ABC
     VehicleAndDamagePhotos:
       type: object
       required:
