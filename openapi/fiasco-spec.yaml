@@ -1071,7 +1071,7 @@ components:
               description: Allow paint color fading on adjecent parts.
             paintAllAssemblyPartsDismounted:
               type: boolean
-              default: false
+              default: true
               description: Paint all assembly parts dismounted.
             resetErrorMemory:
               description: |-
