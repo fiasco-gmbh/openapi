@@ -476,7 +476,7 @@ change. The field that was renamed has not been in production use, yet.
 
 - Initial revision.
 
-[3.6.2]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.2
+[3.6.2]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.6.2
 [3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
 [3.6.0]: https://github.com/fiasco-gmbh/openapi/compare/3.5.6...3.6.0
 [3.5.6]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
