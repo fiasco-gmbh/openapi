@@ -6,6 +6,13 @@ The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
 
+## [3.6.2] - 2025-06-13
+
+### Added
+
+- Added `ignoredPartTagsByAction` field to `CalculationParameters` schema to define which part tags should be ignored for specific actions during calculation (replace, repair, repairPaint, newPaint, paint).
+  
+  
 ## [3.6.1] - 2025-04-25
 
 ### Added
@@ -469,6 +476,7 @@ change. The field that was renamed has not been in production use, yet.
 
 - Initial revision.
 
+[3.6.2]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.6.2
 [3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
 [3.6.0]: https://github.com/fiasco-gmbh/openapi/compare/3.5.6...3.6.0
 [3.5.6]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5

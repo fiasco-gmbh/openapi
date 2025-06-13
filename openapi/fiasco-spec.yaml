@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.6.1
+  version: 3.6.2
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -1087,6 +1087,44 @@ components:
               type:
                 - boolean
                 - "null"
+            ignoredPartTagsByAction:
+              description: |-
+                Defines which part tags should be ignored for specific actions during calculation. 
+                Each action type can have an array of tag strings that will be ignored.
+              type:
+                - object
+                - "null"
+              properties:
+                replace:
+                  type: array
+                  description: Array of part tags to ignore for replace actions.
+                  items:
+                    type: string
+                  default: []
+                repair:
+                  type: array
+                  description: Array of part tags to ignore for repair actions.
+                  items:
+                    type: string
+                  default: []
+                paint:
+                  type: array
+                  description: Array of part tags to ignore for paint actions.
+                  items:
+                    type: string
+                  default: []
+                repairPaint:
+                  type: array
+                  description: Array of part tags to ignore for repair paint actions.
+                  items:
+                    type: string
+                  default: []
+                newPaint:
+                  type: array
+                  description: Array of part tags to ignore for new paint actions.
+                  items:
+                    type: string
+                  default: []
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
