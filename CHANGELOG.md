@@ -6,12 +6,17 @@ The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
 
-## [3.6.2] - 2025-06-13
+## [3.7.0] - 2025-06-16
 
 ### Added
 
 - Added `ignoredPartTagsByAction` field to `CalculationParameters` schema to define which part tags should be ignored for specific actions during calculation (replace, repair, repairPaint, newPaint, paint).
-  
+- Added `checkTireWhenReplacingWheelArchTrim` field to `CalculationParameters` schema to enable checking the tires whenever the wheel arch trim is replaced.
+- Added `onlyCheckWheelsAndTires` field to `CalculationParameters` schema to force wheels and tires to only allow check positions.
+- Added `materialCostsCavitySeal` field to `CalculationParameters` shema to set fixed material costs for certain amounts of parts. 
+- Added `materialCostsAdhesive` field to `CalculationParameters` schema to set fixed material costs for certain amounts of parts.
+- Added `materialCostsAlluvial` field to `CalculationParameters` schema to set fixed material costs for certain amounts of parts.
+- Added `materialCostsUnderSeal` field to `CalculationParameters` schema to set fixed material costs for certain amounts of parts.
   
 ## [3.6.1] - 2025-04-25
 
@@ -476,7 +481,7 @@ change. The field that was renamed has not been in production use, yet.
 
 - Initial revision.
 
-[3.6.2]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.6.2
+[3.7.0]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.7.0
 [3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
 [3.6.0]: https://github.com/fiasco-gmbh/openapi/compare/3.5.6...3.6.0
 [3.5.6]: https://github.com/fiasco-gmbh/openapi/compare/3.5.4...3.5.5
