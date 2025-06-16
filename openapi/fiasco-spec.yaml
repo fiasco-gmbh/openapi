@@ -1141,6 +1141,18 @@ components:
               $ref: "#/components/schemas/MaterialCosts"
             materialCostsUnderSeal:
               $ref: "#/components/schemas/MaterialCosts"
+            maximumRepairTimeByPartGroup:
+              description: |-
+                Defines the maximum repair time for parts in a group, before they will be replaced instead of repaired.
+                Possible part groups: front_bumper, headlight, window_screen, engine_hood, front_fender, front_door, a_pillar, b_pillar, c_pillar, d_pillar, door_sill, strut, roof, wheel, back_door, rear_bumper, side_panel, tailgate
+              type:
+                - object
+                - "null"
+              properties:
+                groupName:
+                  type: number
+                  description: Maximum repair time.
+                  default: null
     MaterialCosts:
       description: |-
         Sets the additional material costs for this material depending on the amount of affected parts.
@@ -1230,7 +1242,6 @@ components:
           type: string
           description: "The zip code for which average labor rates should be determined. DEPRECATED: Use `laborRatesArea` instead."
           example: "12345"
-
     CalculationRequestResultBody:
       type: object
       properties:
