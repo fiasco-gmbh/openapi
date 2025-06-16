@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.6.1
+  version: 3.7.0
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -312,7 +312,7 @@ paths:
           example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
       responses:
         "200":
-          description: The calculation data has been retreieved successfully.
+          description: The calculation data has been retrieved successfully.
           content:
             application/json:
               schema:
@@ -1075,7 +1075,7 @@ components:
             colorMatchingAllowed:
               type: boolean
               default: true
-              description: Allow paint color fading on adjecent parts.
+              description: Allow paint color fading on adjacent parts.
             paintAllAssemblyPartsDismounted:
               type: boolean
               default: true
@@ -1087,6 +1087,80 @@ components:
               type:
                 - boolean
                 - "null"
+            ignoredPartTagsByAction:
+              description: |-
+                Defines which part tags should be ignored for specific actions during calculation. 
+                Each action type can have an array of tag strings that will be ignored.
+              type:
+                - object
+                - "null"
+              properties:
+                replace:
+                  type: array
+                  description: Array of part tags to ignore for replace actions.
+                  items:
+                    type: string
+                  default: []
+                repair:
+                  type: array
+                  description: Array of part tags to ignore for repair actions.
+                  items:
+                    type: string
+                  default: []
+                paint:
+                  type: array
+                  description: Array of part tags to ignore for paint actions.
+                  items:
+                    type: string
+                  default: []
+                repairPaint:
+                  type: array
+                  description: Array of part tags to ignore for repair paint actions.
+                  items:
+                    type: string
+                  default: []
+                newPaint:
+                  type: array
+                  description: Array of part tags to ignore for new paint actions.
+                  items:
+                    type: string
+                  default: []
+            checkTireWhenReplacingWheelArchTrim:
+              type: boolean
+              default: true
+              description: Enable checking the tires whenever the wheel arch trim is replaced.
+            onlyCheckWheelsAndTires:
+              type: boolean
+              default: true
+              description: Enable to force wheels and tires to only allow check positions.
+            materialCostsCavitySeal:
+              $ref: "#/components/schemas/MaterialCosts"
+            materialCostsAdhesive:
+              $ref: "#/components/schemas/MaterialCosts"
+            materialCostsAlluvial:
+              $ref: "#/components/schemas/MaterialCosts"
+            materialCostsUnderSeal:
+              $ref: "#/components/schemas/MaterialCosts"
+    MaterialCosts:
+      description: |-
+        Sets the additional material costs for this material depending on the amount of affected parts.
+        Please not that only certain parts incur costs for a material.
+      type:
+        - object
+        - "null"
+      properties:
+        steps:
+          type: array
+          description: Array of number of minimum affected parts to choose costs for.
+          items:
+            type: integer
+          default: [1, 3, 6]
+        costs:
+          type: array
+          description: Array of of material costs to apply for the minimum number of affected parts given above.
+          items:
+            type: integer
+          default: [10, 15, 20]
     LaborRates:
       description: |-
         Defines the labor rates to be used for the cost calculation.
