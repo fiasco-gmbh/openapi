@@ -1151,7 +1151,7 @@ components:
               properties:
                 groupName:
                   type: number
-                  description: Maximum repair time.
+                  description: Maximum repair time in hours.
                   default: null
     MaterialCosts:
       description: |-
