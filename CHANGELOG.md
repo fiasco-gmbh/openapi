@@ -6,6 +6,12 @@ The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
 
+## [3.7.1] - 2025-08-04
+
+### Added
+
+- Added `highVoltageSafetyHours` field to `CalculationParameters` schema to specify the number of hours required for high voltage safety procedures during a calculation.
+
 ## [3.7.0] - 2025-06-16
 
 ### Added
@@ -481,6 +487,7 @@ change. The field that was renamed has not been in production use, yet.
 
 - Initial revision.
 
+[3.7.1]: https://github.com/fiasco-gmbh/openapi/compare/3.7.0...3.7.1
 [3.7.0]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.7.0
 [3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
 [3.6.0]: https://github.com/fiasco-gmbh/openapi/compare/3.5.6...3.6.0

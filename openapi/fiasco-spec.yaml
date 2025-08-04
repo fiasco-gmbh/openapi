@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.7.0
+  version: 3.7.1
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -1133,6 +1133,14 @@ components:
               type: boolean
               default: true
               description: Enable to force wheels and tires to only allow check positions.
+            highVoltageSafetyHours:
+              type:
+                - number
+                - "null"
+              minimum: 0.0
+              maximum: 999.99
+              default: 0.0
+              description: Number of hours required for high voltage safety procedures during a calculation.
             materialCostsCavitySeal:
               $ref: "#/components/schemas/MaterialCosts"
             materialCostsAdhesive:
