@@ -10,7 +10,7 @@ and this project tries to adhere to [semantic versioning][semver-spec].
 
 ### Added
 
-- Added `highVoltageSafetyHours` field to `CalculationParameters` schema to specify the number of hours required for high voltage safety procedures during a calculation.
+- Added `workHoursForHighVoltageActivation` field to `CalculationParameters` schema to specify the number of hours required for high voltage safety procedures during a calculation.
 
 ## [3.7.0] - 2025-06-16
 

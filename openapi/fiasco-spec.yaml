@@ -1133,7 +1133,7 @@ components:
               type: boolean
               default: true
               description: Enable to force wheels and tires to only allow check positions.
-            highVoltageSafetyHours:
+            workHoursForHighVoltageActivation:
               type:
                 - number
                 - "null"
