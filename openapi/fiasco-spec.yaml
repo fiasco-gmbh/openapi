@@ -1139,7 +1139,7 @@ components:
                 - "null"
               minimum: 0.0
               maximum: 10
-              default: 0.0
+              default: 0.5
               description: Number of hours required for high voltage safety procedures during a calculation.
             materialCostsCavitySeal:
               $ref: "#/components/schemas/MaterialCosts"
