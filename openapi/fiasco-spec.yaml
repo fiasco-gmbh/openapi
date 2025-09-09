@@ -1915,6 +1915,11 @@ components:
           description: A list of ids for the photos of the calculation.
           items:
             type: string
+        photo_subjects:
+          type: array
+          description: A list of subjects for the photo ids above.
+          items:
+            type: string
       example:
         success: true
         message: calculation request retrieved
