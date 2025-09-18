@@ -2415,10 +2415,10 @@ components:
               format: email
               description: Customer's email address
               example: customer@example.com
-            phone_number:
+            mobile_phone_number:
               type: string
-              description: Customer's phone number
-              example: "+49 30 12345678"
+              description: Customer's mobile phone number. Used to receive SMS notifications.
+              example: "+49 171 12345678"
             type:
               type: string
               enum: ["insurance_customer", "external_customer"]
