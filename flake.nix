@@ -22,6 +22,7 @@
           buildInputs = with pkgs; [
             gnumake
             yq
+            openapi-generator-cli
           ];
         };
       }

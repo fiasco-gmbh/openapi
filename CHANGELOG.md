@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
-## ___
+## [3.8.0] - 2025-09-18
 
 ### Added
 
+- Introduced new request creation and management operations
 - Added `maximumRepairTimeByPartGroup` field to `CalculationParameters` schema to define the maximum repair time for parts in a group, before they will be replaced instead of repaired.
 
 ## [3.7.1] - 2025-08-04
