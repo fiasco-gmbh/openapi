@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 4.0.0
+  version: 3.8.0
   contact:
     name: FIASCO Support
     email: support@fiasco.de
