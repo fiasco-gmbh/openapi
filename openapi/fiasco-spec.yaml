@@ -2187,6 +2187,7 @@ components:
         - type
         - vehicle
         - data
+        - reference
       properties:
         reference:
           type: string
