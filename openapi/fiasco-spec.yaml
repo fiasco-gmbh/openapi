@@ -2365,10 +2365,10 @@ components:
           type: boolean
           description: Whether the mileage is estimated
           example: false
-        calculation_preset:
+        calculation_parameters_preset:
           type: string
           enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
-          description: The calculation preset to use
+          description: The calculation parameters preset to use
           example: comprehensive
         labor_rates:
           type: object
