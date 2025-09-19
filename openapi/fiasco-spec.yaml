@@ -2202,14 +2202,6 @@ components:
         vehicle:
           type: object
           description: Vehicle information for the request
-          required:
-            - manufacturer
-            - model
-            - mileage
-            - registration_date
-            - license_plate
-            - vin
-            - hsn_tsn
           properties:
             manufacturer:
               type: string
@@ -2323,11 +2315,15 @@ components:
             express_link_status:
               type: string
               description: Status of the express link (only present if request type is "direct")
-              enum: ["pristine", "requested", "completed"]
+              enum: ["pristine", "request_received", "completed"]
               example: completed
-            replacement_valuation_available:
+            direct_replacement_valuation_available:
               type: boolean
-              description: Whether replacement valuation is available
+              description: Whether Direct replacement valuation is available
+              example: true
+            vision_replacement_valuation_available:
+              type: boolean
+              description: Whether Vision replacement valuation is available
               example: true
             vision_calculation_status:
               type: string
