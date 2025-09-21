@@ -2194,6 +2194,13 @@ components:
           maxLength: 50
           description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.)
           example: case-12345
+        additional_references:
+          type: object
+          additionalProperties: true
+          description: An object containing arbitrary key-value pairs for additional reference information
+          example:
+            order_number: "ORD-2024-001"
+            customer_id: "CUST-12345"
         type:
           type: string
           enum: ["direct"]
