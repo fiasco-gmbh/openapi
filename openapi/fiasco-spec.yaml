@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.7.1
+  version: 3.7.2
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -1920,6 +1920,16 @@ components:
           description: A list of subjects for the photo ids above.
           items:
             type: string
+            enum:
+              - common
+              - dashboard
+              - damage
+              - registration_paper
+        damaged_parts:
+          type: array
+          description: A list of damaged parts detected in the calculation.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
       example:
         success: true
         message: calculation request retrieved
@@ -1931,6 +1941,14 @@ components:
         answers: {}
         photos:
           - 7725ecdf-7285-49b7-a2eb-b3bc6e543aad
+        photo_subjects:
+          - common
+          - damage
+        damaged_parts:
+          - type: "dent"
+            part: "2300"
+          - type: "scratch"
+            part: "1150"
     ListPartsSuccessResponse:
       type: object
       properties:
@@ -1998,3 +2016,26 @@ components:
       example:
         success: false
         message: Unauthorized
+    DamagedPart:
+      type: object
+      required:
+        - type
+        - part
+      properties:
+        type:
+          type: string
+          description: The type of damage detected on the part.
+          enum:
+            - missing
+            - broken
+            - scratch
+            - dent
+            - dent_with_scratch
+            - tear
+            - chip
+            - hail
+          example: "dent"
+        part:
+          type: string
+          description: The FIASCO part ID of the damaged part.
+          example: "2300"
