@@ -531,6 +531,88 @@ paths:
       security:
         - BearerToken: []
 
+  /api/v1/requests/{requestId}/update:
+    post:
+      operationId: v1_updateRequest
+      tags:
+        - Requests
+      summary: Updates an existing request with partial data
+      description: Updates fields of an existing request. All fields are optional for update operations.
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: requestId
+          description: The ID of the request to update.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      requestBody:
+        description: Request update data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestResponse"
+        "400":
+          description: One of the input parameters does not match the requirements.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "403":
+          description: You are not authorized to update this request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "404":
+          description: The request with the specified ID was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "409":
+          description: The request is not in a state that allows updates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "422":
+          description: The validation of input data has failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+      security:
+        - BearerToken: []
+
   /api/v1/requests/{requestId}/status:
     get:
       operationId: v1_getRequestStatus
@@ -737,6 +819,61 @@ webhooks:
           application/json:
             schema:
               $ref: "#/components/schemas/ExpressLinkResultBody"
+        required: true
+      responses:
+        "200":
+          description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+        "400":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "401":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "403":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "500":
+          description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  requestUpdated:
+    post:
+      summary: Webhook for request events.
+      description: This webhook is called for events that occur when processing generic requests, including create, update, and status change events.
+      parameters:
+        - name: User-Agent
+          description: Name and version of the application providing the notification.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: FIASCO Cloud/1.0
+        - name: Authorization
+          description: An optional authorization token can be send as bearer token (provided by you).
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: event
+          description: A name identifying this event.
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - requestCreated
+              - requestUpdated
+              - requestReceived
+              - vinLookupError
+              - preprocessingStarted
+              - preprocessingCompleted
+              - calculationStarted
+              - calculationReady
+              - postprocessingStarted
+              - postprocessingCompleted
+              - requestClosed
+              - feedbackRequested
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestResultBody"
         required: true
       responses:
         "200":
@@ -1979,6 +2116,151 @@ components:
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
           description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the express link request was requested.
+
+    RequestResultBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully processed) or false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Request successfully processed
+        requestId:
+          type: string
+          format: uuid
+          description: ID of the request. Only available when `success` is true.
+          example: 12341234-1234-1234-1234-123412341234
+        fiascoId:
+          type: string
+          description: A unique human readable identifier for the request.
+          example: D2025-SK-F5E8
+        calculationId:
+          type: string
+          format: uuid
+          description: ID of the finished calculation (if applicable).
+          example: 12341234-1234-1234-1234-123412341234
+        calculationText:
+          type: string
+          description: |-
+            The calculation text as returned by the calculation engine.
+            Only available when `success` is true and calculation is complete.
+        calculationDV90:
+          type: string
+          description: |-
+            The calculation in the DV90 format.
+            Only available when `success` is true and calculation is complete.
+        calculationVXS:
+          type: string
+          description: |-
+            The calculation in the VXS format.
+            Only available when `success` is true, calculation is complete, and the calculation provider was DAT.
+        calculationPDF:
+          type: string
+          description: |-
+            Base64-encoded PDF that contains the results of the calculation.
+            Only available when `success` is true, calculation is complete, and the calculation provider was DAT.
+        reference:
+          type: string
+          description: The reference ID that was passed in the original request.
+        additionalReferences:
+          type: object
+          additionalProperties: true
+          description: The additional references that were passed in the original request.
+        audaNetCaseId:
+          type: string
+          format: uuid
+          example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
+          description: |-
+            The AudaNet case ID. Only available when `success` is true and if an `audaNetRecipient`
+            was specified when the request was created.
+        totalPrice:
+          type: number
+          format: float
+          description: The total price of the calculation without tax (if applicable).
+        totalPriceWithTax:
+          type: number
+          format: float
+          description: The total price of the calculation including tax (if applicable).
+        totalTax:
+          type: number
+          format: float
+          description: The total tax amount (if applicable).
+        taxRates:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: number
+                format: float
+                description: The tax rate percentage
+              amount:
+                type: number
+                format: float
+                description: The tax amount for this rate
+          description: |-
+            The tax rates that were applied in the calculation (if applicable).
+        status:
+          type: string
+          description: Current status of the request
+          enum: ["creating", "receiving", "received", "preprocessing", "preprocessed", "calculating", "calculated", "postprocessing", "postprocessed", "closing", "closed"]
+          example: preprocessing
+        directStatus:
+          type: object
+          description: Additional status information for direct request types (only present if request type was "direct")
+          properties:
+            expressLinkStatus:
+              type: string
+              description: Status of the express link (only present if request type is "direct")
+              enum: ["pristine", "request_received", "completed"]
+              example: completed
+            directReplacementValuationAvailable:
+              type: boolean
+              description: Whether Direct replacement valuation is available
+              example: true
+            visionReplacementValuationAvailable:
+              type: boolean
+              description: Whether Vision replacement valuation is available
+              example: true
+            visionCalculationStatus:
+              type: string
+              description: Status of the vision calculation
+              enum: ["pristine", "requested", "completed"]
+              example: completed
+        damagedParts:
+          type: array
+          description: A list of parts that are damaged for classification results.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
+        photos:
+          type: array
+          description: |-
+            A list of photos that were uploaded with the request.
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The ID of the photo.
+                example: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+              filename:
+                type: string
+                description: The filename of the photo.
+                example: "fi-img-952a6927-5c6c-49ab-881a-3d29b4399292.jpeg"
+              subject:
+                type: string
+                description: The subject of the photo.
+                enum:
+                  - common
+                  - other
+                  - dashboard
+                  - damage
+                  - glass_sticker
+                example: "damage"
     CalculationRecipients:
       type: object
       properties:
@@ -2335,6 +2617,114 @@ components:
         message:
           type: string
           description: Error message describing what went wrong
+
+    UpdateRequestBody:
+      type: object
+      description: |-
+        Request body for updating an existing request. All fields are optional for partial updates.
+      properties:
+        webhook_auth_token:
+          type:
+            - string
+            - "null"
+          description: |-
+            If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
+            a value configured for your account will be used.
+        callback_url:
+          type:
+            - string
+            - "null"
+          description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
+        data:
+          oneOf:
+            - $ref: "#/components/schemas/DirectRequestData"
+          description: |-
+            Request-specific data to update, varies based on request type. For direct requests, the following fields can be updated:
+            - vision_mode: The mode to use for Vision ("express_link" or "manual")
+            - send_expression_link: Flag to decide whether to automatically send an express link
+            - vehicle_location_zip_code: Location of the car (zip code)
+            - vehicle_location_country: Location of the car (country code)
+            - insurer_estimated_mileage: Whether the insurer's mileage is estimated
+            - customer_estimated_mileage: Whether the customer's mileage is estimated
+            - insurer_calculation_parameters_preset: The insurer calculation parameters preset
+            - customer_calculation_parameters_preset: The customer calculation parameters preset
+            - labor_rates: Labor rates for different types of work (body, electrical, hail_damage, mechanical, paint)
+            - customer_type: Type of customer ("insurance_customer" or "external_customer")
+            - customer: Customer information including email_address, phone_number, mobile_phone_number
+        damaged_parts:
+          type: array
+          description: A list of parts that are damaged for classification results. Can be used to update damage information.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
+        photos:
+          type: array
+          maxItems: 10
+          description: |-
+            Additional photos to upload. Photos should meet certain requirements. Read more about that in the
+            [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
+            Maximum 10 photos can be uploaded in a single update request.
+            Cannot be provided when vision_mode is express_link - photos should be uploaded by the customer via the express link.
+          items:
+            type: object
+            required:
+              - data
+              - content_type
+            properties:
+              data:
+                type: string
+                format: byte
+                description: The photo data in base64 encoded format.
+              content_type:
+                type: string
+                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
+              file_name:
+                type: ["string", "null"]
+                description: Filename of the photo.
+              subject:
+                type: ["string", "null"]
+                default: common
+                description: |-
+                  The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
+                  means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+
+                  Only photos __not__ marked "common" or "other" will be considered for damage detection.
+                enum:
+                  - common
+                  - other
+                  - dashboard
+                  - damage
+                  - glass_sticker
+
+    UpdateRequestResponse:
+      type: object
+      description: Response when successfully updating a request
+      properties:
+        success:
+          type: boolean
+          description: Whether the update was successful
+          example: true
+        message:
+          type: string
+          description: Success message
+          example: Request successfully updated
+        request_id:
+          type: string
+          format: uuid
+          description: The UUID of the updated request
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+
+    UpdateRequestErrorResponse:
+      type: object
+      description: Error response when updating a request fails
+      properties:
+        success:
+          type: boolean
+          description: Whether the update was successful
+          example: false
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: Request not found or invalid data provided
 
     RequestStatusResponse:
       type: object
