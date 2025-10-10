@@ -12,6 +12,12 @@ and this project tries to adhere to [semantic versioning][semver-spec].
 - Introduced new request creation and management operations
 - Added `maximumRepairTimeByPartGroup` field to `CalculationParameters` schema to define the maximum repair time for parts in a group, before they will be replaced instead of repaired.
 
+## [3.7.2] - 2025-10-09
+
+### Added
+
+- Added `damaged_parts` field to `GetCalculationSuccessResponse` schema to return a list of damaged parts detected in the calculation.
+
 ## [3.7.1] - 2025-08-04
 
 ### Added
@@ -492,7 +498,7 @@ change. The field that was renamed has not been in production use, yet.
 ### Added
 
 - Initial revision.
-
+[3.7.2]: https://github.com/fiasco-gmbh/openapi/compare/3.7.1...3.7.2
 [3.7.1]: https://github.com/fiasco-gmbh/openapi/compare/3.7.0...3.7.1
 [3.7.0]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.7.0
 [3.6.1]: https://github.com/fiasco-gmbh/openapi/compare/3.6.0...3.6.1
