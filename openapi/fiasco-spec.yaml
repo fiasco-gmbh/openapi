@@ -2206,7 +2206,20 @@ components:
         status:
           type: string
           description: Current status of the request
-          enum: ["creating", "receiving", "received", "preprocessing", "preprocessed", "calculating", "calculated", "postprocessing", "postprocessed", "closing", "closed"]
+          enum:
+            [
+              "creating",
+              "receiving",
+              "received",
+              "preprocessing",
+              "preprocessed",
+              "calculating",
+              "calculated",
+              "postprocessing",
+              "postprocessed",
+              "closing",
+              "closed",
+            ]
           example: preprocessing
         directStatus:
           type: object
@@ -2635,22 +2648,16 @@ components:
             - string
             - "null"
           description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
+        start_vision_request:
+          type:
+            - boolean
+            - "null"
+          description: A flag for manual direct cases which initiates the vision request.
         data:
           oneOf:
             - $ref: "#/components/schemas/DirectRequestData"
           description: |-
-            Request-specific data to update, varies based on request type. For direct requests, the following fields can be updated:
-            - vision_mode: The mode to use for Vision ("express_link" or "manual")
-            - send_expression_link: Flag to decide whether to automatically send an express link
-            - vehicle_location_zip_code: Location of the car (zip code)
-            - vehicle_location_country: Location of the car (country code)
-            - insurer_estimated_mileage: Whether the insurer's mileage is estimated
-            - customer_estimated_mileage: Whether the customer's mileage is estimated
-            - insurer_calculation_parameters_preset: The insurer calculation parameters preset
-            - customer_calculation_parameters_preset: The customer calculation parameters preset
-            - labor_rates: Labor rates for different types of work (body, electrical, hail_damage, mechanical, paint)
-            - customer_type: Type of customer ("insurance_customer" or "external_customer")
-            - customer: Customer information including email_address, phone_number, mobile_phone_number
+            Request-specific data to update, varies based on request type.
         damaged_parts:
           type: array
           description: A list of parts that are damaged for classification results. Can be used to update damage information.
@@ -2733,7 +2740,20 @@ components:
         status:
           type: string
           description: Current status of the request
-          enum: ["creating", "receiving", "received", "preprocessing", "preprocessed", "calculating", "calculated", "postprocessing", "postprocessed", "closing", "closed"]
+          enum:
+            [
+              "creating",
+              "receiving",
+              "received",
+              "preprocessing",
+              "preprocessed",
+              "calculating",
+              "calculated",
+              "postprocessing",
+              "postprocessed",
+              "closing",
+              "closed",
+            ]
           example: creating
         direct_status:
           type: object
@@ -2780,7 +2800,7 @@ components:
           type: boolean
           description: A flag that decides whether to automatically send an express link or not
           example: false
-          default: false  
+          default: false
         insurer_vehicle_location_zip_code:
           type: string
           description: Location of the car of the insurer (zip code)
@@ -2797,7 +2817,12 @@ components:
           default: false
         insurer_calculation_parameters_preset:
           type: string
-          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
+          enum:
+            [
+              "comprehensive",
+              "comprehensive_with_binding",
+              "third_party_liability",
+            ]
           description: The insurer calculation parameters preset to use
           example: comprehensive
         insurer_labor_rates:
@@ -2851,7 +2876,12 @@ components:
           default: false
         customer_calculation_parameters_preset:
           type: string
-          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
+          enum:
+            [
+              "comprehensive",
+              "comprehensive_with_binding",
+              "third_party_liability",
+            ]
           description: The customer calculation parameters preset to use
           example: comprehensive_with_binding
         customer_labor_rates:
