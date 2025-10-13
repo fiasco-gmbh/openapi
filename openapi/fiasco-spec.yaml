@@ -2564,9 +2564,14 @@ components:
               type: string
               description: HSN/TSN code for German vehicle registration
               example: 0005/ABC
+        damaged_parts:
+          type: array
+          description: A list of parts that are damaged for classification results.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
         data:
           oneOf:
-            - $ref: "#/components/schemas/DirectRequestData"
+            - $ref: "#/components/schemas/CreateRequestDirect"
           description: Request-specific data, varies based on type
         photos:
           type: array
@@ -2655,7 +2660,7 @@ components:
           description: A flag for manual direct cases which initiates the vision request.
         data:
           oneOf:
-            - $ref: "#/components/schemas/DirectRequestData"
+            - $ref: "#/components/schemas/UpdateRequestDirect"
           description: |-
             Request-specific data to update, varies based on request type.
         damaged_parts:
@@ -2787,7 +2792,7 @@ components:
           description: Error message describing what went wrong
           example: request_not_found
 
-    DirectRequestData:
+    CreateRequestDirect:
       type: object
       description: Data schema for direct type requests
       properties:
@@ -2801,6 +2806,151 @@ components:
           description: A flag that decides whether to automatically send an express link or not
           example: false
           default: false
+        insurer_vehicle_location_zip_code:
+          type: string
+          description: Location of the car of the insurer (zip code)
+          example: "10115"
+        insurer_vehicle_location_country:
+          type: string
+          description: Location of the car of the insurer (country code, ISO 3166-1 alpha-2)
+          example: "DE"
+          default: DE
+        insurer_estimated_mileage:
+          type: boolean
+          description: Whether the mileage of the insurer is estimated
+          example: false
+          default: false
+        insurer_calculation_parameters_preset:
+          type: string
+          enum:
+            [
+              "comprehensive",
+              "comprehensive_with_binding",
+              "third_party_liability",
+            ]
+          description: The insurer calculation parameters preset to use
+          example: comprehensive
+        insurer_labor_rates:
+          type: object
+          description: Labor rates for different types of work for the insurer
+          required:
+            - body
+            - electrical
+            - hail_damage
+            - mechanical
+            - paint
+          properties:
+            body:
+              type: number
+              format: float
+              description: Labor rate for body work
+              example: 45.50
+            electrical:
+              type: number
+              format: float
+              description: Labor rate for electrical work
+              example: 55.00
+            hail_damage:
+              type: number
+              format: float
+              description: Labor rate for hail damage repair
+              example: 40.00
+            mechanical:
+              type: number
+              format: float
+              description: Labor rate for mechanical work
+              example: 50.00
+            paint:
+              type: number
+              format: float
+              description: Labor rate for paint work
+              example: 48.75
+        customer_vehicle_location_zip_code:
+          type: string
+          description: Location of the car of the customer (zip code)
+          example: "10115"
+        customer_vehicle_location_country:
+          type: string
+          description: Location of the car of the customer (country code, ISO 3166-1 alpha-2)
+          example: "DE"
+          default: DE
+        customer_estimated_mileage:
+          type: boolean
+          description: Whether the mileage of the customer is estimated
+          example: false
+          default: false
+        customer_calculation_parameters_preset:
+          type: string
+          enum:
+            [
+              "comprehensive",
+              "comprehensive_with_binding",
+              "third_party_liability",
+            ]
+          description: The customer calculation parameters preset to use
+          example: comprehensive_with_binding
+        customer_labor_rates:
+          type: object
+          description: Labor rates for different types of work for the customer
+          required:
+            - body
+            - electrical
+            - hail_damage
+            - mechanical
+            - paint
+          properties:
+            body:
+              type: number
+              format: float
+              description: Labor rate for body work
+              example: 45.50
+            electrical:
+              type: number
+              format: float
+              description: Labor rate for electrical work
+              example: 55.00
+            hail_damage:
+              type: number
+              format: float
+              description: Labor rate for hail damage repair
+              example: 40.00
+            mechanical:
+              type: number
+              format: float
+              description: Labor rate for mechanical work
+              example: 50.00
+            paint:
+              type: number
+              format: float
+              description: Labor rate for paint work
+              example: 48.75
+        customer_type:
+          type: string
+          enum: ["insurance_customer", "external_customer"]
+          description: Type of customer
+          example: insurance_customer
+        customer:
+          type: object
+          description: Customer (Express Link recipient) information for the request
+          properties:
+            email_address:
+              type: string
+              format: email
+              description: Customer's email address
+              example: customer@example.com
+            phone_number:
+              type: string
+              description: Customer's phone number. Used to receive SMS notifications.
+              example: "+49 171 12345678"
+            mobile_phone_number:
+              type: string
+              description: Customer's mobile phone number. Used to receive SMS notifications.
+              example: "+49 171 12345678"
+
+    UpdateRequestDirect:
+      type: object
+      description: Data schema for updating direct type requests
+      properties:
         insurer_vehicle_location_zip_code:
           type: string
           description: Location of the car of the insurer (zip code)
