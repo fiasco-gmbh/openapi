@@ -2780,14 +2780,14 @@ components:
           type: boolean
           description: A flag that decides whether to automatically send an express link or not
           example: false
-          default: false
-        vehicle_location_zip_code:
+          default: false  
+        insurer_vehicle_location_zip_code:
           type: string
-          description: Location of the car (zip code)
+          description: Location of the car of the insurer (zip code)
           example: "10115"
-        vehicle_location_country:
+        insurer_vehicle_location_country:
           type: string
-          description: Location of the car (country code, ISO 3166-1 alpha-2)
+          description: Location of the car of the insurer (country code, ISO 3166-1 alpha-2)
           example: "DE"
           default: DE
         insurer_estimated_mileage:
@@ -2795,24 +2795,68 @@ components:
           description: Whether the mileage of the insurer is estimated
           example: false
           default: false
-        customer_estimated_mileage:
-          type: boolean
-          description: Whether the mileage of the customer is estimated
-          example: false
-          default: false
         insurer_calculation_parameters_preset:
           type: string
           enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
           description: The insurer calculation parameters preset to use
           example: comprehensive
+        insurer_labor_rates:
+          type: object
+          description: Labor rates for different types of work for the insurer
+          required:
+            - body
+            - electrical
+            - hail_damage
+            - mechanical
+            - paint
+          properties:
+            body:
+              type: number
+              format: float
+              description: Labor rate for body work
+              example: 45.50
+            electrical:
+              type: number
+              format: float
+              description: Labor rate for electrical work
+              example: 55.00
+            hail_damage:
+              type: number
+              format: float
+              description: Labor rate for hail damage repair
+              example: 40.00
+            mechanical:
+              type: number
+              format: float
+              description: Labor rate for mechanical work
+              example: 50.00
+            paint:
+              type: number
+              format: float
+              description: Labor rate for paint work
+              example: 48.75
+        customer_vehicle_location_zip_code:
+          type: string
+          description: Location of the car of the customer (zip code)
+          example: "10115"
+        customer_vehicle_location_country:
+          type: string
+          description: Location of the car of the customer (country code, ISO 3166-1 alpha-2)
+          example: "DE"
+          default: DE
+        customer_estimated_mileage:
+          type: boolean
+          description: Whether the mileage of the customer is estimated
+          example: false
+          default: false
         customer_calculation_parameters_preset:
           type: string
           enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
           description: The customer calculation parameters preset to use
           example: comprehensive_with_binding
-        labor_rates:
+        customer_labor_rates:
           type: object
-          description: Labor rates for different types of work
+          description: Labor rates for different types of work for the customer
           required:
             - body
             - electrical
