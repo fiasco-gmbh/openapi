@@ -2507,6 +2507,11 @@ components:
           maxLength: 50
           description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.)
           example: case-12345
+        created_by_worker_email:
+          type: string
+          format: email
+          description: Worker's email address
+          example: worker@example.com
         additional_references:
           type: object
           additionalProperties: true
@@ -2563,7 +2568,7 @@ components:
             hsn_tsn:
               type: string
               description: HSN/TSN code for German vehicle registration
-              example: 0005/ABC
+              example: 0005ABC
         damaged_parts:
           type: array
           description: A list of parts that are damaged for classification results.
@@ -2582,7 +2587,7 @@ components:
             type: object
             required:
               - data
-              - content_type
+              - subject
             properties:
               data:
                 type: string
@@ -2601,13 +2606,12 @@ components:
                   The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
                   means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
 
-                  Only photos __not__ marked "common" or "other" will be considered for damage detection.
+                  Only photos __not__ marked "common" will be considered for damage detection.
                 enum:
                   - common
-                  - other
-                  - dashboard
                   - damage
-                  - glass_sticker
+                  - dashboard
+                  - registration_paper
 
     CreateRequestResponse:
       type: object
