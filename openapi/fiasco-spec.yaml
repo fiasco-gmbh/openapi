@@ -2524,14 +2524,14 @@ components:
           enum: ["direct"]
           description: The type of request being created
           example: direct
-        webhook_auth_token:
+        send_result_webhook_auth_token:
           type:
             - string
             - "null"
           description: |-
             If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
             a value configured for your account will be used.
-        callback_url:
+        send_result_webhook_url:
           type:
             - string
             - "null"
@@ -2645,14 +2645,14 @@ components:
       description: |-
         Request body for updating an existing request. All fields are optional for partial updates.
       properties:
-        webhook_auth_token:
+        send_result_webhook_auth_token:
           type:
             - string
             - "null"
           description: |-
             If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
             a value configured for your account will be used.
-        callback_url:
+        send_result_webhook_url:
           type:
             - string
             - "null"
