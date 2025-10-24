@@ -1407,7 +1407,7 @@ components:
                 - "null"
             ignoredPartTagsByAction:
               description: |-
-                Defines which part tags should be ignored for specific actions during calculation. 
+                Defines which part tags should be ignored for specific actions during calculation.
                 Each action type can have an array of tag strings that will be ignored.
               type:
                 - object
@@ -2536,6 +2536,12 @@ components:
             - string
             - "null"
           description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
+        foreign_company_access_key:
+          type:
+            - string
+            - "null"
+          description: |-
+            Optional access key that allows Company B to create requests on behalf of Company A. When provided, the request will be created under Company A's account (the owner of the access key), and billing will be attributed to Company A. The access key must be valid, active, not expired, and have the :create permission. If the access key is invalid, inactive, expired, or lacks the required permission, the request will be rejected with an appropriate error.
         vehicle:
           type: object
           description: Vehicle information for the request
@@ -2826,12 +2832,7 @@ components:
           default: false
         insurer_calculation_parameters_preset:
           type: string
-          enum:
-            [
-              "comprehensive",
-              "comprehensive_with_binding",
-              "third_party_liability",
-            ]
+          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
           description: The insurer calculation parameters preset to use
           example: comprehensive
         insurer_labor_rates:
@@ -2885,12 +2886,7 @@ components:
           default: false
         customer_calculation_parameters_preset:
           type: string
-          enum:
-            [
-              "comprehensive",
-              "comprehensive_with_binding",
-              "third_party_liability",
-            ]
+          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
           description: The customer calculation parameters preset to use
           example: comprehensive_with_binding
         customer_labor_rates:
