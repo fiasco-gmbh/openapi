@@ -99,3 +99,13 @@ else
 	@$(call log_error,"  git -----------\> ${GIT_VERSION}")
 	exit 1
 endif
+
+.PHONY: docs
+docs: ## Generate HTML documentation from OpenAPI specs.
+	@echo "Generating documentation ..."
+	@mkdir -p docs
+	@echo "  fiasco-spec.yaml -> docs/fiasco-api/"
+	@openapi-generator-cli generate -i ${SPEC1_FILE} -g html2 -o docs/fiasco-api/ > /dev/null 2>&1
+	@echo "  fiasco-axc-spec.yaml -> docs/fiasco-axc-api/"
+	@openapi-generator-cli generate -i ${SPEC2_FILE} -g html2 -o docs/fiasco-axc-api/ > /dev/null 2>&1
+	@echo "${GREEN}>> Documentation generated in docs/ directory${RESET}"

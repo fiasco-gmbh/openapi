@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.7.1
+  version: 3.7.2
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -40,6 +40,10 @@ tags:
     description: |-
       Calculations are the results of either a calculation request or an express link request.
       They can be sent to an AudaNet recipient or via email to a specified recipient.
+  - name: Requests
+    description: |-
+      Generic requests for various operations that can be processed asynchronously.
+      These provide a unified interface for creating and managing different types of requests.
 
 paths:
   /api/v1/calculation_requests:
@@ -465,6 +469,269 @@ paths:
                 $ref: "#/components/schemas/GetCalculationPhotoErrorResponse"
           description: Your credentials could not be authenticated.
 
+  /api/v1/requests:
+    post:
+      operationId: v1_createRequest
+      tags:
+        - Requests
+      summary: Creates a new request in the system
+      description: Creates a new generic request that can be processed asynchronously.
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+      requestBody:
+        description: Request data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been accepted and created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestResponse"
+        "400":
+          description: One of the input parameters does not match the requirements.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestErrorResponse"
+        "403":
+          description: You are not authorized to create new requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestErrorResponse"
+        "422":
+          description: The validation of input data has failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateRequestErrorResponse"
+      security:
+        - BearerToken: []
+
+  /api/v1/requests/{requestId}/update:
+    post:
+      operationId: v1_updateRequest
+      tags:
+        - Requests
+      summary: Updates an existing request with partial data
+      description: Updates fields of an existing request. All fields are optional for update operations.
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: requestId
+          description: The ID of the request to update.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      requestBody:
+        description: Request update data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequestBody"
+        required: true
+      responses:
+        "200":
+          description: The request has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestResponse"
+        "400":
+          description: One of the input parameters does not match the requirements.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "403":
+          description: You are not authorized to update this request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "404":
+          description: The request with the specified ID was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "409":
+          description: The request is not in a state that allows updates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "422":
+          description: The validation of input data has failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRequestErrorResponse"
+      security:
+        - BearerToken: []
+
+  /api/v1/requests/{requestId}/status:
+    get:
+      operationId: v1_getRequestStatus
+      tags:
+        - Requests
+      summary: Returns the status information about a request
+      description: Retrieves the current status and workflow state of a specific request.
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: requestId
+          description: The ID of the request.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        "200":
+          description: The status information has been retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusResponse"
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "403":
+          description: You are not authorized to access this request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "404":
+          description: The request with the specified ID was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+      security:
+        - BearerToken: []
+
+  /api/v1/requests/{requestId}/send_express_link:
+    get:
+      operationId: v1_sendExpressLink
+      tags:
+        - Requests
+      summary: (Re)send the vision express link for a request
+      description: (Re)sends the express link to the user. This operation only works if the targeted request was created with type "direct" and in its "data" key the field "vision_mode" was set to "express_link".
+      parameters:
+        - name: User-Agent
+          description: Please provide the name and version of your application here.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: partner-web-app/1.0
+        - name: requestId
+          description: The ID of the request.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+      responses:
+        "200":
+          description: The express link has been resent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: express_link_sent
+        "401":
+          description: Your credentials could not be authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "403":
+          description: You are not authorized to access this request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "404":
+          description: The request with the specified ID was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+        "500":
+          description: An internal error has occurred. Additional details might be provided in the response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestStatusErrorResponse"
+      security:
+        - BearerToken: []
+
 webhooks:
   calculationRequestCreated:
     post:
@@ -552,6 +819,61 @@ webhooks:
           application/json:
             schema:
               $ref: "#/components/schemas/ExpressLinkResultBody"
+        required: true
+      responses:
+        "200":
+          description: The webhook has been received successfully (all 2xx responses are considered to mean this).
+        "400":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "401":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "403":
+          description: A client-side error occurred (all 4xx responses are handled like this).
+        "500":
+          description: A server-side error occurred (all 5xx responses are handled like this). In this case we will try to redeliver the webhook notification a few times.
+  requestUpdated:
+    post:
+      summary: Webhook for request events.
+      description: This webhook is called for events that occur when processing generic requests, including create, update, and status change events.
+      parameters:
+        - name: User-Agent
+          description: Name and version of the application providing the notification.
+          in: header
+          required: true
+          schema:
+            type: string
+          example: FIASCO Cloud/1.0
+        - name: Authorization
+          description: An optional authorization token can be send as bearer token (provided by you).
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: event
+          description: A name identifying this event.
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - requestCreated
+              - requestUpdated
+              - requestReceived
+              - vinLookupError
+              - preprocessingStarted
+              - preprocessingCompleted
+              - calculationStarted
+              - calculationReady
+              - postprocessingStarted
+              - postprocessingCompleted
+              - requestClosed
+              - feedbackRequested
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestResultBody"
         required: true
       responses:
         "200":
@@ -745,14 +1067,10 @@ components:
                   - "null"
                 description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
               filename:
-                type:
-                  - string
-                  - "null"
+                type: ["string", "null"]
                 description: Filename of the photo.
               subject:
-                type:
-                  - string
-                  - "null"
+                type: ["string", "null"]
                 default: common
                 description: |-
                   The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
@@ -1089,7 +1407,7 @@ components:
                 - "null"
             ignoredPartTagsByAction:
               description: |-
-                Defines which part tags should be ignored for specific actions during calculation. 
+                Defines which part tags should be ignored for specific actions during calculation.
                 Each action type can have an array of tag strings that will be ignored.
               type:
                 - object
@@ -1798,6 +2116,164 @@ components:
           format: uuid
           example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
           description: The AudaNet case ID. Only available when 'success' is true and if an 'audaNetRecipient' was specified when the express link request was requested.
+
+    RequestResultBody:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Either true (request was successfully processed) or false (an error occurred). Always available.
+          example: true
+        message:
+          type: string
+          description: Describes the return status (e.g. error details). Can be null or empty.
+          example: Request successfully processed
+        requestId:
+          type: string
+          format: uuid
+          description: ID of the request. Only available when `success` is true.
+          example: 12341234-1234-1234-1234-123412341234
+        fiascoId:
+          type: string
+          description: A unique human readable identifier for the request.
+          example: D2025-SK-F5E8
+        calculationId:
+          type: string
+          format: uuid
+          description: ID of the finished calculation (if applicable).
+          example: 12341234-1234-1234-1234-123412341234
+        calculationText:
+          type: string
+          description: |-
+            The calculation text as returned by the calculation engine.
+            Only available when `success` is true and calculation is complete.
+        calculationDV90:
+          type: string
+          description: |-
+            The calculation in the DV90 format.
+            Only available when `success` is true and calculation is complete.
+        calculationVXS:
+          type: string
+          description: |-
+            The calculation in the VXS format.
+            Only available when `success` is true, calculation is complete, and the calculation provider was DAT.
+        calculationPDF:
+          type: string
+          description: |-
+            Base64-encoded PDF that contains the results of the calculation.
+            Only available when `success` is true, calculation is complete, and the calculation provider was DAT.
+        reference:
+          type: string
+          description: The reference ID that was passed in the original request.
+        additionalReferences:
+          type: object
+          additionalProperties: true
+          description: The additional references that were passed in the original request.
+        audaNetCaseId:
+          type: string
+          format: uuid
+          example: B1CAF6C5-AFAF-B40D-B0C8-9E0A2A041179
+          description: |-
+            The AudaNet case ID. Only available when `success` is true and if an `audaNetRecipient`
+            was specified when the request was created.
+        totalPrice:
+          type: number
+          format: float
+          description: The total price of the calculation without tax (if applicable).
+        totalPriceWithTax:
+          type: number
+          format: float
+          description: The total price of the calculation including tax (if applicable).
+        totalTax:
+          type: number
+          format: float
+          description: The total tax amount (if applicable).
+        taxRates:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: number
+                format: float
+                description: The tax rate percentage
+              amount:
+                type: number
+                format: float
+                description: The tax amount for this rate
+          description: |-
+            The tax rates that were applied in the calculation (if applicable).
+        status:
+          type: string
+          description: Current status of the request
+          enum:
+            [
+              "creating",
+              "receiving",
+              "received",
+              "preprocessing",
+              "preprocessed",
+              "calculating",
+              "calculated",
+              "postprocessing",
+              "postprocessed",
+              "closing",
+              "closed",
+            ]
+          example: preprocessing
+        directStatus:
+          type: object
+          description: Additional status information for direct request types (only present if request type was "direct")
+          properties:
+            expressLinkStatus:
+              type: string
+              description: Status of the express link (only present if request type is "direct")
+              enum: ["pristine", "request_received", "completed"]
+              example: completed
+            directReplacementValuationAvailable:
+              type: boolean
+              description: Whether Direct replacement valuation is available
+              example: true
+            visionReplacementValuationAvailable:
+              type: boolean
+              description: Whether Vision replacement valuation is available
+              example: true
+            visionCalculationStatus:
+              type: string
+              description: Status of the vision calculation
+              enum: ["pristine", "requested", "completed"]
+              example: completed
+        damagedParts:
+          type: array
+          description: A list of parts that are damaged for classification results.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
+        photos:
+          type: array
+          description: |-
+            A list of photos that were uploaded with the request.
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The ID of the photo.
+                example: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+              filename:
+                type: string
+                description: The filename of the photo.
+                example: "fi-img-952a6927-5c6c-49ab-881a-3d29b4399292.jpeg"
+              subject:
+                type: string
+                description: The subject of the photo.
+                enum:
+                  - common
+                  - other
+                  - dashboard
+                  - damage
+                  - glass_sticker
+                example: "damage"
     CalculationRecipients:
       type: object
       properties:
@@ -1920,6 +2396,16 @@ components:
           description: A list of subjects for the photo ids above.
           items:
             type: string
+            enum:
+              - common
+              - dashboard
+              - damage
+              - registration_paper
+        damaged_parts:
+          type: array
+          description: A list of damaged parts detected in the calculation.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
       example:
         success: true
         message: calculation request retrieved
@@ -1931,6 +2417,14 @@ components:
         answers: {}
         photos:
           - 7725ecdf-7285-49b7-a2eb-b3bc6e543aad
+        photo_subjects:
+          - common
+          - damage
+        damaged_parts:
+          - type: "dent"
+            part: "2300"
+          - type: "scratch"
+            part: "1150"
     ListPartsSuccessResponse:
       type: object
       properties:
@@ -1998,3 +2492,480 @@ components:
       example:
         success: false
         message: Unauthorized
+
+    CreateRequestBody:
+      type: object
+      description: Request body for creating a new request
+      required:
+        - type
+        - vehicle
+        - data
+        - reference
+      properties:
+        reference:
+          type: string
+          maxLength: 50
+          description: A reference ID that is added to the request for future reference (e.g. case ID, order ID, etc.)
+          example: case-12345
+        created_by_worker_email:
+          type: string
+          format: email
+          description: Worker's email address
+          example: worker@example.com
+        additional_references:
+          type: object
+          additionalProperties: true
+          description: An object containing arbitrary key-value pairs for additional reference information
+          example:
+            order_number: "ORD-2024-001"
+            customer_id: "CUST-12345"
+        type:
+          type: string
+          enum: ["direct"]
+          description: The type of request being created
+          example: direct
+        send_result_webhook_auth_token:
+          type:
+            - string
+            - "null"
+          description: |-
+            If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
+            a value configured for your account will be used.
+        send_result_webhook_url:
+          type:
+            - string
+            - "null"
+          description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
+        foreign_company_access_key:
+          type:
+            - string
+            - "null"
+          description: |-
+            Optional access key that allows Company B to create requests on behalf of Company A. When provided, the request will be created under Company A's account (the owner of the access key), and billing will be attributed to Company A. The access key must be valid, active, not expired, and have the :create permission. If the access key is invalid, inactive, expired, or lacks the required permission, the request will be rejected with an appropriate error.
+        vehicle:
+          type: object
+          description: Vehicle information for the request
+          properties:
+            manufacturer:
+              type: string
+              description: Vehicle manufacturer
+              example: BMW
+            model:
+              type: string
+              description: Vehicle model
+              example: 3 Series
+            mileage:
+              type: integer
+              description: Vehicle mileage in kilometers
+              example: 50000
+            first_registration_date:
+              type: string
+              format: date-time
+              description: First registration date in UTC
+              example: "2020-01-15T00:00:00Z"
+            license_plate:
+              type: string
+              description: Vehicle license plate number
+              example: AB-CD 1234
+            vin:
+              type: string
+              description: Vehicle identification number
+              example: WBAVB13506PT12345
+            hsn_tsn:
+              type: string
+              description: HSN/TSN code for German vehicle registration
+              example: 0005ABC
+        damaged_parts:
+          type: array
+          description: A list of parts that are damaged for classification results.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
+        data:
+          oneOf:
+            - $ref: "#/components/schemas/CreateRequestDirect"
+          description: Request-specific data, varies based on type
+        photos:
+          type: array
+          description: |-
+            Photos should meet certain requirements. Read more about that in the
+            [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
+          items:
+            type: object
+            required:
+              - data
+              - subject
+            properties:
+              data:
+                type: string
+                format: byte
+                description: The photo data in base64 encoded format.
+              content_type:
+                type: string
+                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
+              file_name:
+                type: ["string", "null"]
+                description: Filename of the photo.
+              subject:
+                type: ["string", "null"]
+                default: common
+                description: |-
+                  The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
+                  means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+
+                  Only photos __not__ marked "common" will be considered for damage detection.
+                enum:
+                  - common
+                  - damage
+                  - dashboard
+                  - registration_paper
+
+    CreateRequestResponse:
+      type: object
+      description: Response when successfully creating a new request
+      properties:
+        fiasco_id:
+          type: string
+          description: A unique human readable identifier for the created request
+          example: D2025-SK-F5E8
+        request_id:
+          type: string
+          format: uuid
+          description: A UUID for the created request
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+        link:
+          type: string
+          format: uri
+          description: A deep link generated for the request
+          example: https://cloud.fiasco.de/direct/request/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+
+    CreateRequestErrorResponse:
+      type: object
+      description: Error response when creating a request fails
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+
+    UpdateRequestBody:
+      type: object
+      description: |-
+        Request body for updating an existing request. All fields are optional for partial updates.
+      properties:
+        send_result_webhook_auth_token:
+          type:
+            - string
+            - "null"
+          description: |-
+            If set, this token will be used from our servers to authenticate against a receiving webhook server. If not set,
+            a value configured for your account will be used.
+        send_result_webhook_url:
+          type:
+            - string
+            - "null"
+          description: The webhook URL to send the results to. If not set, the default URL configured for your account will be used.
+        start_vision_request:
+          type:
+            - boolean
+            - "null"
+          description: A flag for manual direct cases which initiates the vision request.
+        damaged_parts:
+          type: array
+          description: A list of parts that are damaged for classification results. Can be used to update damage information.
+          items:
+            $ref: "#/components/schemas/DamagedPart"
+        photos:
+          type: array
+          maxItems: 10
+          description: |-
+            Additional photos to upload. Photos should meet certain requirements. Read more about that in the
+            [detailed description](https://github.com/fiasco-gmbh/openapi/blob/main/Photo%20Requirements.md).
+            Maximum 10 photos can be uploaded in a single update request.
+            Cannot be provided when vision_mode is express_link - photos should be uploaded by the customer via the express link.
+          items:
+            type: object
+            required:
+              - data
+              - content_type
+            properties:
+              data:
+                type: string
+                format: byte
+                description: The photo data in base64 encoded format.
+              content_type:
+                type: string
+                description: The MIME type of the image (e.g. 'image/jpeg', 'image/jxl', 'image/png', 'image/heic', 'image/webp', 'image/tiff').
+              file_name:
+                type: ["string", "null"]
+                description: Filename of the photo.
+              subject:
+                type: ["string", "null"]
+                default: common
+                description: |-
+                  The subject of the photo (common picture of the car, photo of a damage, other/unspecified, ...). The value `glass_sticker`
+                  means a special sticker placed behind glass to highlight defects in the glass itself, e.g. a chip in the windshield.
+
+                  Only photos __not__ marked "common" or "other" will be considered for damage detection.
+                enum:
+                  - common
+                  - other
+                  - dashboard
+                  - damage
+                  - glass_sticker
+
+    UpdateRequestResponse:
+      type: object
+      description: Response when successfully updating a request
+      properties:
+        success:
+          type: boolean
+          description: Whether the update was successful
+          example: true
+        message:
+          type: string
+          description: Success message
+          example: Request successfully updated
+        request_id:
+          type: string
+          format: uuid
+          description: The UUID of the updated request
+          example: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+
+    UpdateRequestErrorResponse:
+      type: object
+      description: Error response when updating a request fails
+      properties:
+        success:
+          type: boolean
+          description: Whether the update was successful
+          example: false
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: Request not found or invalid data provided
+
+    RequestStatusResponse:
+      type: object
+      description: Response containing the status of a request
+      properties:
+        status:
+          type: string
+          description: Current status of the request
+          enum:
+            [
+              "creating",
+              "receiving",
+              "received",
+              "preprocessing",
+              "preprocessed",
+              "calculating",
+              "calculated",
+              "postprocessing",
+              "postprocessed",
+              "closing",
+              "closed",
+            ]
+          example: creating
+        direct_status:
+          type: object
+          description: Additional status information for direct request types (only present if request type was "direct")
+          properties:
+            express_link_status:
+              type: string
+              description: Status of the express link (only present if request type is "direct")
+              enum: ["pristine", "request_received", "completed"]
+              example: completed
+            direct_replacement_valuation_available:
+              type: boolean
+              description: Whether Direct replacement valuation is available
+              example: true
+            vision_replacement_valuation_available:
+              type: boolean
+              description: Whether Vision replacement valuation is available
+              example: true
+            vision_calculation_status:
+              type: string
+              description: Status of the vision calculation
+              enum: ["pristine", "requested", "completed"]
+              example: completed
+
+    RequestStatusErrorResponse:
+      type: object
+      description: Error response when retrieving request status fails
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: request_not_found
+
+    CreateRequestDirect:
+      type: object
+      description: Data schema for direct type requests
+      properties:
+        vision_mode:
+          type: string
+          enum: ["express_link", "manual"]
+          description: The mode to use for Vision
+          example: manual
+        send_express_link:
+          type: boolean
+          description: A flag that decides whether to automatically send an express link or not
+          example: false
+          default: false
+        enable_insurer_wbw:
+          type: boolean
+          description: A flag that decides whether to automatically run the insurer WBW valuation.
+          example: true
+          default: true
+        insurer_vehicle_location_zip_code:
+          type: string
+          description: Location of the car of the insurer (zip code)
+          example: "10115"
+        insurer_vehicle_location_country:
+          type: string
+          description: Location of the car of the insurer (country code, ISO 3166-1 alpha-2)
+          example: "DE"
+          default: DE
+        insurer_estimated_mileage:
+          type: boolean
+          description: Whether the mileage of the insurer is estimated
+          example: false
+          default: false
+        insurer_calculation_parameters_preset:
+          type: string
+          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
+          description: The insurer calculation parameters preset to use
+          example: comprehensive
+        insurer_labor_rates:
+          type: object
+          description: Labor rates for different types of work for the insurer
+          required:
+            - body
+            - electrical
+            - hail_damage
+            - mechanical
+            - paint
+          properties:
+            body:
+              type: number
+              format: float
+              description: Labor rate for body work
+              example: 45.50
+            electrical:
+              type: number
+              format: float
+              description: Labor rate for electrical work
+              example: 55.00
+            hail_damage:
+              type: number
+              format: float
+              description: Labor rate for hail damage repair
+              example: 40.00
+            mechanical:
+              type: number
+              format: float
+              description: Labor rate for mechanical work
+              example: 50.00
+            paint:
+              type: number
+              format: float
+              description: Labor rate for paint work
+              example: 48.75
+        customer_vehicle_location_zip_code:
+          type: string
+          description: Location of the car of the customer (zip code)
+          example: "10115"
+        customer_vehicle_location_country:
+          type: string
+          description: Location of the car of the customer (country code, ISO 3166-1 alpha-2)
+          example: "DE"
+          default: DE
+        customer_estimated_mileage:
+          type: boolean
+          description: Whether the mileage of the customer is estimated
+          example: false
+          default: false
+        customer_calculation_parameters_preset:
+          type: string
+          enum: ["comprehensive", "comprehensive_with_binding", "third_party_liability"]
+          description: The customer calculation parameters preset to use
+          example: comprehensive_with_binding
+        customer_labor_rates:
+          type: object
+          description: Labor rates for different types of work for the customer
+          required:
+            - body
+            - electrical
+            - hail_damage
+            - mechanical
+            - paint
+          properties:
+            body:
+              type: number
+              format: float
+              description: Labor rate for body work
+              example: 45.50
+            electrical:
+              type: number
+              format: float
+              description: Labor rate for electrical work
+              example: 55.00
+            hail_damage:
+              type: number
+              format: float
+              description: Labor rate for hail damage repair
+              example: 40.00
+            mechanical:
+              type: number
+              format: float
+              description: Labor rate for mechanical work
+              example: 50.00
+            paint:
+              type: number
+              format: float
+              description: Labor rate for paint work
+              example: 48.75
+        customer_type:
+          type: string
+          enum: ["insurance_customer", "external_customer"]
+          description: Type of customer
+          example: insurance_customer
+        customer:
+          type: object
+          description: Customer (Express Link recipient) information for the request
+          properties:
+            email_address:
+              type: string
+              format: email
+              description: Customer's email address
+              example: customer@example.com
+            phone_number:
+              type: string
+              description: Customer's phone number. Used to receive SMS notifications.
+              example: "+49 171 12345678"
+            mobile_phone_number:
+              type: string
+              description: Customer's mobile phone number. Used to receive SMS notifications.
+              example: "+49 171 12345678"
+    DamagedPart:
+      type: object
+      required:
+        - type
+        - part
+      properties:
+        type:
+          type: string
+          description: The type of damage detected on the part.
+          enum:
+            - missing
+            - broken
+            - scratch
+            - dent
+            - dent_with_scratch
+            - tear
+            - chip
+            - hail
+          example: "dent"
+        part:
+          type: string
+          description: The FIASCO part ID of the damaged part.
+          example: "2300"
