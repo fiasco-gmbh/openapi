@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [keep a change log][keep-a-changelog],
 and this project tries to adhere to [semantic versioning][semver-spec].
 
+## [3.8.1] - 2025-11-18
+
+### Added
+
+- Added `start_vision_request` flag to `CreateRequestDirect` schema. This boolean flag triggers the vision calculation for manual direct requests automatically. Only works when `vision_mode` is set to "manual". Default value is false.
+- Added `enable_customer_wbw` flag to `CreateRequestDirect` schema. This boolean flag decides whether to automatically run the customer WBW valuation. Default value is true.
+
 ## [3.8.0] - 2025-09-18
 
 ### Added
@@ -498,6 +505,8 @@ change. The field that was renamed has not been in production use, yet.
 ### Added
 
 - Initial revision.
+[3.8.1]: https://github.com/fiasco-gmbh/openapi/compare/3.8.0...3.8.1
+[3.8.0]: https://github.com/fiasco-gmbh/openapi/compare/3.7.2...3.8.0
 [3.7.2]: https://github.com/fiasco-gmbh/openapi/compare/3.7.1...3.7.2
 [3.7.1]: https://github.com/fiasco-gmbh/openapi/compare/3.7.0...3.7.1
 [3.7.0]: https://github.com/fiasco-gmbh/openapi/compare/3.6.1...3.7.0

@@ -8,7 +8,7 @@ info:
     (described separately for each endpoint, don't forget to set the Content-Type header accordingly) and
     respond with an `application/json` payload. We notify customers about events using webhooks (HTTP requests
     with a JSON payload describing events).
-  version: 3.7.2
+  version: 3.8.1
   contact:
     name: FIASCO Support
     email: support@fiasco.de
@@ -2811,9 +2811,19 @@ components:
           description: A flag that decides whether to automatically send an express link or not
           example: false
           default: false
+        start_vision_request:
+          type: boolean
+          description: A flag that triggers the vision calculation for manual direct requests automatically. Only works for manual direct requests (when vision_mode is "manual").
+          example: true
+          default: false
         enable_insurer_wbw:
           type: boolean
           description: A flag that decides whether to automatically run the insurer WBW valuation.
+          example: true
+          default: true
+        enable_customer_wbw:
+          type: boolean
+          description: A flag that decides whether to automatically run the customer WBW valuation.
           example: true
           default: true
         insurer_vehicle_location_zip_code:
