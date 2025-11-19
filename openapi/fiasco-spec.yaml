@@ -2821,6 +2821,11 @@ components:
           description: A flag that decides whether to automatically run the insurer WBW valuation.
           example: true
           default: true
+        enable_customer_wbw:
+          type: boolean
+          description: A flag that decides whether to automatically run the customer WBW valuation.
+          example: true
+          default: true
         insurer_vehicle_location_zip_code:
           type: string
           description: Location of the car of the insurer (zip code)

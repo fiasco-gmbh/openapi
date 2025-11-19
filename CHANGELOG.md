@@ -10,6 +10,7 @@ and this project tries to adhere to [semantic versioning][semver-spec].
 ### Added
 
 - Added `start_vision_request` flag to `CreateRequestDirect` schema. This boolean flag triggers the vision calculation for manual direct requests automatically. Only works when `vision_mode` is set to "manual". Default value is false.
+- Added `enable_customer_wbw` flag to `CreateRequestDirect` schema. This boolean flag decides whether to automatically run the customer WBW valuation. Default value is true.
 
 ## [3.8.0] - 2025-09-18
 
