@@ -2498,7 +2498,6 @@ components:
       description: Request body for creating a new request
       required:
         - type
-        - vehicle
         - data
         - reference
       properties:
@@ -2800,6 +2799,8 @@ components:
     CreateRequestDirect:
       type: object
       description: Data schema for direct type requests
+      required:
+        - vision_mode
       properties:
         vision_mode:
           type: string
